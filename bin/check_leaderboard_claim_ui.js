@@ -1322,6 +1322,15 @@ manifest.datasets.forEach((dataset) => {
     api.state.split = split.name;
     const rankedRows = api.rowsForActiveSplit();
     rankedRows.forEach((row) => {
+      if (row.record_type === "development_fixture") {
+        assert.equal(row.rank, null, `${dataset.name}/${split.name}/${row.id} development fixture must not receive a rank`);
+        assert.equal(
+          row._ranking.source,
+          "non_ranked_development_fixture",
+          `${dataset.name}/${split.name}/${row.id} must retain explicit non-ranked fixture provenance`
+        );
+        return;
+      }
       assert.equal(
         row._ranking.source,
         "verified_generated_release",
@@ -1350,6 +1359,17 @@ async function verifyGeneratedClaimRecords() {
       api.state.split = split.name;
       for (const row of api.rowsForActiveSplit()) {
         await api.ensureClaimRecord(row);
+        if (row.record_type === "development_fixture") {
+          assert.equal(
+            api.claimRecordCheck(row)?.status,
+            "not_listed",
+            `${dataset.name}/${split.name}/${row.id} development fixture must not publish a claim record`
+          );
+          const eligibility = api.claimEligibility(row);
+          assert.equal(eligibility.academic_citation, false);
+          assert.equal(eligibility.promotion, false);
+          continue;
+        }
         assert.equal(api.claimRecordCheck(row)?.status, "verified", `${dataset.name}/${split.name}/${row.id} claim record must verify`);
       }
     }

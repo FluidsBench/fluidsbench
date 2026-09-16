@@ -2970,7 +2970,27 @@
     return rounded === null ? "N/A" : rounded.toFixed(policy.decimal_places);
   }
 
+  function isNonRankedDevelopmentFixture(row) {
+    return row?.record_type === "development_fixture";
+  }
+
+  function nonRankedDevelopmentFixtureRanking(row, policy, rankedResultCount) {
+    return {
+      ...policy,
+      value: finiteNumber(row?.metricValues?.[policy.metric_id]),
+      ranked_value: null,
+      display_value: "Non-ranked",
+      unit: metricDefinition(policy.metric_id)?.unit || "",
+      rank: null,
+      ranked_result_count: rankedResultCount,
+      tied: false,
+      tie_count: 0,
+      source: "non_ranked_development_fixture",
+    };
+  }
+
   function generatedRanking(row, policy) {
+    if (isNonRankedDevelopmentFixture(row)) return null;
     const generated = row.ranking;
     if (!state.feedVerified || !generated || typeof generated !== "object") return null;
     const requiredNumberFields = ["value", "ranked_value", "rank", "ranked_result_count", "tie_count"];
@@ -3094,27 +3114,38 @@
 
   function rowsForActiveSplit() {
     const allRows = (state.rows.get(state.dataset) || []).filter((row) => row.split === state.split);
+    const rankableRows = allRows.filter((row) => !isNonRankedDevelopmentFixture(row));
     const policy = rankingPolicy();
-    const fallback = fallbackRankings(allRows, policy);
+    const fallback = fallbackRankings(rankableRows, policy);
     const fallbackById = new Map(fallback.map((item) => [item.row.id, item.ranking]));
-    const generated = allRows.map((row) => generatedRanking(row, policy));
+    const generated = rankableRows.map((row) => generatedRanking(row, policy));
     const generatedIsConsistent =
-      generated.length && generated.every((item, index) => generatedRankingMatches(item, fallbackById.get(allRows[index].id)));
+      generated.length && generated.every((item, index) => generatedRankingMatches(item, fallbackById.get(rankableRows[index].id)));
+    let rankedRows;
     if (generatedIsConsistent) {
-      const generatedById = new Map(allRows.map((row, index) => [row.id, generated[index]]));
-      return fallback.map(({ row }) => {
+      const generatedById = new Map(rankableRows.map((row, index) => [row.id, generated[index]]));
+      rankedRows = fallback.map(({ row }) => {
         const verifiedRanking = { ...generatedById.get(row.id), source: "verified_generated_release" };
         return { ...row, rank: verifiedRanking.rank, _ranking: verifiedRanking };
       });
+    } else {
+      const generatedWasPresent = rankableRows.some((row) => row.ranking && typeof row.ranking === "object");
+      rankedRows = fallback.map(({ row, ranking: rowRanking }) => {
+        const verifiedFallback = {
+          ...rowRanking,
+          source: generatedWasPresent ? "computed_fallback_generated_release_mismatch" : "computed_fallback_legacy_release",
+        };
+        return { ...row, rank: verifiedFallback.rank, _ranking: verifiedFallback };
+      });
     }
-    const generatedWasPresent = allRows.some((row) => row.ranking && typeof row.ranking === "object");
-    return fallback.map(({ row, ranking: rowRanking }) => {
-      const verifiedFallback = {
-        ...rowRanking,
-        source: generatedWasPresent ? "computed_fallback_generated_release_mismatch" : "computed_fallback_legacy_release",
-      };
-      return { ...row, rank: verifiedFallback.rank, _ranking: verifiedFallback };
-    });
+    const rankedResultCount = fallback[0]?.ranking?.ranked_result_count || 0;
+    const developmentFixtures = allRows
+      .filter(isNonRankedDevelopmentFixture)
+      .map((row) => {
+        const fixtureRanking = nonRankedDevelopmentFixtureRanking(row, policy, rankedResultCount);
+        return { ...row, rank: null, _ranking: fixtureRanking };
+      });
+    return [...rankedRows, ...developmentFixtures];
   }
 
   function revisionRowsForActiveSplit() {
