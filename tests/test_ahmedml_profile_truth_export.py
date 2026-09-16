@@ -3,10 +3,16 @@ from __future__ import annotations
 import hashlib
 import json
 import sys
+import unittest
 from pathlib import Path
 
-import numpy as np
-import pytest
+try:
+    import numpy as np
+    import pytest
+except ModuleNotFoundError as exc:  # pragma: no cover - unittest smoke environment
+    raise unittest.SkipTest(
+        "AhmedML profile exporter tests require the optional NumPy/pytest toolchain"
+    ) from exc
 
 
 ROOT = Path(__file__).resolve().parents[1]
