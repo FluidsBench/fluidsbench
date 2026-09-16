@@ -131,7 +131,7 @@
       "summary": "The candidate contract binds all 484 public cases, eight official split lists, pMeanTrim and wallShearStressMeanTrim on every native surface polygon, UMeanTrim and pMeanTrim on every native volume cell, constant-reference force truth, AutoCFD5 velocity profiles, and continuous Cp cuts. Surface area sidecars, equal-cell volume accumulation, and all-case native profile truth are published; evaluator freezing, remaining diagnostic review, and genuine-model sensitivity analysis remain before public submissions can open.",
       "split_ids": ["full", "medium", "scarce", "super_scarce", "geometry", "high_drag", "low_drag", "rear_separation"],
       "case_id_status": "official",
-      "contract_digest": "33219e1554ee05806181c28e00ef3f4f0cbcedc0143e8ce3441cd67244a7ec20"
+      "contract_digest": "114ab1ba624522c2af3700b03b425f554a45e8a1ac31d0e821bc48efa4a093dc"
     },
     "visual": {
       "inputs": "DrivAer geometry + flow conditions",
