@@ -3742,6 +3742,8 @@ def check(submission_root: Path) -> list[str]:
                         )
                         if sample_count is None:
                             sample_count = panel.get("sample_count")
+                        if sample_count is None:
+                            sample_count = panel.get("exact_points")
                         if isinstance(sample_count, int) and (
                             not isinstance(coordinate, list)
                             or len(coordinate) != sample_count

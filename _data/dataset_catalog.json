@@ -14,7 +14,7 @@
       "release": "Hugging Face revision 02688c7",
       "license": "CC BY-SA 4.0",
       "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "availability": "500 field-bearing cases; approximately 2 TB for the complete repository",
+      "availability": "500 field-bearing cases; approximately 3.08 TB for the complete pinned repository",
       "contents": "STL geometry, native boundary VTP and volume VTU fields, force and geometry tables, CFD slices and images, eight split families, and one native polygon-area sidecar per boundary mesh.",
       "image": {
         "path": "/assets/img/datasets/ahmedml-flow.png",
@@ -44,7 +44,7 @@
       ],
       "operating_conditions": "The operating setup is fixed across the dataset, so the intended breadth comes from geometry rather than a boundary-condition sweep.",
       "sampling": "Latin hypercube sampling fills the six-dimensional parameter box with 500 geometry cases.",
-      "coverage": "The eight published source splits separate the random full-data task, nested data-efficiency tasks, and held-out geometry, force, and wake regimes. Their FluidsBench case bindings are still candidate definitions.",
+      "coverage": "The eight published source splits separate the random full-data task, nested data-efficiency tasks, and held-out geometry, force, and wake regimes. All eight candidate benchmark bindings now use the exact pinned public case IDs; the four nested data-efficiency splits share the same 50-case test set.",
       "source_url": "https://arxiv.org/abs/2407.20801",
       "source_label": "AhmedML paper and design-space table"
     },
@@ -52,11 +52,11 @@
       "status": "owner_review_required",
       "status_label": "Benchmark definition in preparation",
       "submissions_open": false,
-      "source_pin": "Not yet frozen",
-      "summary": "The current candidate scores native boundary pMean and wallShearStressMean, native-volume UMean and pMean, forces, and profile diagnostics. Public boundary_cell_area sidecars support area-weighted surface errors, but the eight FluidsBench case lists are still provisional and not open for submissions.",
+      "source_pin": "neashton/ahmedml @ 02688c727cdb8dc8678e28abc6bbbb7e93c5fa15",
+      "summary": "The owner-review candidate scores complete native boundary pMean and wallShearStressMean, complete native-volume UMean and pMean, reconstructed force coefficients, three 128-point surface Cp cuts, four 128-point wake-velocity profiles, and report-only near-body/wake/farfield diagnostics. Case IDs and source bytes are pinned, but public submissions remain closed pending owner approval.",
       "split_ids": ["full", "medium", "scarce", "super_scarce", "geometry", "high_drag", "low_drag", "image_wake"],
-      "case_id_status": "prototype_generated",
-      "contract_digest": "1c95ec2d7ea700ad609b658fe90fc8ecbbf4ea897f14ac6cb40e03774630d228"
+      "case_id_status": "official",
+      "contract_digest": "c55a037c8c79f640359a34bf4e95169ae8f7c07d4517e236419ae05df397122b"
     },
     "visual": {
       "inputs": "Ahmed geometry + flow conditions",

@@ -285,7 +285,7 @@ chart:
     <div class="leaderboard-panel-heading">
       <div>
         <h3>Native field regions</h3>
-        <p>Explore where selected DrivAerML and HiLiftAeroML native-field errors occur. HiLift volume fields default to equal-case regional RMSE normalized by each case's whole-volume truth RMS; local relative L2 and R2 remain in the numeric diagnostics. These checksum-bound reports have zero official scoring weight.</p>
+        <p>Explore where selected DrivAerML, HiLiftAeroML, and AhmedML native-field errors occur. HiLift volume fields default to equal-case regional RMSE normalized by each case's whole-volume truth RMS; local relative L2 and R2 remain in the numeric diagnostics. These checksum-bound reports have zero official scoring weight.</p>
       </div>
       <div class="chart-control-row">
         <div class="chart-control">

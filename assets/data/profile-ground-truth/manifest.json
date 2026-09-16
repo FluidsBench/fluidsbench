@@ -3,7 +3,7 @@
   "data_release": {
     "id": "prototype-profile-ground-truth-2026-09-04",
     "status": "prototype_dummy_data",
-    "generated_at": "2026-09-04T07:00:00Z",
+    "generated_at": "2026-09-16T20:48:24Z",
     "source_repository": "https://github.com/neilashton/fluidsbench",
     "source_ref": "dev",
     "source_commit": null
@@ -13,93 +13,108 @@
     {
       "id": "ahmedml",
       "name": "AhmedML",
+      "native_profile_truth": {
+        "source_kind": "native_cfd",
+        "analytical_dummy": false,
+        "dataset_revision": "02688c727cdb8dc8678e28abc6bbbb7e93c5fa15",
+        "source_identity_sha256": "56a620a5b335cef6cb0587e186df321eb907bbe46e8b81aa4de302b8fe73cf44",
+        "profile_definition_sha256": "1048a0380f70de778e3e51db07d6910579f720d6f2dd1d9ad7179dbfe88d1cae",
+        "release_id": "ahmedml-native-profile-truth-all316-v1-candidate",
+        "case_count": 316,
+        "case_set_count": 5,
+        "series_per_case": 7,
+        "samples_per_series": 128,
+        "master_index_file": "datasets/ahmedml/native-all316-v1/index.json",
+        "master_index_sha256": "480a1a978d99a7d157ba77e62430286aeecccfbad3435a45b6685e54e714e394"
+      },
       "splits": [
         {
           "id": "full",
           "label": "Full",
-          "case_set_id": "standard",
+          "case_set_id": "full-test",
           "case_count": 50
         },
         {
           "id": "medium",
           "label": "Medium",
-          "case_set_id": "standard",
+          "case_set_id": "full-test",
           "case_count": 50
         },
         {
           "id": "scarce",
           "label": "Scarce",
-          "case_set_id": "standard",
+          "case_set_id": "full-test",
           "case_count": 50
         },
         {
           "id": "super_scarce",
           "label": "Super scarce",
-          "case_set_id": "standard",
+          "case_set_id": "full-test",
           "case_count": 50
         },
         {
           "id": "geometry",
           "label": "Geometry",
-          "case_set_id": "geometry",
+          "case_set_id": "geometry-test",
           "case_count": 100
         },
         {
           "id": "high_drag",
           "label": "High drag",
-          "case_set_id": "high_drag",
+          "case_set_id": "high_drag-test",
           "case_count": 100
         },
         {
           "id": "low_drag",
           "label": "Low drag",
-          "case_set_id": "low_drag",
+          "case_set_id": "low_drag-test",
           "case_count": 100
         },
         {
           "id": "image_wake",
           "label": "Image wake",
-          "case_set_id": "image_wake",
+          "case_set_id": "image_wake-test",
           "case_count": 100
         }
       ],
       "case_sets": [
         {
-          "id": "standard",
-          "index_file": "datasets/ahmedml/standard/index.json",
-          "index_sha256": "b7e1306c0972d8422364e4371aa7bbb631dcbc38cbfe58714d3508640d726183",
+          "id": "full-test",
+          "index_file": "datasets/ahmedml/native-all316-v1/full-test/index.json",
+          "index_sha256": "a9319c4c91227ef50a647216568908916019bb7399bb1bbd80c06be8429ac901",
           "case_count": 50,
-          "case_id_status": "prototype_generated"
+          "case_id_status": "official"
         },
         {
-          "id": "geometry",
-          "index_file": "datasets/ahmedml/geometry/index.json",
-          "index_sha256": "b5b002390b1307649982215f5db853b46c18daa41fd9e4cd8da6534ec42b8f2a",
+          "id": "geometry-test",
+          "index_file": "datasets/ahmedml/native-all316-v1/geometry-test/index.json",
+          "index_sha256": "890069a823f60f3348a46df9930c2499649abee5fb5ae875f92f170c318b874a",
           "case_count": 100,
-          "case_id_status": "prototype_generated"
+          "case_id_status": "official"
         },
         {
-          "id": "high_drag",
-          "index_file": "datasets/ahmedml/high_drag/index.json",
-          "index_sha256": "d33fa4c08ab451a5b603ad8e9e0ad49c1e2447cb89de236f31a180f565b14779",
+          "id": "high_drag-test",
+          "index_file": "datasets/ahmedml/native-all316-v1/high_drag-test/index.json",
+          "index_sha256": "ef561934395c2934cfb82152efdaf3de3239c1bd70e0b6725dbb392b44cdf220",
           "case_count": 100,
-          "case_id_status": "prototype_generated"
+          "case_id_status": "official"
         },
         {
-          "id": "low_drag",
-          "index_file": "datasets/ahmedml/low_drag/index.json",
-          "index_sha256": "6448b2c07e506645264d76cc49e2c6d4d4eaf8bca9f2eba4c2440374e8dd3470",
+          "id": "low_drag-test",
+          "index_file": "datasets/ahmedml/native-all316-v1/low_drag-test/index.json",
+          "index_sha256": "088b41b6cf9276c41784185eb83f1f4c97e38f8e42774c27131308e0dd0f41ea",
           "case_count": 100,
-          "case_id_status": "prototype_generated"
+          "case_id_status": "official"
         },
         {
-          "id": "image_wake",
-          "index_file": "datasets/ahmedml/image_wake/index.json",
-          "index_sha256": "11d7ce27982b9efd9e97f09535f8582f2977a120911373618ae4e5b83b44a4d1",
+          "id": "image_wake-test",
+          "index_file": "datasets/ahmedml/native-all316-v1/image_wake-test/index.json",
+          "index_sha256": "3b6feda3e55a4fc92782b11633c85c6cab8c39f027ea9c2aa03ed06b87c4e56c",
           "case_count": 100,
-          "case_id_status": "prototype_generated"
+          "case_id_status": "official"
         }
-      ]
+      ],
+      "note": "All seven AhmedML curves per case are exact evaluator-owned native CFD truth sampled on frozen mappings at 128 points per series for all 316 unique official test cases."
     },
     {
       "id": "airfrans",
