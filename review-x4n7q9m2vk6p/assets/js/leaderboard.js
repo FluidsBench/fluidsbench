@@ -52,6 +52,30 @@
   const hiLiftCompactTruthReleaseId = "hiliftaeroml-compact-profile-truth-all1355-v1";
   const hiLiftCompactTruthCaseCount = 1355;
   const hiLiftCompactTruthCaseSetCount = 8;
+  const ahmedNativeTruthSchemas = {
+    master: "fluidsbench-ahmedml-native-profile-truth-master-index-v1",
+    index: "fluidsbench-ahmedml-native-profile-truth-index-v1",
+    chunk: "fluidsbench-ahmedml-native-profile-truth-chunk-v1",
+    version: "1.0",
+  };
+  const ahmedNativeTruthReleaseId = "ahmedml-native-profile-truth-all316-v1-candidate";
+  const ahmedNativeDatasetRevision = "02688c727cdb8dc8678e28abc6bbbb7e93c5fa15";
+  const ahmedNativeSourceIdentitySha256 = "56a620a5b335cef6cb0587e186df321eb907bbe46e8b81aa4de302b8fe73cf44";
+  const ahmedNativeProfileDefinitionSha256 = "1048a0380f70de778e3e51db07d6910579f720d6f2dd1d9ad7179dbfe88d1cae";
+  const ahmedNativeTruthSource = {
+    source_kind: "native_cfd",
+    analytical_dummy: false,
+    native_quantity_source: "pinned_ahmedml_cell_data_via_frozen_evaluator_mapping",
+  };
+  const ahmedNativeSeriesContract = [
+    ["pressure_profiles", "upper_body_centerline", "cp", "x_over_l", 0, 1],
+    ["pressure_profiles", "underbody_centerline", "cp", "x_over_l", 0, 1],
+    ["pressure_profiles", "rear_slant_centerline", "cp", "s_over_slant", 0, 1],
+    ["velocity_profiles", "wake_vertical_x_0p25_l", "ux_over_uinf", "z_over_h", 0, 2],
+    ["velocity_profiles", "wake_vertical_x_0p50_l", "ux_over_uinf", "z_over_h", 0, 2],
+    ["velocity_profiles", "wake_vertical_x_1p00_l", "ux_over_uinf", "z_over_h", 0, 2],
+    ["velocity_profiles", "wake_lateral_x_0p50_l_z_0p50_h", "ux_over_uinf", "y_over_w", -1, 1],
+  ];
   const hiLiftCpStationIds = Array.from("abcdefghij", (letter) => `pressure_belt_${letter}`);
   const hiLiftVelocityStations = [
     ["B.2", "hlpw5_b_2"],
@@ -107,6 +131,31 @@
           label: "Volume velocity",
           domain: "volume",
           supportId: "drivaerml-volume-four-geometric-regions-v1",
+          globalMetricId: "volume_velocity_rel_l2",
+        },
+      },
+    },
+    ahmedml: {
+      reportSchema: "ahmedml-regional-diagnostics-aggregate-v1",
+      schemaVersion: 1,
+      contractSha256: "338db5b806caec2883e2583e491b751546624d3f101c04ae644cf9357b1275d7",
+      definitionId: "ahmedml-native-regions-v1-candidate",
+      layout: "supports",
+      fields: {
+        volume_pressure: {
+          id: "volume_pressure",
+          reportFieldId: "volume_pressure",
+          label: "Volume pressure",
+          domain: "volume",
+          supportId: "ahmedml-volume-three-geometric-regions-v1",
+          globalMetricId: "volume_pressure_rel_l2",
+        },
+        volume_velocity: {
+          id: "volume_velocity",
+          reportFieldId: "volume_velocity",
+          label: "Volume velocity",
+          domain: "volume",
+          supportId: "ahmedml-volume-three-geometric-regions-v1",
           globalMetricId: "volume_velocity_rel_l2",
         },
       },
@@ -358,6 +407,15 @@
       value?.source_kind === nativeProfileTruthSource.source_kind &&
       value?.analytical_dummy === false &&
       value?.native_quantity_source === nativeProfileTruthSource.native_quantity_source &&
+      Object.keys(value || {}).length === 3
+    );
+  }
+
+  function exactAhmedNativeTruthSource(value) {
+    return (
+      value?.source_kind === ahmedNativeTruthSource.source_kind &&
+      value?.analytical_dummy === false &&
+      value?.native_quantity_source === ahmedNativeTruthSource.native_quantity_source &&
       Object.keys(value || {}).length === 3
     );
   }
@@ -2292,8 +2350,11 @@
     const nativeProfileTruth = nativeTruthVersion !== null;
     const drivaermlDataset = datasetName === "DrivAerML" || dataset?.id === "drivaerml";
     const hiLiftDataset = datasetName === "HiLiftAeroML" || dataset?.id === "hiliftaeroml";
+    const ahmedDataset = datasetName === "AhmedML" || dataset?.id === "ahmedml";
     const hiLiftCompactTruth =
       cached.data?.schema === hiLiftCompactTruthSchemas.index && cached.data?.schema_version === hiLiftCompactTruthSchemas.version;
+    const ahmedNativeTruth =
+      cached.data?.schema === ahmedNativeTruthSchemas.index && cached.data?.schema_version === ahmedNativeTruthSchemas.version;
     if (drivaermlDataset && !nativeProfileTruth) {
       throw new Error(
         `${datasetName} profile ground truth must use a checksum-bound native CFD v2 or v3 release; legacy or analytical indexes are unavailable`
@@ -2307,6 +2368,12 @@
     }
     if (hiLiftDataset && !hiLiftCompactTruth) {
       throw new Error(`${datasetName} ground truth must use the checksum-bound compact Native CFD release for every official case set`);
+    }
+    if (ahmedNativeTruth && !ahmedDataset) {
+      throw new Error(`${datasetName} cannot use the AhmedML native profile-truth schema`);
+    }
+    if (ahmedDataset && dataset?.native_profile_truth && !ahmedNativeTruth) {
+      throw new Error(`${datasetName} ground truth must use its checksum-bound 128-point Native CFD release`);
     }
     let nativeChunkBaseUrl = null;
     let nativeMasterChunks = null;
@@ -2511,6 +2578,106 @@
         throw new Error(`${datasetName} compact Native CFD truth index has incomplete coverage or a stale contract binding`);
       }
     }
+    if (ahmedNativeTruth) {
+      const declaration = dataset?.native_profile_truth;
+      const indexedIds = caseIds(cached.data);
+      const indexedChunks = cached.data?.chunks || [];
+      if (
+        declaration?.source_kind !== "native_cfd" ||
+        declaration?.analytical_dummy !== false ||
+        declaration?.dataset_revision !== ahmedNativeDatasetRevision ||
+        declaration?.source_identity_sha256 !== ahmedNativeSourceIdentitySha256 ||
+        declaration?.profile_definition_sha256 !== ahmedNativeProfileDefinitionSha256 ||
+        declaration?.release_id !== ahmedNativeTruthReleaseId ||
+        declaration?.case_count !== 316 ||
+        declaration?.case_set_count !== 5 ||
+        declaration?.series_per_case !== 7 ||
+        declaration?.samples_per_series !== 128 ||
+        !declaration?.master_index_file ||
+        !validSha256(declaration?.master_index_sha256)
+      ) {
+        throw new Error(`${datasetName} native CFD truth lacks its exact all-316 release declaration`);
+      }
+      if (
+        cached.data?.release_id !== ahmedNativeTruthReleaseId ||
+        cached.data?.status !== "candidate_owner_review_required" ||
+        cached.data?.usage !== "browser_visualization_only_not_metric_recomputation" ||
+        cached.data?.dataset_id !== "ahmedml" ||
+        cached.data?.dataset_revision !== ahmedNativeDatasetRevision ||
+        cached.data?.source_identity_sha256 !== ahmedNativeSourceIdentitySha256 ||
+        cached.data?.profile_definition_sha256 !== ahmedNativeProfileDefinitionSha256 ||
+        cached.data?.case_set_id !== caseSet.id ||
+        cached.data?.case_id_status !== "official" ||
+        cached.data?.case_count !== caseSet.case_count ||
+        cached.data?.case_count !== split?.case_count ||
+        cached.data?.series_per_case !== 7 ||
+        cached.data?.samples_per_series !== 128 ||
+        !exactAhmedNativeTruthSource(cached.data?.truth_source) ||
+        !Array.isArray(cached.data?.case_ids) ||
+        cached.data.case_ids.length !== caseSet.case_count ||
+        indexedIds.length !== caseSet.case_count ||
+        indexedIds.some((caseId, index) => caseId !== cached.data.case_ids[index]) ||
+        new Set(indexedIds).size !== indexedIds.length ||
+        !Array.isArray(indexedChunks) ||
+        indexedChunks.some(
+          (entry) =>
+            !entry?.file ||
+            !validSha256(entry.sha256) ||
+            entry.case_count !== (entry.case_ids || []).length ||
+            entry.series_count !== 7 * entry.case_count
+        )
+      ) {
+        throw new Error(`${datasetName} native CFD truth index has incomplete coverage or a stale contract binding`);
+      }
+      const masterIndexUrl = fileUrl(
+        declaration.master_index_file,
+        state.groundTruthManifestProvenance?.base_url || groundTruthBaseUrl
+      );
+      if (!state.groundTruthIndexes.has(masterIndexUrl)) {
+        state.groundTruthIndexes.set(
+          masterIndexUrl,
+          await fetchJsonWithProvenance(masterIndexUrl, `${datasetName} native profile-truth master index`)
+        );
+      }
+      const masterLoaded = state.groundTruthIndexes.get(masterIndexUrl);
+      const master = masterLoaded.data;
+      const masterCaseSets = master?.case_sets || [];
+      if (
+        masterLoaded.sha256 !== declaration.master_index_sha256 ||
+        master?.schema !== ahmedNativeTruthSchemas.master ||
+        master?.schema_version !== ahmedNativeTruthSchemas.version ||
+        master?.release_id !== ahmedNativeTruthReleaseId ||
+        master?.status !== "candidate_owner_review_required" ||
+        master?.usage !== "browser_visualization_only_not_metric_recomputation" ||
+        master?.dataset_id !== "ahmedml" ||
+        master?.dataset_revision !== ahmedNativeDatasetRevision ||
+        master?.source_identity_sha256 !== ahmedNativeSourceIdentitySha256 ||
+        master?.profile_definition_sha256 !== ahmedNativeProfileDefinitionSha256 ||
+        master?.case_count !== 316 ||
+        !Array.isArray(master?.case_ids) ||
+        master.case_ids.length !== 316 ||
+        new Set(master.case_ids).size !== 316 ||
+        master?.case_set_count !== 5 ||
+        !Array.isArray(masterCaseSets) ||
+        masterCaseSets.length !== 5 ||
+        new Set(masterCaseSets.map((entry) => entry.case_set_id)).size !== 5 ||
+        master?.series_per_case !== 7 ||
+        master?.samples_per_series !== 128 ||
+        !exactAhmedNativeTruthSource(master?.truth_source)
+      ) {
+        throw new Error(`${datasetName} native CFD master index has incomplete or stale all-316 coverage`);
+      }
+      const masterCaseSet = masterCaseSets.find((entry) => entry.case_set_id === caseSet.id);
+      if (
+        !masterCaseSet ||
+        masterCaseSet.sha256 !== cached.sha256 ||
+        masterCaseSet.case_count !== caseSet.case_count ||
+        masterCaseSet.case_id_status !== "official" ||
+        new URL(masterCaseSet.file, new URL(".", masterIndexUrl)).href !== indexUrl
+      ) {
+        throw new Error(`${datasetName} case-set truth is not bound by the checksum-verified all-316 master index`);
+      }
+    }
     return {
       index: cached.data,
       indexUrl,
@@ -2522,6 +2689,7 @@
       nativeChunkBaseUrl,
       nativeMasterChunks,
       hiLiftCompactTruth,
+      ahmedNativeTruth,
     };
   }
 
@@ -2625,6 +2793,61 @@
         throw new Error(`${label} compact HiLift prediction chunk has an unsupported or stale contract binding`);
       }
     }
+    if (context.ahmedNativeTruth) {
+      const loadedCaseIds = (cached.data?.cases || []).map((candidate) => candidate.case_id);
+      if (
+        cached.data?.schema !== ahmedNativeTruthSchemas.chunk ||
+        cached.data?.schema_version !== ahmedNativeTruthSchemas.version ||
+        cached.data?.release_id !== ahmedNativeTruthReleaseId ||
+        cached.data?.dataset_id !== "ahmedml" ||
+        cached.data?.dataset_revision !== ahmedNativeDatasetRevision ||
+        cached.data?.source_identity_sha256 !== ahmedNativeSourceIdentitySha256 ||
+        cached.data?.profile_definition_sha256 !== ahmedNativeProfileDefinitionSha256 ||
+        cached.data?.case_set_id !== context.caseSetId ||
+        cached.data?.series_per_case !== 7 ||
+        cached.data?.samples_per_series !== 128 ||
+        !exactAhmedNativeTruthSource(cached.data?.truth_source) ||
+        cached.data?.case_count !== loadedCaseIds.length ||
+        loadedCaseIds.length !== (entry.case_ids || []).length ||
+        (cached.data?.case_ids || []).some((loadedCaseId, index) => loadedCaseId !== loadedCaseIds[index]) ||
+        loadedCaseIds.some((loadedCaseId, index) => loadedCaseId !== (entry.case_ids || [])[index]) ||
+        (cached.data?.cases || []).some(
+          (candidate) =>
+            !exactAhmedNativeTruthSource(candidate?.truth_source) ||
+            !Array.isArray(candidate?.series) ||
+            candidate.series.length !== ahmedNativeSeriesContract.length ||
+            candidate.series.some(
+              (series, seriesIndex) => {
+                const [panelId, stationId, quantityId, coordinateId, start, end] =
+                  ahmedNativeSeriesContract[seriesIndex] || [];
+                const coordinate = series?.coordinate;
+                const values = series?.value;
+                return (
+                  series?.panel_id !== panelId ||
+                  series?.station_id !== stationId ||
+                  series?.quantity_id !== quantityId ||
+                  series?.coordinate_id !== coordinateId ||
+                  series?.coordinate_unit !== "1" ||
+                  series?.source !== "evaluator_owned_frozen_native_cell_mapping" ||
+                  series?.sample_count !== 128 ||
+                  !Array.isArray(coordinate) ||
+                  !Array.isArray(values) ||
+                  coordinate.length !== 128 ||
+                  values.length !== 128 ||
+                  coordinate.some(
+                    (value, sampleIndex) =>
+                      !Number.isFinite(Number(value)) ||
+                      Math.abs(Number(value) - (start + ((end - start) * sampleIndex) / 127)) > 1e-12
+                  ) ||
+                  values.some((value) => !Number.isFinite(Number(value)))
+                );
+              }
+            )
+        )
+      ) {
+        throw new Error(`${label} AhmedML native profile chunk has an unsupported or stale contract binding`);
+      }
+    }
     if (context.hiLiftCompactTruth || context.hiLiftCompactPrediction) {
       const loadedCaseIds = (cached.data?.cases || []).map((candidate) => candidate.case_id);
       if (
@@ -2669,6 +2892,9 @@
     if (context.nativeProfileTruth && !exactNativeTruthSource(profileCase.truth_source)) {
       throw new Error(`${label} native profile case lacks its exact pinned non-analytical CFD truth declaration`);
     }
+    if (context.ahmedNativeTruth && !exactAhmedNativeTruthSource(profileCase.truth_source)) {
+      throw new Error(`${label} AhmedML profile case lacks its exact pinned non-analytical CFD truth declaration`);
+    }
     const relativeProfileV3 = cached.data?.schema_version === drivaermlRelativeProfileSchemaVersion;
     if (context.nativeProfileTruth || relativeProfileV3) await bindProfileCoordinateIdentities(profileCase);
     return {
@@ -2678,6 +2904,7 @@
       _fluidsbenchRelativeProfileV3: relativeProfileV3,
       _fluidsbenchHiLiftCompactTruth: Boolean(context.hiLiftCompactTruth),
       _fluidsbenchHiLiftCompactPrediction: Boolean(context.hiLiftCompactPrediction),
+      _fluidsbenchAhmedNativeProfileTruth: Boolean(context.ahmedNativeTruth),
       _fluidsbenchHiLiftIndex: context.hiLiftCompactTruth ? context.index : null,
       _fluidsbenchArtifactBaseUrl:
         context.hiLiftCompactTruth || context.hiLiftCompactPrediction ? new URL(".", context.indexUrl).href : baseUrl,
@@ -4101,6 +4328,11 @@
     return trainingRegimeDefinition(row.training_regime)?.label || row.training_regime || "Not supplied";
   }
 
+  function resultStatusLabel(row) {
+    if (row?.record_type === "development_fixture") return "Development fixture · non-ranked";
+    return humanize(row?.approvalStatus);
+  }
+
   function targetDataLabel(value) {
     const labels = {
       none: "None",
@@ -4138,7 +4370,7 @@
       modelTypes: row.modelTypes.join(", ") || "Not supplied",
       training: trainingLabel(row),
       predictionData: predictionAvailability(row).label,
-      status: humanize(row.approvalStatus),
+      status: resultStatusLabel(row),
       parameters: formatNumber(row.parameterCount, 2),
       date: row.date || "Not supplied",
     };
@@ -4218,7 +4450,7 @@
       cell.appendChild(chip("leaderboard-training", predictionAvailability(submission).label));
       return;
     } else if (column.key === "status") {
-      cell.appendChild(chip("leaderboard-training", humanize(submission.approvalStatus)));
+      cell.appendChild(chip("leaderboard-training", resultStatusLabel(submission)));
       return;
     }
     cell.textContent = cellValue(submission, column);
@@ -5275,6 +5507,22 @@
     return fields[requested] || fields.surface_pressure || Object.values(fields)[0] || null;
   }
 
+  function configureRegionalFieldSelection() {
+    const select = element("regional-field");
+    const fields = Object.values(regionalFieldsForDataset());
+    if (!select || !fields.length) return fields[0] || null;
+    const requested = select.value;
+    const selected = fields.some((field) => field.id === requested)
+      ? requested
+      : (fields.find((field) => field.id === "surface_pressure") || fields[0]).id;
+    populateSelect(
+      select,
+      fields.map((field) => ({ value: field.id, label: field.label })),
+      selected
+    );
+    return fields.find((field) => field.id === select.value) || fields[0];
+  }
+
   function regionalPrimaryWeighting(fieldReport, field) {
     if (field?.primaryWeighting) return field.primaryWeighting;
     return fieldReport?.primary_weighting === "physical" ? "physical" : "equal_entity";
@@ -5359,6 +5607,9 @@
       aft_airframe_wake_envelope_proxy: "Aft-airframe wake envelope",
       near_aircraft_flow_envelope: "Near-aircraft flow envelope",
       farfield_and_remaining: "Farfield & remaining",
+      near_body: "Near body",
+      wake: "Wake envelope",
+      farfield: "Farfield & remaining",
     };
     return labels[regionId] || humanize(regionId);
   }
@@ -5471,6 +5722,28 @@
     </div>`;
   }
 
+  function ahmedRegionalVolumeGuide(rules) {
+    const byId = new Map(rules.map((rule, index) => [rule.region_id, { rule, index }]));
+    const color = (regionId) => regionalPalette[(byId.get(regionId)?.index || 0) % regionalPalette.length];
+    return `<div class="leaderboard-volume-region-guide">
+      <svg viewBox="0 0 760 235" role="img" aria-label="AhmedML three-zone volume partition in a streamwise x-z projection">
+        <rect x="55" y="25" width="665" height="168" rx="8" fill="${color("farfield")}1f" stroke="${color("farfield")}" stroke-width="1.5"/>
+        <rect x="220" y="88" width="205" height="105" fill="${color("near_body")}46" stroke="${color("near_body")}" stroke-width="2"/>
+        <rect x="425" y="88" width="245" height="105" fill="${color("wake")}46" stroke="${color("wake")}" stroke-width="2"/>
+        <g class="leaderboard-volume-region-labels">
+          <text x="82" y="52">farfield / remaining</text>
+          <text x="322" y="142" text-anchor="middle">near body</text>
+          <text x="548" y="142" text-anchor="middle">wake envelope</text>
+        </g>
+        <g class="leaderboard-volume-region-axis"><line x1="55" y1="205" x2="720" y2="205"/>
+          <text x="390" y="230" text-anchor="middle">streamwise x / body length</text>
+          <text x="220" y="220" text-anchor="middle">−1.25</text><text x="425" y="220" text-anchor="middle">0</text><text x="670" y="220" text-anchor="middle">2</text>
+        </g>
+      </svg>
+      <div class="leaderboard-regional-zone-list">${rules.map(regionalGuideCard).join("")}</div>
+    </div>`;
+  }
+
   function hiLiftRegionalSurfaceGuide(rules) {
     const byId = new Map(rules.map((rule, index) => [rule.region_id, { rule, index }]));
     const color = (regionId) => regionalPalette[(byId.get(regionId)?.index || 0) % regionalPalette.length];
@@ -5543,6 +5816,7 @@
     const guides = {
       hilift_surface: hiLiftRegionalSurfaceGuide,
       hilift_volume: hiLiftRegionalVolumeGuide,
+      ahmed_volume: ahmedRegionalVolumeGuide,
     };
     const guide = guides[definition.guide] || (field.domain === "surface" ? regionalSurfaceGuide : regionalVolumeGuide);
     element("regional-zone-guide").innerHTML = guide(rules);
@@ -5673,7 +5947,7 @@
       documents.length
     } explicitly selected compatible result${
       documents.length === 1 ? "" : "s"
-    }, using ${weightingLabel}. The four released geometric regions are mutually exclusive and exhaustive.${normalizationNote} Regional diagnostics have zero official scoring weight and do not change the official field or overall score. ${releaseStamp()}.`;
+    }, using ${weightingLabel}. The ${rules.length} released geometric regions are mutually exclusive and exhaustive.${normalizationNote} Regional diagnostics have zero official scoring weight and do not change the official field or overall score. ${releaseStamp()}.`;
     setChartSummary(
       "regional-chart-summary",
       `${field.label} ${primaryCaption} bar chart for ${state.dataset}, ${state.split}; ${documents.length} selected compatible submissions across ${rules.length} exhaustive regions. ${weightingLabel}; lower is better. Regional diagnostics have zero official scoring weight.`
@@ -5748,10 +6022,10 @@
     const version = ++state.regionalLoadVersion;
     const datasetDefinition = regionalDatasetDefinition();
     if (!datasetDefinition) {
-      clearRegionalExplorer("Regional native-field diagnostics are currently available for DrivAerML and HiLiftAeroML.");
+      clearRegionalExplorer("Regional native-field diagnostics are currently available for DrivAerML, HiLiftAeroML, and AhmedML.");
       return;
     }
-    const field = regionalFieldDefinition();
+    const field = configureRegionalFieldSelection() || regionalFieldDefinition();
     if (!field) {
       clearRegionalExplorer("This dataset does not define any regional fields.");
       return;
@@ -7306,12 +7580,18 @@
   }
 
   function verifiedNativeGroundTruthCase(profileCase) {
-    return Boolean(profileCase?._fluidsbenchNativeProfileTruth || profileCase?._fluidsbenchHiLiftCompactTruth);
+    return Boolean(
+      profileCase?._fluidsbenchNativeProfileTruth ||
+        profileCase?._fluidsbenchHiLiftCompactTruth ||
+        profileCase?._fluidsbenchAhmedNativeProfileTruth
+    );
   }
 
   function publicGroundTruthLabel(profileCase) {
     if (profileCase?._fluidsbenchHiLiftCompactTruth) return "Native CFD ground truth (plot-only)";
-    return profileCase?._fluidsbenchNativeProfileTruth ? "Native CFD ground truth" : "Ground truth";
+    return profileCase?._fluidsbenchNativeProfileTruth || profileCase?._fluidsbenchAhmedNativeProfileTruth
+      ? "Native CFD ground truth"
+      : "Ground truth";
   }
 
   function renderProfileChart(index) {
@@ -7477,7 +7757,9 @@
         ? verifiedNativeGroundTruthCase(state.groundTruthCase)
           ? state.groundTruthCase?._fluidsbenchHiLiftCompactTruth
             ? "checksum-bound plot-only Native CFD ground truth on the compact 128-point-per-graph support and "
-            : `pinned Native CFD ground truth (${nativeDrivaermlDatasetRevision}) and `
+            : state.groundTruthCase?._fluidsbenchAhmedNativeProfileTruth
+              ? `pinned 128-point Native CFD ground truth (${ahmedNativeDatasetRevision}) and `
+              : `pinned Native CFD ground truth (${nativeDrivaermlDatasetRevision}) and `
           : "public ground truth and "
         : ""
     }${submissionCurveCount} explicitly selected ${resultDataOriginLabel()} model curve${submissionCurveCount === 1 ? "" : "s"}. ${lineProcessing} ${
@@ -8889,7 +9171,13 @@
           )}</dd></div>`
       )
       .join("");
-    const summaryRank = rankContext ? `#${rankContext.rank} of ${rankContext.ranked_result_count}` : "Superseded version";
+    const summaryRank = rankContext
+      ? `#${rankContext.rank} of ${rankContext.ranked_result_count}`
+      : !isLatestRevision(row)
+        ? "Superseded version"
+        : row.record_type === "development_fixture"
+          ? "Non-ranked development fixture"
+          : "Not ranked";
     const summaryRankingLabel = plainMetricLabel(metricDefinition(ranking().metric_id)) || "Ranking score";
     const packageValidationLabel =
       dataRelease().status === "official" ? humanize(validation.status || "not recorded") : "Prototype fixture — not applicable";
@@ -8930,6 +9218,7 @@
         ${detailsRow("Submission ID", row.id)}
         ${detailsRow("Result series", revision.series_id)}
         ${detailsRow("Version", revisionLabel(row))}
+        ${detailsRow("Record type", row.record_type === "development_fixture" ? "Non-ranked development fixture" : humanize(row.record_type))}
         ${detailsRow("Supersedes", revision.supersedes)}
         ${detailsRow("Change summary", revision.change_summary || (revision.version === 1 ? "Initial published result." : null))}
         ${detailsRow("Dataset version", row.dataset_version)}
