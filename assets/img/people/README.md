@@ -1,6 +1,6 @@
 # Portrait provenance
 
-The organiser portraits listed below were downloaded without cropping, resizing, or other modification on 2026-08-01. The profile pages are included to establish identity and provenance; the direct links identify the exact source files.
+The organiser portraits in the following table were downloaded without cropping, resizing, or other modification on 2026-08-01. The profile pages are included to establish identity and provenance; the direct links identify the exact source files.
 
 | Local file             | Organiser        |  Dimensions | Source profile                                                                                           | Direct image source                                                                                | Retrieved  |
 | ---------------------- | ---------------- | ----------: | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ---------- |
@@ -25,3 +25,9 @@ No explicit open-reuse licence was found on these profile pages or image files. 
 - `astrid.jpeg` was added to this repository by Neil Ashton in commit `dcc1f9e` on 2024-03-25. The repository history contains no original source URL or explicit licence. The same file is publicly used for Astrid Walle on the [AutoCFD organising committee page](https://autocfd.org/organizers/).
 
 Consent or other permission to use these two existing portraits should be confirmed and recorded separately; their presence in this repository and on AutoCFD does not establish an open licence.
+
+## Emanuele Tamburini
+
+`emanuele-tamburini.jpg` (200 × 200) was downloaded without modification on 2026-09-16 from the public LinkedIn portrait indexed for [Emanuele Tamburini's profile](https://www.linkedin.com/in/emanuele-tamburini/), which lists Sorbonne Université. The image was added at the FluidsBench maintainer's request; no open-reuse licence is asserted.
+
+[Direct JPEG source](https://media.licdn.com/dms/image/v2/D4E03AQGRHzk-by1RfQ/profile-displayphoto-scale_200_200/B4EZ_Ht8btKQAc-/0/1785762141017?e=2147483647&v=beta&t=mfmbYkU3yDANPCZxeOCkd8Y0NMMFtrzYiklkthXKXf0)
