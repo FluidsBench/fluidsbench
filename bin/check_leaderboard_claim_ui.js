@@ -99,10 +99,12 @@ window.__FluidsBenchClaimTest = {
   regionalPooled,
   regionalPrimaryMetricValue,
   regionalPrimaryWeighting,
+  regionalReportMatches,
   regionalReportUrl,
   regionalRules,
   regionalScope,
   regionalUsesWholeSupportMetric,
+  validAhmedRegionalReport,
   resolvedProfileCoordinateView,
   radarMetricAxes,
   radarNormalizedValue,
@@ -318,6 +320,156 @@ assert.equal(api.regionalUsesWholeSupportMetric(hiLiftVolumePressure), true);
 assert.equal(api.regionalUsesWholeSupportMetric(hiLiftSurfacePressure), false);
 assert.equal(api.regionalPrimaryMetricValue(hiLiftRegionFixture, "equal_entity", hiLiftVolumePressure), 3.7);
 assert.equal(api.regionalCaseStatistic(hiLiftRegionFixture, "equal_entity", "p90", "whole_support_normalized_rmse_percent"), 6.0);
+
+function ahmedRegionalMetric(relativeL2, errorFraction) {
+  const scalar = relativeL2 / 100;
+  return {
+    absolute_error: scalar,
+    squared_error: scalar * scalar,
+    squared_truth: 1,
+    total_weight: 1,
+    relative_l2_percent: relativeL2,
+    mae: scalar,
+    rmse: scalar,
+    fraction_of_support_squared_error: errorFraction,
+  };
+}
+
+function ahmedRegionalField(regionIds, primaryWeighting) {
+  const fraction = 1 / regionIds.length;
+  return {
+    case_count: 1,
+    entity_count: regionIds.length,
+    physical_weight: regionIds.length,
+    primary_weighting: primaryWeighting,
+    quantity: "fixture",
+    unit: "fixture",
+    regions: regionIds.map((regionId, code) => {
+      const metric = ahmedRegionalMetric(10, fraction);
+      const summary = {
+        pooled: { ...metric },
+        macro_case_mean: { relative_l2_percent: 10, mae: 0.1, rmse: 0.1 },
+        case_distribution: Object.fromEntries(
+          ["relative_l2_percent", "mae", "rmse"].map((metricId) => {
+            const value = metricId === "relative_l2_percent" ? 10 : 0.1;
+            return [
+              metricId,
+              {
+                minimum: value,
+                median: value,
+                p90: value,
+                maximum: value,
+                method: "linear_order_statistics_over_complete_cases",
+              },
+            ];
+          })
+        ),
+      };
+      return {
+        region_id: regionId,
+        code,
+        entity_count: 1,
+        entity_fraction: fraction,
+        physical_weight: 1,
+        physical_weight_fraction: fraction,
+        equal_entity: summary,
+        physical: JSON.parse(JSON.stringify(summary)),
+      };
+    }),
+  };
+}
+
+const ahmedRegionalBinding = {
+  format: "ahmedml-regional-diagnostics-aggregate-v2",
+  file: "regional-diagnostics.json",
+  sha256: "c".repeat(64),
+  contract_sha256: "467cf92356aa7bca0f6b1745f0ae756b1e3dacdb02d29ce61bc25da653e5b4b6",
+  definition_id: "ahmedml-native-regions-v2-candidate",
+  case_count: 1,
+  role: "report_only",
+  weight: 0,
+  official_score_changed: false,
+};
+const ahmedRegionalRow = {
+  id: "ahmed-regional-demo-v2",
+  dataset_id: "ahmedml",
+  split_id: "full",
+  prediction_scope: "surface_and_volume",
+  regional_diagnostics: ahmedRegionalBinding,
+};
+const ahmedSurfaceIds = ["streamwise_facing", "lateral_facing", "upward_facing", "downward_facing"];
+const ahmedVolumeIds = ["near_body", "wake", "farfield"];
+function ahmedSupport(definitionSha256, guide, regionIds, fields) {
+  return {
+    definition_sha256: definitionSha256,
+    definition: {
+      definition_id: `${guide}-fixture`,
+      support_id: `${guide}-native-fixture`,
+      guide,
+      coordinate_frame: "fixture",
+      region_source: "fixture",
+      partition_properties: "mutually_exclusive_and_exhaustive",
+      regions_in_code_order: regionIds.map((regionId, code) => ({ region_id: regionId, code, predicate: `fixture-${code}` })),
+      scoring_role: "report_only_zero_weight",
+      scoring_weight: 0,
+      semantic_limit: "fixture",
+    },
+    fields,
+  };
+}
+const ahmedRegionalReport = {
+  schema: "ahmedml-regional-diagnostics-aggregate-v2",
+  schema_version: 2,
+  status: "complete_report_only",
+  definition_id: "ahmedml-native-regions-v2-candidate",
+  contract_sha256: ahmedRegionalBinding.contract_sha256,
+  dataset_id: "ahmedml",
+  split_id: "full",
+  prediction_scope: "surface_and_volume",
+  case_count: 1,
+  case_ids: ["run_1"],
+  scoring: {
+    official_metric_inputs_changed: false,
+    official_score_changed: false,
+    role: "report_only",
+    weight: 0,
+  },
+  validation: {
+    all_case_reports_strictly_validated: true,
+    all_regional_sums_reconstruct_unchanged_global_field_sums: true,
+    exact_case_order_and_membership: true,
+    regional_values_consumed_by_official_score: false,
+  },
+  supports: {
+    "ahmedml-surface-four-normal-regions-v1": ahmedSupport(
+      ahmedRegionalBinding.contract_sha256,
+      "ahmed_surface",
+      ahmedSurfaceIds,
+      {
+        surface_pressure: ahmedRegionalField(ahmedSurfaceIds, "physical"),
+        surface_wall_shear: ahmedRegionalField(ahmedSurfaceIds, "physical"),
+      }
+    ),
+    "ahmedml-volume-three-geometric-regions-v1": ahmedSupport(
+      "338db5b806caec2883e2583e491b751546624d3f101c04ae644cf9357b1275d7",
+      "ahmed_volume",
+      ahmedVolumeIds,
+      {
+        volume_pressure: ahmedRegionalField(ahmedVolumeIds, "equal_entity"),
+        volume_velocity: ahmedRegionalField(ahmedVolumeIds, "equal_entity"),
+      }
+    ),
+  },
+};
+assert.deepEqual(api.regionalBinding(ahmedRegionalRow), ahmedRegionalBinding);
+const ahmedDefinition = api.regionalDatasetDefinition("AhmedML");
+assert.equal(api.validAhmedRegionalReport(ahmedRegionalReport, ahmedRegionalRow, ahmedRegionalBinding, ahmedDefinition), true);
+assert.equal(api.regionalReportMatches(ahmedRegionalReport, ahmedRegionalRow, ahmedRegionalBinding, ahmedDefinition), true);
+assert.equal(api.regionalFieldsForDataset("ahmedml").surface_pressure.supportId, "ahmedml-surface-four-normal-regions-v1");
+assert.equal(api.regionalRules(ahmedRegionalReport, api.regionalFieldsForDataset("ahmedml").surface_pressure).length, 4);
+const tamperedAhmedReport = JSON.parse(JSON.stringify(ahmedRegionalReport));
+tamperedAhmedReport.supports["ahmedml-surface-four-normal-regions-v1"].fields.surface_pressure.regions[0].physical.pooled.fraction_of_support_squared_error += 0.2;
+assert.equal(api.validAhmedRegionalReport(tamperedAhmedReport, ahmedRegionalRow, ahmedRegionalBinding, ahmedDefinition), false);
 
 api.state.metrics = new Map([["score", { id: "score", unit: "" }]]);
 const policy = {

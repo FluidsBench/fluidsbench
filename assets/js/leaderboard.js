@@ -136,12 +136,40 @@
       },
     },
     ahmedml: {
-      reportSchema: "ahmedml-regional-diagnostics-aggregate-v1",
-      schemaVersion: 1,
-      contractSha256: "338db5b806caec2883e2583e491b751546624d3f101c04ae644cf9357b1275d7",
-      definitionId: "ahmedml-native-regions-v1-candidate",
+      reportSchema: "ahmedml-regional-diagnostics-aggregate-v2",
+      schemaVersion: 2,
+      contractSha256: "467cf92356aa7bca0f6b1745f0ae756b1e3dacdb02d29ce61bc25da653e5b4b6",
+      definitionId: "ahmedml-native-regions-v2-candidate",
       layout: "supports",
+      supports: {
+        "ahmedml-surface-four-normal-regions-v1": {
+          definitionSha256: "467cf92356aa7bca0f6b1745f0ae756b1e3dacdb02d29ce61bc25da653e5b4b6",
+          primaryWeighting: "physical",
+          regions: ["streamwise_facing", "lateral_facing", "upward_facing", "downward_facing"],
+        },
+        "ahmedml-volume-three-geometric-regions-v1": {
+          definitionSha256: "338db5b806caec2883e2583e491b751546624d3f101c04ae644cf9357b1275d7",
+          primaryWeighting: "equal_entity",
+          regions: ["near_body", "wake", "farfield"],
+        },
+      },
       fields: {
+        surface_pressure: {
+          id: "surface_pressure",
+          reportFieldId: "surface_pressure",
+          label: "Surface pressure",
+          domain: "surface",
+          supportId: "ahmedml-surface-four-normal-regions-v1",
+          globalMetricId: "surface_pressure_rel_l2",
+        },
+        surface_wall_shear: {
+          id: "surface_wall_shear",
+          reportFieldId: "surface_wall_shear",
+          label: "Surface wall shear",
+          domain: "surface",
+          supportId: "ahmedml-surface-four-normal-regions-v1",
+          globalMetricId: "surface_wall_shear_rel_l2",
+        },
         volume_pressure: {
           id: "volume_pressure",
           reportFieldId: "volume_pressure",
@@ -1177,6 +1205,148 @@
     return true;
   }
 
+  function closeRegionalValue(actual, expected) {
+    return Math.abs(actual - expected) <= 2e-10 * Math.max(1, Math.abs(expected));
+  }
+
+  function validAhmedRegionalReport(report, row, binding, definition) {
+    const validation = record(report.validation);
+    if (
+      report.definition_id !== definition.definitionId ||
+      report.split_id !== row?.split_id ||
+      report.case_count !== binding.case_count ||
+      !Array.isArray(report.case_ids) ||
+      report.case_ids.length !== binding.case_count ||
+      new Set(report.case_ids).size !== binding.case_count ||
+      validation.all_case_reports_strictly_validated !== true ||
+      validation.all_regional_sums_reconstruct_unchanged_global_field_sums !== true ||
+      validation.exact_case_order_and_membership !== true ||
+      validation.regional_values_consumed_by_official_score !== false
+    ) {
+      return false;
+    }
+    const supports = record(report.supports);
+    const expectedSupports = record(definition.supports);
+    if (
+      Object.keys(supports).length !== Object.keys(expectedSupports).length ||
+      Object.keys(expectedSupports).some((supportId) => !Object.hasOwn(supports, supportId))
+    ) {
+      return false;
+    }
+    for (const [supportId, expectedSupport] of Object.entries(expectedSupports)) {
+      const support = record(supports[supportId]);
+      const supportDefinition = record(support.definition);
+      const rules = Array.isArray(supportDefinition.regions_in_code_order)
+        ? supportDefinition.regions_in_code_order
+        : [];
+      if (
+        support.definition_sha256 !== expectedSupport.definitionSha256 ||
+        supportDefinition.scoring_role !== "report_only_zero_weight" ||
+        supportDefinition.scoring_weight !== 0 ||
+        supportDefinition.partition_properties !== "mutually_exclusive_and_exhaustive" ||
+        rules.length !== expectedSupport.regions.length ||
+        rules.some(
+          (rule, index) =>
+            rule?.region_id !== expectedSupport.regions[index] ||
+            rule?.code !== index ||
+            typeof rule?.predicate !== "string" ||
+            !rule.predicate
+        )
+      ) {
+        return false;
+      }
+      const fields = record(support.fields);
+      const expectedFields = Object.values(definition.fields)
+        .filter((field) => field.supportId === supportId)
+        .map((field) => field.reportFieldId);
+      if (
+        Object.keys(fields).length !== expectedFields.length ||
+        expectedFields.some((fieldId) => !Object.hasOwn(fields, fieldId))
+      ) {
+        return false;
+      }
+      for (const fieldId of expectedFields) {
+        const field = record(fields[fieldId]);
+        const regions = Array.isArray(field.regions) ? field.regions : [];
+        if (
+          field.case_count !== binding.case_count ||
+          field.primary_weighting !== expectedSupport.primaryWeighting ||
+          finiteNumber(field.entity_count) === null ||
+          finiteNumber(field.entity_count) <= 0 ||
+          finiteNumber(field.physical_weight) === null ||
+          finiteNumber(field.physical_weight) <= 0 ||
+          regions.length !== expectedSupport.regions.length ||
+          regions.some(
+            (region, index) =>
+              region?.region_id !== expectedSupport.regions[index] ||
+              region?.code !== index ||
+              !Number.isSafeInteger(region?.entity_count) ||
+              region.entity_count < 1 ||
+              finiteNumber(region?.physical_weight) === null ||
+              finiteNumber(region?.physical_weight) <= 0
+          ) ||
+          !fractionsReconstruct(regions, "entity_fraction") ||
+          !fractionsReconstruct(regions, "physical_weight_fraction")
+        ) {
+          return false;
+        }
+        for (const weighting of ["equal_entity", "physical"]) {
+          let errorFractionTotal = 0;
+          let squaredErrorTotal = 0;
+          for (const region of regions) {
+            const metrics = record(record(region[weighting]).pooled);
+            const absoluteError = finiteNumber(metrics.absolute_error);
+            const squaredError = finiteNumber(metrics.squared_error);
+            const squaredTruth = finiteNumber(metrics.squared_truth);
+            const totalWeight = finiteNumber(metrics.total_weight);
+            const relativeL2 = finiteNumber(metrics.relative_l2_percent);
+            const mae = finiteNumber(metrics.mae);
+            const rmse = finiteNumber(metrics.rmse);
+            const errorFraction = finiteNumber(metrics.fraction_of_support_squared_error);
+            const macro = record(region[weighting]).macro_case_mean;
+            const distribution = record(region[weighting]).case_distribution;
+            if (
+              [absoluteError, squaredError, squaredTruth, totalWeight, relativeL2, mae, rmse, errorFraction].some(
+                (value) => value === null || value < 0
+              ) ||
+              squaredTruth <= 0 ||
+              totalWeight <= 0 ||
+              !closeRegionalValue(relativeL2, 100 * Math.sqrt(squaredError / squaredTruth)) ||
+              !closeRegionalValue(mae, absoluteError / totalWeight) ||
+              !closeRegionalValue(rmse, Math.sqrt(squaredError / totalWeight))
+            ) {
+              return false;
+            }
+            for (const metricId of ["relative_l2_percent", "mae", "rmse"]) {
+              const macroValue = finiteNumber(record(macro)[metricId]);
+              const values = ["minimum", "median", "p90", "maximum"].map((key) =>
+                finiteNumber(record(record(distribution)[metricId])[key])
+              );
+              if (
+                macroValue === null ||
+                macroValue < 0 ||
+                values.some((value) => value === null || value < 0) ||
+                values.some((value, index) => index > 0 && values[index - 1] > value) ||
+                record(record(distribution)[metricId]).method !==
+                  "linear_order_statistics_over_complete_cases"
+              ) {
+                return false;
+              }
+            }
+            errorFractionTotal += errorFraction;
+            squaredErrorTotal += squaredError;
+          }
+          if (
+            !closeRegionalValue(errorFractionTotal, squaredErrorTotal === 0 ? 0 : 1)
+          ) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
   function regionalReportMatches(report, row, binding, definition) {
     const scoring = record(report.scoring);
     if (
@@ -1192,6 +1362,9 @@
       scoring.official_score_changed !== false
     ) {
       return false;
+    }
+    if (slug(row?.dataset_id || "") === "ahmedml") {
+      return validAhmedRegionalReport(report, row, binding, definition);
     }
     if (definition.layout === "supports") {
       return record(report.validation).regional_values_consumed_by_official_score === false;
@@ -5641,6 +5814,10 @@
       near_body: "Near body",
       wake: "Wake envelope",
       farfield: "Farfield & remaining",
+      streamwise_facing: "Streamwise-facing",
+      lateral_facing: "Lateral-facing",
+      upward_facing: "Upward-facing",
+      downward_facing: "Downward-facing",
     };
     return labels[regionId] || humanize(regionId);
   }
@@ -5775,6 +5952,28 @@
     </div>`;
   }
 
+  function ahmedRegionalSurfaceGuide(rules) {
+    const byId = new Map(rules.map((rule, index) => [rule.region_id, { rule, index }]));
+    const color = (regionId) => regionalPalette[(byId.get(regionId)?.index || 0) % regionalPalette.length];
+    return `<div class="leaderboard-hilift-region-guide">
+      <svg viewBox="0 0 760 285" role="img" aria-label="AhmedML dominant outward-normal surface orientation bins">
+        <path d="M145 184 L208 88 L478 88 L590 132 L625 184 Z" fill="none" stroke="#667085" stroke-width="4"/>
+        <path d="M145 184 L625 184" stroke="${color("downward_facing")}" stroke-width="16" opacity="0.82"/>
+        <path d="M211 88 L474 88" stroke="${color("upward_facing")}" stroke-width="16" opacity="0.82"/>
+        <path d="M583 130 L624 181" stroke="${color("streamwise_facing")}" stroke-width="16" opacity="0.82"/>
+        <ellipse cx="350" cy="136" rx="235" ry="86" fill="none" stroke="${color("lateral_facing")}" stroke-width="8" stroke-dasharray="12 8" opacity="0.82"/>
+        <g class="leaderboard-volume-region-labels">
+          <text x="343" y="66" text-anchor="middle">upward-facing dominant normal</text>
+          <text x="343" y="219" text-anchor="middle">downward-facing dominant normal</text>
+          <text x="635" y="126">streamwise-facing</text>
+          <text x="98" y="137" text-anchor="end">lateral-facing</text>
+          <text x="380" y="260" text-anchor="middle">schematic orientation guide; bins follow each polygon's outward area vector</text>
+        </g>
+      </svg>
+      <div class="leaderboard-regional-zone-list">${rules.map(regionalGuideCard).join("")}</div>
+    </div>`;
+  }
+
   function hiLiftRegionalSurfaceGuide(rules) {
     const byId = new Map(rules.map((rule, index) => [rule.region_id, { rule, index }]));
     const color = (regionId) => regionalPalette[(byId.get(regionId)?.index || 0) % regionalPalette.length];
@@ -5847,6 +6046,7 @@
     const guides = {
       hilift_surface: hiLiftRegionalSurfaceGuide,
       hilift_volume: hiLiftRegionalVolumeGuide,
+      ahmed_surface: ahmedRegionalSurfaceGuide,
       ahmed_volume: ahmedRegionalVolumeGuide,
     };
     const guide = guides[definition.guide] || (field.domain === "surface" ? regionalSurfaceGuide : regionalVolumeGuide);

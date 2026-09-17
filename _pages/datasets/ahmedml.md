@@ -52,9 +52,8 @@ compact_masthead: true
   <section class="dataset-panel">
     <h3>Published source splits</h3>
     <p>
-      AhmedML publishes the eight train, validation, and test manifests below. The names and counts are current source definitions, but the matching
-      FluidsBench split files are still labelled <code>prototype_generated</code>; use them for development only until the exact scoring bindings are
-      finalized.
+      AhmedML publishes the eight train, validation, and test manifests below. The development evaluator binds these exact public <code>run_N</code>
+      case IDs and the immutable source revision; public submissions remain closed until owner review.
     </p>
 
     <div class="dataset-table-wrap">
@@ -145,7 +144,10 @@ compact_masthead: true
     <p>
       AhmedML does not publish a canonical set of one-dimensional pressure traces. FluidsBench therefore defines the
       following symmetry-plane benchmark traces, informed by the body regions described in the
-      <a href="https://arxiv.org/abs/2407.20801">AhmedML paper</a>. Use the exact ID in <code>station_id</code>.
+      <a href="https://arxiv.org/abs/2407.20801">AhmedML paper</a>. The target lines move with each body: their coordinates use that case's
+      length, height, width, slant dimensions, and actual surface bounds. The evaluator then samples a frozen nearest-native-polygon mapping.
+      The dataset frame itself remains fixed at rear plane <code>x=0</code>, symmetry plane <code>y=0</code>, and ground <code>z=0</code>.
+      Use the exact ID in <code>station_id</code>.
     </p>
     <div class="dataset-table-wrap">
       <table class="dataset-table compact">
@@ -154,6 +156,25 @@ compact_masthead: true
           <tr><td><code>upper_body_centerline</code></td><td>Upper-body centreline over the roof and rear slant.</td></tr>
           <tr><td><code>underbody_centerline</code></td><td>Underbody centreline along the underfloor.</td></tr>
           <tr><td><code>rear_slant_centerline</code></td><td>Centreline across the pressure-sensitive rear slant.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="dataset-panel">
+    <h3>Wake velocity stations</h3>
+    <p>
+      Wake targets are also geometry-relative. For each case, <code>L</code>, <code>H</code>, and <code>W</code> come from that body's published
+      parameters, and the evaluator freezes the native volume-cell mapping before any submission is scored. Each trace contains exactly 128 samples.
+    </p>
+    <div class="dataset-table-wrap">
+      <table class="dataset-table compact">
+        <thead><tr><th>Station ID</th><th>Geometry-relative target</th><th>Displayed coordinate</th></tr></thead>
+        <tbody>
+          <tr><td><code>wake_vertical_x_0p25_l</code></td><td><code>x=0.25L, y=0, z=tH</code></td><td><code>z/H</code>, 0 to 2</td></tr>
+          <tr><td><code>wake_vertical_x_0p50_l</code></td><td><code>x=0.50L, y=0, z=tH</code></td><td><code>z/H</code>, 0 to 2</td></tr>
+          <tr><td><code>wake_vertical_x_1p00_l</code></td><td><code>x=1.00L, y=0, z=tH</code></td><td><code>z/H</code>, 0 to 2</td></tr>
+          <tr><td><code>wake_lateral_x_0p50_l_z_0p50_h</code></td><td><code>x=0.50L, y=tW, z=z_min+0.50H</code></td><td><code>y/W</code>, −1 to 1</td></tr>
         </tbody>
       </table>
     </div>
@@ -257,8 +278,8 @@ compact_masthead: true
       <div>
         <dt>Velocity profile R<sup>2</sup></dt>
         <dd>
-          R<sup>2</sup> over the selected wake profile samples. Unless the benchmark package states otherwise, the score is
-          computed on the velocity vector components flattened across stations, cases, and sample points.
+          One global R<sup>2</sup> over evaluator-derived scalar <code>Ux/Uinf</code> samples, flattened across the four frozen stations,
+          held-out cases, and 128 sample locations. The other velocity components are part of native volume-field scoring, not this profile metric.
         </dd>
       </div>
     </dl>
