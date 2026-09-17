@@ -453,6 +453,15 @@
   }
 
   function profileFamilies(panel) {
+    if (activeDatasetSlug() === "windsorml") {
+      return (panel.families || []).map((family) => ({
+        id: family.id,
+        placementMode: family.placement_mode,
+        label: family.label,
+        description: family.description,
+        stations: family.stations,
+      }));
+    }
     if (activeDatasetSlug() !== "drivaerml") {
       return [
         {
@@ -1179,7 +1188,7 @@
             const distribution = record(region?.case_distribution);
             return (
               !["ok", "empty", "zero_target_variance"].includes(r2Status) ||
-              ((r2Status === "ok") !== (r2 !== null)) ||
+              (r2Status === "ok") !== (r2 !== null) ||
               !validHiLiftCaseMacroMetric(macro.whole_support_normalized_rmse_percent, binding.case_count) ||
               !validHiLiftCaseMacroMetric(macro.relative_l2_percent, binding.case_count) ||
               !validHiLiftCaseMacroMetric(macro.r2, binding.case_count, true) ||
@@ -2505,6 +2514,94 @@
     return state.groundTruthManifest;
   }
 
+  const windsorNativeBinding = {
+    schema_version: "1.0",
+    release_id: "windsorml-native-profile-truth-v1-candidate",
+    dataset_id: "windsorml",
+    dataset_revision: "8a6ca32ae22c94f54df2186d1b0ccf9662a294c2",
+    profile_support_manifest_sha256: "e660311ef82ec19347e91eeb1753c1f0af4c1bd65ba01491fb47ac960da51376",
+    profile_definition_sha256: "d58014ae66d92ea5ffce3c4f3b8e206447873d563d8bc3ffb4cbeee81539e056",
+    source_identity_sha256: "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+    source_kind: "native_cfd",
+    analytical_dummy: false,
+    status: "candidate_owner_review_required",
+    usage: "browser_visualization_only_not_metric_recomputation",
+    series_per_case: 16,
+    samples_per_series: 128,
+  };
+  const windsorCaseSets = {
+    full: ["baseline-test", 35],
+    medium: ["baseline-test", 35],
+    scarce: ["baseline-test", 35],
+    super_scarce: ["baseline-test", 35],
+    geometry: ["geometry-test", 71],
+    high_drag: ["high_drag-test", 70],
+    low_drag: ["low_drag-test", 70],
+    image_wake: ["image_wake-test", 71],
+  };
+  const windsorStationIds = {
+    windsorml_velocity_constant_v1: [
+      "wake_vertical_x_0p05l",
+      "wake_vertical_x_0p10l",
+      "wake_vertical_x_0p25l",
+      "wake_vertical_x_0p50l",
+      "wake_lateral_x_0p10l_y_0p194",
+    ],
+    windsorml_velocity_relative_v1: [
+      "wake_vertical_x_0p05l_relative",
+      "wake_vertical_x_0p10l_relative",
+      "wake_vertical_x_0p25l_relative",
+      "wake_vertical_x_0p50l_relative",
+      "wake_lateral_x_0p10l_relative",
+    ],
+    windsorml_cp_constant_v1: ["cp_centreline_upper", "cp_base_vertical", "cp_side_horizontal_y_0p194"],
+    windsorml_cp_relative_v1: ["cp_centreline_upper_relative", "cp_base_vertical_relative", "cp_side_horizontal_relative"],
+  };
+
+  function exactWindsorNativeBinding(value) {
+    return Object.entries(windsorNativeBinding).every(([key, expected]) => value?.[key] === expected);
+  }
+
+  function validateWindsorNativeCase(profileCase) {
+    const expected = Object.entries(windsorStationIds).flatMap(([family, stations]) => stations.map((station) => [family, station]));
+    if (
+      !validSha256(profileCase?.profile_support_sha256) ||
+      !Number.isFinite(profileCase?.body_height_m) ||
+      profileCase.body_height_m <= 0 ||
+      profileCase?.reference_velocity_m_s !== 42.1 ||
+      !Array.isArray(profileCase?.series) ||
+      profileCase.series.length !== expected.length
+    ) {
+      throw new Error("WindsorML native profile case lacks complete pinned support");
+    }
+    for (const [index, [family, station]] of expected.entries()) {
+      const series = profileCase.series[index];
+      const velocity = family.includes("_velocity_");
+      const relative = family.includes("_relative_");
+      const ids = series?.[velocity ? "native_cell_ids" : "native_point_ids"];
+      if (
+        series?.family_id !== family ||
+        series?.station_id !== station ||
+        series?.panel_id !== (velocity ? "velocity_profiles" : "pressure_profiles") ||
+        series?.quantity_id !== (velocity ? "ux_over_uinf" : "cp") ||
+        series?.placement_mode !== (relative ? "relative" : "constant") ||
+        series?.scoring_role !== (relative ? "report_only" : "ranked_candidate") ||
+        series?.sample_count !== 128 ||
+        !["m", "1"].includes(series?.coordinate_unit) ||
+        !["x", "y", "z", "eta", "x_over_l"].includes(series?.coordinate_id) ||
+        !Array.isArray(ids) ||
+        ids.length !== 128 ||
+        ids.some((id) => !Number.isSafeInteger(id) || id < 0) ||
+        [series?.coordinate, series?.value].some(
+          (array) => !Array.isArray(array) || array.length !== 128 || array.some((value) => !Number.isFinite(value))
+        ) ||
+        series.coordinate.some((value, i) => i > 0 && value <= series.coordinate[i - 1])
+      ) {
+        throw new Error(`WindsorML ${family}/${station} must contain the complete finite 128-point native series`);
+      }
+    }
+  }
+
   async function groundTruthIndex(datasetName, splitName) {
     const manifest = await ensureGroundTruthManifest();
     const dataset = (manifest.datasets || []).find((candidate) => candidate.name === datasetName);
@@ -2524,6 +2621,39 @@
     const drivaermlDataset = datasetName === "DrivAerML" || dataset?.id === "drivaerml";
     const hiLiftDataset = datasetName === "HiLiftAeroML" || dataset?.id === "hiliftaeroml";
     const ahmedDataset = datasetName === "AhmedML" || dataset?.id === "ahmedml";
+    const windsorDataset = datasetName === "WindsorML" || dataset?.id === "windsorml";
+    const windsorNativeTruth = cached.data?.schema === "windsorml-native-profile-truth-index-v1";
+    if (windsorDataset !== windsorNativeTruth) {
+      throw new Error(`${datasetName} cannot use legacy, analytical, or another dataset's WindsorML truth index`);
+    }
+    if (windsorNativeTruth) {
+      const declaration = dataset?.native_profile_truth;
+      const expected = windsorCaseSets[split?.id];
+      const indexedIds = caseIds(cached.data);
+      if (
+        !exactWindsorNativeBinding(declaration) ||
+        declaration.case_count !== 233 ||
+        declaration.case_set_count !== 5 ||
+        !exactWindsorNativeBinding(cached.data) ||
+        !expected ||
+        caseSet.id !== expected[0] ||
+        cached.data.case_set_id !== caseSet.id ||
+        cached.data.case_id_status !== "official_intersected_with_published" ||
+        split.case_count !== expected[1] ||
+        caseSet.case_count !== expected[1] ||
+        cached.data.case_count !== expected[1] ||
+        !Array.isArray(cached.data.case_ids) ||
+        cached.data.case_ids.length !== expected[1] ||
+        indexedIds.length !== expected[1] ||
+        new Set(indexedIds).size !== expected[1] ||
+        indexedIds.some((id, i) => id !== cached.data.case_ids[i]) ||
+        cached.data.chunks.some(
+          (entry) => entry.case_ids.length !== 1 || entry.file !== `../cases/${entry.case_ids[0]}.json` || !validSha256(entry.sha256)
+        )
+      ) {
+        throw new Error(`${datasetName} native CFD truth index has incomplete coverage or a stale contract binding`);
+      }
+    }
     const hiLiftCompactTruth =
       cached.data?.schema === hiLiftCompactTruthSchemas.index && cached.data?.schema_version === hiLiftCompactTruthSchemas.version;
     const ahmedNativeTruth =
@@ -2863,6 +2993,7 @@
       nativeMasterChunks,
       hiLiftCompactTruth,
       ahmedNativeTruth,
+      windsorNativeTruth,
     };
   }
 
@@ -2940,6 +3071,18 @@
     }
     if (!entry.sha256 || !cached.sha256 || entry.sha256 !== cached.sha256) {
       throw new Error(`${label} profile chunk checksum does not match its index`);
+    }
+    if (context.windsorNativeTruth) {
+      if (
+        cached.data?.schema !== "windsorml-native-profile-truth-chunk-v1" ||
+        !exactWindsorNativeBinding(cached.data) ||
+        !Array.isArray(cached.data.cases) ||
+        cached.data.cases.length !== 1 ||
+        cached.data.cases[0]?.case_id !== caseId
+      ) {
+        throw new Error(`${label} WindsorML native profile chunk has an unsupported or stale contract binding`);
+      }
+      validateWindsorNativeCase(cached.data.cases[0]);
     }
     if (context.hiLiftCompactTruth) {
       if (
@@ -3078,6 +3221,7 @@
       _fluidsbenchHiLiftCompactTruth: Boolean(context.hiLiftCompactTruth),
       _fluidsbenchHiLiftCompactPrediction: Boolean(context.hiLiftCompactPrediction),
       _fluidsbenchAhmedNativeProfileTruth: Boolean(context.ahmedNativeTruth),
+      _fluidsbenchWindsorNativeProfileTruth: Boolean(context.windsorNativeTruth),
       _fluidsbenchHiLiftIndex: context.hiLiftCompactTruth ? context.index : null,
       _fluidsbenchArtifactBaseUrl:
         context.hiLiftCompactTruth || context.hiLiftCompactPrediction ? new URL(".", context.indexUrl).href : baseUrl,
@@ -3510,12 +3654,16 @@
     const dataWarningTitle = element("leaderboard-data-warning-title");
     const dataWarningText = element("leaderboard-data-warning-text");
     const officialRelease = release.status === "official";
+    const windsorTruthOnly = activeDatasetSlug() === "windsorml" && activeDataset()?.submission_count === 0;
     if (dataWarning) dataWarning.className = `leaderboard-data-warning${officialRelease ? " is-official" : ""}`;
-    if (dataWarningTitle) dataWarningTitle.textContent = officialRelease ? "Official release" : "Prototype results";
+    if (dataWarningTitle)
+      dataWarningTitle.textContent = windsorTruthOnly ? "Native CFD ground truth" : officialRelease ? "Official release" : "Prototype results";
     if (dataWarningText) {
-      dataWarningText.textContent = officialRelease
-        ? " — submitted packages are validated and maintainer-approved."
-        : " — illustrative dummy data; not citable or suitable for leaderboard claims.";
+      dataWarningText.textContent = windsorTruthOnly
+        ? " — all eight WindsorML splits are available below. No model results have been submitted; the benchmark is awaiting owner review."
+        : officialRelease
+          ? " — submitted packages are validated and maintainer-approved."
+          : " — illustrative dummy data; not citable or suitable for leaderboard claims.";
     }
     element("leaderboard-release-id").textContent = release.id || "Unversioned";
     const details = [];
@@ -4670,7 +4818,10 @@
       const cell = document.createElement("td");
       cell.colSpan = Math.max(1, activeColumns().length);
       cell.className = "leaderboard-empty";
-      cell.textContent = "No leaderboard rows match this dataset, split, and model type.";
+      cell.textContent =
+        activeDatasetSlug() === "windsorml" && activeDataset()?.submission_count === 0
+          ? "No WindsorML model results yet. Explore native CFD ground-truth profiles below."
+          : "No leaderboard rows match this dataset, split, and model type.";
       row.appendChild(cell);
       body.appendChild(row);
       return;
@@ -6149,9 +6300,7 @@
             callbacks: {
               label(context) {
                 const region = context.dataset.regionalValues?.[context.dataIndex];
-                const lines = [
-                  `${context.dataset.label}: ${regionalNumber(context.raw)}`,
-                ];
+                const lines = [`${context.dataset.label}: ${regionalNumber(context.raw)}`];
                 if (wholeSupportPrimary) {
                   lines.push(
                     `Pooled whole-volume-normalized RMSE: ${regionalNumber(regionalPooled(region, weighting)?.whole_support_normalized_rmse_percent)}`,
@@ -6236,8 +6385,14 @@
     );
     if (values.some((value) => value.median_case_primary_metric_percent !== null)) {
       columns.push(
-        { label: wholeSupportPrimary ? "Median case whole-volume NRMSE (%)" : "Median case rel. L2 (%)", value: (value) => regionalNumber(value.median_case_primary_metric_percent) },
-        { label: wholeSupportPrimary ? "P90 case whole-volume NRMSE (%)" : "P90 case rel. L2 (%)", value: (value) => regionalNumber(value.p90_case_primary_metric_percent) }
+        {
+          label: wholeSupportPrimary ? "Median case whole-volume NRMSE (%)" : "Median case rel. L2 (%)",
+          value: (value) => regionalNumber(value.median_case_primary_metric_percent),
+        },
+        {
+          label: wholeSupportPrimary ? "P90 case whole-volume NRMSE (%)" : "P90 case rel. L2 (%)",
+          value: (value) => regionalNumber(value.p90_case_primary_metric_percent),
+        }
       );
     }
     renderNumericTable(
@@ -6677,7 +6832,11 @@
       for (let sourceIndex = sourceStart; sourceIndex < sourceStop; sourceIndex += 1) {
         if (!support.velocityMask[sourceIndex]) {
           if (activeSegmentStart !== null) {
-            segments.push({ emitted_index_start: activeSegmentStart, emitted_index_stop: coordinate.length, segment_id: `${stationId}-valid-run-${run}` });
+            segments.push({
+              emitted_index_start: activeSegmentStart,
+              emitted_index_stop: coordinate.length,
+              segment_id: `${stationId}-valid-run-${run}`,
+            });
             activeSegmentStart = null;
             run += 1;
           }
@@ -6689,7 +6848,11 @@
         sampleIndex.push(sourceIndex);
       }
       if (activeSegmentStart !== null) {
-        segments.push({ emitted_index_start: activeSegmentStart, emitted_index_stop: coordinate.length, segment_id: `${stationId}-valid-run-${run}` });
+        segments.push({
+          emitted_index_start: activeSegmentStart,
+          emitted_index_stop: coordinate.length,
+          segment_id: `${stationId}-valid-run-${run}`,
+        });
       }
       series.push({
         ...hiLiftSeriesBase({
@@ -7466,6 +7629,28 @@
     const label = `${source?.case_id || "profile case"}/${panel.id}/${expectedFamily || "legacy"}/${stationId}/${quantity.id}`;
     if (matches.length !== 1) throw new Error(`${label} is ambiguous because ${matches.length} matching series were supplied`);
     const selected = matches[0];
+    if (source?._fluidsbenchWindsorNativeProfileTruth) {
+      validateWindsorNativeCase(source);
+      const parsed = legacyProfileSeries(selected);
+      return {
+        ...parsed,
+        legacy: false,
+        familyId: selected.family_id,
+        placementMode: selected.placement_mode,
+        stationId: selected.station_id,
+        quantityId: selected.quantity_id,
+        scoringRole: selected.scoring_role,
+        coordinateId: selected.coordinate_id,
+        coordinateUnit: selected.coordinate_unit,
+        supportIdentity: source.profile_support_sha256,
+        representation: "materialized",
+        nativeTruth: true,
+        nativeTruthSource: windsorNativeBinding,
+        nativeDatasetRevision: windsorNativeBinding.dataset_revision,
+        selectedSeries: selected,
+        materializedSeries: selected,
+      };
+    }
     if (!selected.family_id) {
       const legacy = legacyProfileSeries(selected);
       return legacy ? { ...legacy, selectedSeries: selected, materializedSeries: selected } : null;
@@ -7484,16 +7669,7 @@
       else requireExactSubmittedSeriesFields(selected, "shared_alias", label);
       requireProfileDescriptors(selected, label, nativeTruth, nativeTruthVersion);
       if (
-        [
-          "coordinate",
-          "display_coordinate",
-          "value",
-          "prediction",
-          "sample_index",
-          "raw_native_cell_id",
-          "segments",
-          "unsupported_samples",
-        ].some(
+        ["coordinate", "display_coordinate", "value", "prediction", "sample_index", "raw_native_cell_id", "segments", "unsupported_samples"].some(
           (field) => field in selected
         )
       ) {
@@ -7814,13 +7990,16 @@
     return Boolean(
       profileCase?._fluidsbenchNativeProfileTruth ||
         profileCase?._fluidsbenchHiLiftCompactTruth ||
-        profileCase?._fluidsbenchAhmedNativeProfileTruth
+        profileCase?._fluidsbenchAhmedNativeProfileTruth ||
+        profileCase?._fluidsbenchWindsorNativeProfileTruth
     );
   }
 
   function publicGroundTruthLabel(profileCase) {
     if (profileCase?._fluidsbenchHiLiftCompactTruth) return "Native CFD ground truth (plot-only)";
-    return profileCase?._fluidsbenchNativeProfileTruth || profileCase?._fluidsbenchAhmedNativeProfileTruth
+    return profileCase?._fluidsbenchNativeProfileTruth ||
+      profileCase?._fluidsbenchAhmedNativeProfileTruth ||
+      profileCase?._fluidsbenchWindsorNativeProfileTruth
       ? "Native CFD ground truth"
       : "Ground truth";
   }
@@ -9750,6 +9929,13 @@
     renderScatterChart();
     void prepareRegionalExplorer();
     void refreshProfileContext();
+    const truthOnly = activeDatasetSlug() === "windsorml" && activeDataset()?.submission_count === 0;
+    element("leaderboard-radar-panel").hidden = truthOnly;
+    element("comparison-model-description").closest("fieldset").hidden = truthOnly;
+    if (truthOnly) {
+      element("leaderboard-advanced-analysis").open = true;
+      activateAnalysisTab("profiles");
+    }
   }
 
   function resizeVisibleCharts() {

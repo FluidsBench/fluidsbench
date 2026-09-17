@@ -14,6 +14,8 @@ import zipfile
 from pathlib import Path
 from typing import Any
 
+from export_windsorml_native_profile_truth import bundle_errors as windsorml_native_bundle_errors
+
 
 ROOT = Path(__file__).resolve().parents[1]
 GROUND_TRUTH_ROOT = ROOT / "assets" / "data" / "profile-ground-truth"
@@ -4252,6 +4254,9 @@ def check(submission_root: Path) -> list[str]:
                     GROUND_TRUTH_ROOT, ground_truth_dataset, submission_root
                 )
             )
+            continue
+        if dataset_id == "windsorml":
+            errors.extend(windsorml_native_bundle_errors(GROUND_TRUTH_ROOT, ground_truth_dataset, submission_root))
             continue
         spec_splits = {split["id"]: split for split in spec["splits"]}
         ground_truth_splits = {

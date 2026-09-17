@@ -2378,12 +2378,7 @@ async function verifyHiLiftCompactProfileOverlay() {
     ["deflection", ["Deflection", "caseset-c0ecb14de138", 360]],
     ["stall", ["Stall", "caseset-804491c8956e", 723]],
   ]);
-  const expectedRowsPerSplit = new Map(
-    [...expectedPreviewSplits].map(([splitId]) => [
-      splitId,
-      splitId === "scarce" ? 1 : 2,
-    ])
-  );
+  const expectedRowsPerSplit = new Map([...expectedPreviewSplits].map(([splitId]) => [splitId, splitId === "scarce" ? 1 : 2]));
   const previewRows = feed.filter((entry) => entry.dataset_id === "hiliftaeroml");
   assert.equal(
     previewRows.length,
@@ -2482,13 +2477,7 @@ async function verifyHiLiftCompactProfileOverlay() {
   assert.equal(api.profileSeriesCompatibility(truthCp, predictionCp), true);
   api.state.manifest.datasets = [{ name: "HiLiftAeroML", slug: "hiliftaeroml" }];
   api.state.dataset = "HiLiftAeroML";
-  const cpAxes = api.hiLiftProfileAxisRanges(
-    [
-      { finitePoints: truthCp.points },
-      { finitePoints: predictionCp.points },
-    ],
-    cpPanel
-  );
+  const cpAxes = api.hiLiftProfileAxisRanges([{ finitePoints: truthCp.points }, { finitePoints: predictionCp.points }], cpPanel);
   assert.equal(cpAxes.x.min, 1050);
   assert.equal(cpAxes.x.max, 1500);
   assert.equal(cpAxes.x.step, 50);
@@ -2507,10 +2496,7 @@ async function verifyHiLiftCompactProfileOverlay() {
   assert.equal(predictionVelocity.points.length, truthVelocity.points.length);
   assert.equal(api.profileSeriesCompatibility(truthVelocity, predictionVelocity), true);
   const velocityAxes = api.hiLiftProfileAxisRanges(
-    [
-      { finitePoints: truthVelocity.points },
-      { finitePoints: predictionVelocity.points },
-    ],
+    [{ finitePoints: truthVelocity.points }, { finitePoints: predictionVelocity.points }],
     velocityPanel
   );
   assert.equal(velocityAxes.x.min, 0);
@@ -2537,9 +2523,7 @@ function verifyHiLiftVelocityStorageDecoder() {
   const bitsView = new DataView(bitsBuffer);
   values.forEach((value, index) => bitsView.setFloat32(index * 4, value, true));
   const words = values.map((_value, index) => bitsView.getUint32(index * 4, true));
-  const deltas = words.map((word, index) =>
-    index === 0 ? word : (word - words[index - 1]) >>> 0
-  );
+  const deltas = words.map((word, index) => (index === 0 ? word : (word - words[index - 1]) >>> 0));
   const stored = new Array(count * 4);
   for (let index = 0; index < count; index += 1) {
     for (let lane = 0; lane < 4; lane += 1) {
@@ -2554,13 +2538,93 @@ function verifyHiLiftVelocityStorageDecoder() {
     Array.from(decoded, (_value, index) => decodedView.getUint32(index * 4, true)),
     words
   );
-  assert.throws(
-    () => api.decodeHiLiftVelocityStorage(stored.slice(1), count, "bad velocity"),
-    /storage length differs/
-  );
+  assert.throws(() => api.decodeHiLiftVelocityStorage(stored.slice(1), count, "bad velocity"), /storage length differs/);
+}
+
+async function verifyWindsorNativeGroundTruth() {
+  const previous = { ...api.state };
+  const manifest = JSON.parse(fs.readFileSync(path.join(submissionRoot, "leaderboard/manifest.json"), "utf8"));
+  const truthManifest = JSON.parse(fs.readFileSync(path.join(root, "assets/data/profile-ground-truth/manifest.json"), "utf8"));
+  const windsor = manifest.datasets.find((dataset) => dataset.slug === "windsorml");
+  api.state.manifest = manifest;
+  api.state.dataset = "WindsorML";
+  api.state.groundTruthManifest = truthManifest;
+  api.state.groundTruthManifestProvenance = { base_url: "https://example.test/profile-ground-truth/" };
+  api.state.groundTruthIndexes = new Map();
+  const cache = new Map();
+  try {
+    assert.deepEqual(
+      windsor.splits.map((split) => split.id),
+      ["full", "medium", "scarce", "super_scarce", "geometry", "high_drag", "low_drag", "image_wake"]
+    );
+    assert.equal(windsor.submission_count, 0);
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(submissionRoot, windsor.file), "utf8")), []);
+    api.renderReleaseMetadata();
+    assert.equal(elements.get("leaderboard-data-warning-title").textContent, "Native CFD ground truth");
+    assert.doesNotMatch(elements.get("leaderboard-data-warning-text").textContent, /dummy/);
+    const checked = new Set();
+    for (const split of windsor.splits) {
+      const index = await api.groundTruthIndex("WindsorML", split.name);
+      assert.equal(api.caseIds(index.index).length, split.case_count);
+      for (const caseId of api.caseIds(index.index)) {
+        if (checked.has(caseId)) continue;
+        checked.add(caseId);
+        const truth = await api.indexedProfileCase(index, caseId, cache, "WindsorML test");
+        assert.equal(truth._fluidsbenchWindsorNativeProfileTruth, true);
+        let count = 0;
+        for (const panel of windsor.diagnostic_panels) {
+          assert.equal(api.profileFamilies(panel).length, 2);
+          for (const family of api.profileFamilies(panel)) {
+            for (const station of api.profileStations(panel, family)) {
+              const series = api.profileSeries(truth, panel, station.id, panel.quantities[0], family);
+              assert.equal(series.points.length, 128);
+              assert.equal(series.droppedPointCount, 0);
+              assert.equal(series.nativeTruth, true);
+              assert.equal(series.scoringRole, family.placementMode === "relative" ? "report_only" : "ranked_candidate");
+              count += 1;
+            }
+          }
+        }
+        assert.equal(count, 16);
+      }
+    }
+    assert.equal(checked.size, 233);
+    const index = await api.groundTruthIndex("WindsorML", "Full");
+    const caseId = api.caseIds(index.index)[0];
+    const truth = await api.indexedProfileCase(index, caseId, cache, "WindsorML test");
+    const panel = windsor.diagnostic_panels[0];
+    const family = api.profileFamilies(panel)[0];
+    for (const mutation of [
+      (value) => value.series.pop(),
+      (value) => {
+        value.series[0].value[0] = null;
+      },
+      (value) => {
+        value.series[0].coordinate[1] = value.series[0].coordinate[0];
+      },
+      (value) => {
+        value.series[0].station_id = "prototype_0_25l";
+      },
+    ]) {
+      const bad = JSON.parse(JSON.stringify(truth));
+      mutation(bad);
+      assert.throws(() => api.profileSeries(bad, panel, family.stations[0].id, panel.quantities[0], family), /WindsorML/);
+    }
+    const cachedIndex = api.state.groundTruthIndexes.get(index.indexUrl);
+    const goodSchema = cachedIndex.data.schema;
+    cachedIndex.data.schema = "fluidsbench-profile-ground-truth-index-v1";
+    await assert.rejects(api.groundTruthIndex("WindsorML", "Full"), /cannot use legacy/);
+    cachedIndex.data.schema = goodSchema;
+    const chunk = [...cache.values()][0];
+    chunk.sha256 = "0".repeat(64);
+    await assert.rejects(api.indexedProfileCase(index, caseId, cache, "WindsorML test"), /checksum/);
+  } finally {
+    Object.assign(api.state, previous);
+  }
 }
 
 verifyDrivaerLegacyTruthFailsClosed()
+  .then(() => verifyWindsorNativeGroundTruth())
   .then(() => verifyNativeV3CpDisplayCoordinates())
   .then(() => verifyCurrentRun419ProfileFixture())
   .then(() => verifyRetainedNativeRun419Bundle())

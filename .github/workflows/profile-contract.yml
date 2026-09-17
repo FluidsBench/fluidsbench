@@ -18,7 +18,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: neilashton/fluidsbench-submission
-          ref: dev
+          # Match the immutable feed in _config_preview.yml (submission PR #33).
+          ref: 6c895baefd2b80c50acb1a1564e4204d4bc7be29
           path: fluidsbench-submission
       - uses: actions/setup-python@v5
         with:

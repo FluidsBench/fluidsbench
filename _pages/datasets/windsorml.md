@@ -22,7 +22,7 @@ compact_masthead: true
       </div>
       <div>
         <dt>Cases</dt>
-        <dd>355 CFD simulations.</dd>
+        <dd>355 designed cases; 350 public per-run field datasets.</dd>
       </div>
       <div>
         <dt>Solver</dt>
@@ -51,30 +51,37 @@ compact_masthead: true
     {% include dataset_getting_started.html slug="windsorml" %}
   </section>
 
-  {% include dataset_design_space.html slug="windsorml" %}
+{% include dataset_design_space.html slug="windsorml" %}
 
   <section class="dataset-panel">
-    <h3>Published source splits</h3>
+    <h3>Benchmark splits</h3>
     <p>
-      WindsorML now publishes eight deterministic source split families. These are current source definitions, not yet active FluidsBench case
-      bindings: the submission specification still contains one prototype case and needs a fixed policy for the five runs without complete per-run
-      fields.
+      All eight splits in the <a href="https://huggingface.co/datasets/neashton/windsorml/blob/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/splits/manifest.json">pinned Hugging Face manifest</a>
+      are available in the <a href="{{ '/' | relative_url }}?dataset=windsorml&amp;split=full">leaderboard profile viewer</a>.
+      FluidsBench retains the official assignments and uses the intersection with published field files.
+      Runs <code>350–354</code> have no public per-run payload and are excluded, without replacement or reassignment.
+      Counts below show <strong>available / official</strong> cases.
     </p>
     <div class="dataset-table-wrap">
       <table class="dataset-table compact">
         <thead><tr><th>Split ID</th><th>Purpose</th><th>Train</th><th>Validation</th><th>Test</th></tr></thead>
         <tbody>
-          <tr><td><code>full</code></td><td>Random source baseline.</td><td>284</td><td>35</td><td>36</td></tr>
-          <tr><td><code>medium</code></td><td>Nested data-efficiency subset.</td><td>95</td><td>35</td><td>36</td></tr>
-          <tr><td><code>scarce</code></td><td>Smaller nested subset.</td><td>47</td><td>35</td><td>36</td></tr>
-          <tr><td><code>super_scarce</code></td><td>Minimum-data nested subset.</td><td>8</td><td>35</td><td>36</td></tr>
-          <tr><td><code>geometry</code></td><td>Geometry out of distribution.</td><td>248</td><td>36</td><td>71</td></tr>
-          <tr><td><code>high_drag</code></td><td>High-drag out of distribution.</td><td>248</td><td>36</td><td>71</td></tr>
-          <tr><td><code>low_drag</code></td><td>Low-drag out of distribution.</td><td>248</td><td>36</td><td>71</td></tr>
-          <tr><td><code>image_wake</code></td><td>Image-derived wake out of distribution.</td><td>248</td><td>36</td><td>71</td></tr>
+          <tr><td><code>full</code></td><td>Random source baseline.</td><td>280 / 284</td><td>35 / 35</td><td>35 / 36</td></tr>
+          <tr><td><code>medium</code></td><td>Nested data-efficiency subset.</td><td>93 / 95</td><td>35 / 35</td><td>35 / 36</td></tr>
+          <tr><td><code>scarce</code></td><td>Smaller nested subset.</td><td>47 / 47</td><td>35 / 35</td><td>35 / 36</td></tr>
+          <tr><td><code>super_scarce</code></td><td>Minimum-data nested subset.</td><td>8 / 8</td><td>35 / 35</td><td>35 / 36</td></tr>
+          <tr><td><code>geometry</code></td><td>Geometry out of distribution.</td><td>243 / 248</td><td>36 / 36</td><td>71 / 71</td></tr>
+          <tr><td><code>high_drag</code></td><td>High-drag out of distribution.</td><td>244 / 248</td><td>36 / 36</td><td>70 / 71</td></tr>
+          <tr><td><code>low_drag</code></td><td>Low-drag out of distribution.</td><td>244 / 248</td><td>36 / 36</td><td>70 / 71</td></tr>
+          <tr><td><code>image_wake</code></td><td>Image-derived wake out of distribution.</td><td>244 / 248</td><td>35 / 36</td><td>71 / 71</td></tr>
         </tbody>
       </table>
     </div>
+    <p>
+      The four data-efficiency splits share validation and test cases; only training size changes. The five distinct test sets contain
+      233 unique available cases. The <code>full</code> split is the published seed-42 benchmark, not a reconstruction of the paper's 60/20/20 split.
+      Use validation for model selection and reserve test cases for final evaluation. Submissions remain closed pending owner review.
+    </p>
   </section>
 
   <section class="dataset-panel">
@@ -87,17 +94,25 @@ compact_masthead: true
   </section>
 
   <section class="dataset-panel">
-    <h3>Cp stations</h3>
+    <h3>Native CFD ground-truth profiles</h3>
     <p>
-      These stations reproduce the mean surface-pressure cuts in the supplementary validation of the
-      <a href="https://arxiv.org/abs/2407.19320">WindsorML paper</a>. Use the exact ID in <code>station_id</code>.
+      Every available test case has three surface Cp cuts and five wake velocity profiles, each with 128 samples.
+      The viewer shows both fixed locations and body-height-relative locations: 16 series per case.
+      Values come directly from the evaluator's pinned native CFD support, with no fabricated model curves or scores.
+      The fixed families contribute to the candidate score; relative families are report-only with zero weight.
     </p>
     <div class="dataset-table-wrap">
       <table class="dataset-table compact">
-        <thead><tr><th>Station ID</th><th>Published trace</th></tr></thead>
+        <thead><tr><th>Fixed station ID</th><th>Trace</th></tr></thead>
         <tbody>
-          <tr><td><code>symmetry_plane_z_0</code></td><td>Symmetry-plane trace, z = 0 m (Figure 18).</td></tr>
-          <tr><td><code>horizontal_cut_y_0_2595</code></td><td>Horizontal trace, y = 0.2595 m (Figure 19).</td></tr>
+          <tr><td><code>cp_centreline_upper</code></td><td>Upper centreline, nose to base.</td></tr>
+          <tr><td><code>cp_base_vertical</code></td><td>Vertical centreline on the base.</td></tr>
+          <tr><td><code>cp_side_horizontal_y_0p194</code></td><td>Side surface at y = 194 mm.</td></tr>
+          <tr><td><code>wake_vertical_x_0p05l</code></td><td>Vertical wake line 0.05L behind the base.</td></tr>
+          <tr><td><code>wake_vertical_x_0p10l</code></td><td>Vertical wake line 0.10L behind the base.</td></tr>
+          <tr><td><code>wake_vertical_x_0p25l</code></td><td>Vertical wake line 0.25L behind the base.</td></tr>
+          <tr><td><code>wake_vertical_x_0p50l</code></td><td>Vertical wake line 0.50L behind the base.</td></tr>
+          <tr><td><code>wake_lateral_x_0p10l_y_0p194</code></td><td>Lateral wake line 0.10L behind the base, at y = 194 mm.</td></tr>
         </tbody>
       </table>
     </div>
@@ -172,8 +187,8 @@ compact_masthead: true
       <div>
         <dt>C<sub>d</sub> and C<sub>l</sub> R<sup>2</sup></dt>
         <dd>
-          R<sup>2</sup> computed over all evaluated cases using predicted drag coefficient <code>cd_pred</code> and lift
-          coefficient <code>cl_pred</code>.
+          R<sup>2</sup> over all evaluated cases. The evaluator integrates predicted and reference Cp and skin-friction
+          fields using the same boundary support, reference area of 0.112 m², and +y lift convention.
         </dd>
       </div>
       <div>
@@ -200,8 +215,8 @@ compact_masthead: true
       <div>
         <dt>Velocity profile R<sup>2</sup></dt>
         <dd>
-          R<sup>2</sup> over selected wake profile samples behind the body. Unless the benchmark package states otherwise,
-          the score is computed on the velocity vector components flattened across stations, cases, and sample points.
+          One global R<sup>2</sup> for streamwise velocity <code>u_x / U_inf</code>, with <code>U_inf = 42.1 m/s</code>,
+          across all five fixed stations, test cases, and 128 samples per station. The body-height-relative result is reported separately at zero weight.
         </dd>
       </div>
     </dl>
