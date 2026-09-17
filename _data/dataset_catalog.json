@@ -56,7 +56,7 @@
       "summary": "The owner-review candidate scores complete native boundary pMean and wallShearStressMean, complete native-volume UMean and pMean, reconstructed force coefficients, three 128-point surface Cp cuts, four 128-point wake-velocity profiles, and report-only near-body/wake/farfield diagnostics. Case IDs and source bytes are pinned, but public submissions remain closed pending owner approval.",
       "split_ids": ["full", "medium", "scarce", "super_scarce", "geometry", "high_drag", "low_drag", "image_wake"],
       "case_id_status": "official",
-      "contract_digest": "c55a037c8c79f640359a34bf4e95169ae8f7c07d4517e236419ae05df397122b"
+      "contract_digest": "67a2231186a9eae2aed7fdef913130cdbaf758eab7e343ee91ce8e2667107c41"
     },
     "visual": {
       "inputs": "Ahmed geometry + flow conditions",
