@@ -56,6 +56,12 @@ organisers:
     initials: RR
     image: /assets/img/people/rishi-ranade.png
     profile: https://developer.nvidia.com/blog/author/rranade/
+  - name: Emanuele Tamburini
+    affiliation: Sorbonne University
+    initials: ET
+    image: /assets/img/people/emanuele-tamburini.jpg
+    profile: https://www.linkedin.com/in/emanuele-tamburini/
+    email: emanuele.tamburini@sorbonne-universite.fr
 
 advisory_board:
   - name: Siddhartha Mishra

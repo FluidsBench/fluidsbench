@@ -36,21 +36,28 @@
           <div class="organizer-card__info">
             <h3>{{ person.name }}</h3>
             <p class="organizer-card__affiliation">{{ person.affiliation }}</p>
-            {% if person.profile %}
-              <div class="organizer-card__links" role="group" aria-label="{{ person.name }} profile">
-                <a
-                  href="{{ person.profile }}"
-                  title="View {{ person.name }}'s profile"
-                  aria-label="View {{ person.name }}'s profile"
-                  rel="external noopener"
-                  target="_blank"
-                >
-                  {% if person.profile_kind == 'orcid' %}
-                    <i class="fa-brands fa-orcid" aria-hidden="true"></i>
-                  {% else %}
-                    <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                  {% endif %}
-                </a>
+            {% if person.profile or person.email %}
+              <div class="organizer-card__links" role="group" aria-label="{{ person.name }} links">
+                {% if person.profile %}
+                  <a
+                    href="{{ person.profile }}"
+                    title="View {{ person.name }}'s profile"
+                    aria-label="View {{ person.name }}'s profile"
+                    rel="external noopener"
+                    target="_blank"
+                  >
+                    {% if person.profile_kind == 'orcid' %}
+                      <i class="fa-brands fa-orcid" aria-hidden="true"></i>
+                    {% else %}
+                      <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                    {% endif %}
+                  </a>
+                {% endif %}
+                {% if person.email %}
+                  <a href="mailto:{{ person.email }}" title="Email {{ person.name }}" aria-label="Email {{ person.name }}">
+                    <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                  </a>
+                {% endif %}
               </div>
             {% endif %}
           </div>
