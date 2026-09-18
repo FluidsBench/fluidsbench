@@ -309,7 +309,7 @@
       "revision": "bbec30bcfc6103309c1375c5228b3ad0a586bfaf",
       "revision_short": "bbec30b",
       "revision_url": "https://huggingface.co/datasets/nvidia/HiLiftAeroML/tree/bbec30bcfc6103309c1375c5228b3ad0a586bfaf",
-      "checked_on": "2026-09-03",
+      "checked_on": "2026-09-18",
       "release": "Hugging Face revision bbec30b",
       "license": "CC BY 4.0",
       "license_url": "https://creativecommons.org/licenses/by/4.0/",
@@ -345,16 +345,16 @@
       ],
       "operating_conditions": "Each geometry is simulated at ten angles of attack from 4° to 22° in 2° steps, at Mach 0.2 and chord Reynolds number 1.6 × 10⁶.",
       "sampling": "Latin hypercube sampling supplies 180 geometry variants, crossed with the ten-angle sweep for 1,800 CFD cases.",
-      "coverage": "Fourteen published split families distinguish data efficiency, unseen geometry, single-angle tasks, angle extrapolation, high-deflection geometry, and stall behaviour. FluidsBench scoring bindings remain provisional.",
+      "coverage": "Fourteen official split labels distinguish data efficiency, unseen geometry, single-angle tasks, angle extrapolation, high-deflection geometry, and stall behaviour. FluidsBench binds eight exact ordered evaluation case sets covering 1,355 unique cases; public submissions remain closed.",
       "source_url": "https://arxiv.org/abs/2605.19565",
       "source_label": "HiLiftAeroML paper and parameter-range table"
     },
     "benchmark": {
       "status": "owner_review_required",
-      "status_label": "Prototype benchmark definition",
+      "status_label": "Closed benchmark candidate",
       "submissions_open": false,
-      "source_pin": "Not yet frozen",
-      "summary": "The source now publishes all fourteen deterministic splits, native-point surface area sidecars, invalid-volume-row records, and six documented field-integrated mean force/moment corrections. FluidsBench has candidate surface, volume, force, Cp-cut, and velocity-profile metrics, but its case lists and exact scored array bindings remain provisional and are not active for submissions.",
+      "source_pin": "nvidia/HiLiftAeroML @ bbec30b; closed-candidate evaluator @ 68899f7",
+      "summary": "The closed schema-v3 candidate binds all fourteen official splits, complete native surface and retained valid volume fields, integrated loads, ten Cp rows and five velocity stations. Twenty-three real-model previews and plot-only CFD truth for all 1,355 evaluation cases are available. Public intake remains closed pending final source-content pins, scoring-support publication and owner approval.",
       "split_ids": [
         "full",
         "medium",
@@ -376,8 +376,8 @@
     },
     "visual": {
       "inputs": "CRM-HL geometry + angle of attack",
-      "support": "Candidate native aircraft boundary and flow volume",
-      "metrics": "Candidate surface and volume errors, forces, Cp cuts, and near-wall profiles"
+      "support": "Native aircraft boundary and retained valid volume points",
+      "metrics": "Native field errors, integrated loads, ten Cp rows and five velocity stations"
     }
   },
   "airfrans": {
