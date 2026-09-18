@@ -1223,6 +1223,8 @@
         "format": {
           "enum": [
             "drivaerml-regional-aggregate-v2",
+            "ahmedml-regional-diagnostics-aggregate-v1",
+            "ahmedml-regional-diagnostics-aggregate-v2",
             "hiliftaeroml-regional-diagnostics-aggregate-v1",
             "hiliftaeroml-regional-diagnostics-aggregate-v2"
           ]
@@ -1263,7 +1265,6 @@
           "enum": [
             "fluidsbench-profile-chunks-v1",
             "fluidsbench-drivaerml-relative-profile-chunks-v3-candidate",
-            "fluidsbench-hiliftaeroml-native-profile-chunks-v1-candidate",
             "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate"
           ]
         },

@@ -77,6 +77,112 @@ class ProfileCaseCoverageTests(unittest.TestCase):
         self.assertTrue(any("prototype" in error for error in errors))
 
 
+class AhmedMLNativeProfileTruthTests(unittest.TestCase):
+    @staticmethod
+    def series() -> dict:
+        expected = check_profile_contract.AHMEDML_NATIVE_TRUTH_SERIES[0]
+        start, stop = expected[-2:]
+        count = check_profile_contract.AHMEDML_NATIVE_TRUTH_SAMPLES_PER_SERIES
+        return {
+            "panel_id": expected[0],
+            "station_id": expected[1],
+            "quantity_id": expected[2],
+            "coordinate_id": expected[3],
+            "coordinate_unit": "1",
+            "coordinate": [
+                start + (stop - start) * index / (count - 1)
+                for index in range(count)
+            ],
+            "value": [0.01 * index for index in range(count)],
+            "sample_count": count,
+            "source": "evaluator_owned_frozen_native_cell_mapping",
+        }
+
+    def test_exact_128_point_series_passes(self) -> None:
+        self.assertEqual(
+            check_profile_contract.ahmedml_series_errors(
+                self.series(),
+                check_profile_contract.AHMEDML_NATIVE_TRUTH_SERIES[0],
+                "fixture",
+            ),
+            [],
+        )
+
+    def test_rejects_wrong_source_noncanonical_grid_and_nonfinite_value(self) -> None:
+        wrong_source = self.series()
+        wrong_source["source"] = "participant_supplied"
+        self.assertTrue(
+            any(
+                "identity or source" in error
+                for error in check_profile_contract.ahmedml_series_errors(
+                    wrong_source,
+                    check_profile_contract.AHMEDML_NATIVE_TRUTH_SERIES[0],
+                    "fixture",
+                )
+            )
+        )
+        wrong_grid = self.series()
+        wrong_grid["coordinate"][64] += 1.0e-4
+        self.assertTrue(
+            any(
+                "uniform grid" in error
+                for error in check_profile_contract.ahmedml_series_errors(
+                    wrong_grid,
+                    check_profile_contract.AHMEDML_NATIVE_TRUTH_SERIES[0],
+                    "fixture",
+                )
+            )
+        )
+        nonfinite = self.series()
+        nonfinite["value"][0] = float("nan")
+        self.assertTrue(
+            any(
+                "finite native-CFD" in error
+                for error in check_profile_contract.ahmedml_series_errors(
+                    nonfinite,
+                    check_profile_contract.AHMEDML_NATIVE_TRUTH_SERIES[0],
+                    "fixture",
+                )
+            )
+        )
+
+    def test_rejects_stale_revision_schema_and_truth_source(self) -> None:
+        header = {
+            "schema": check_profile_contract.AHMEDML_NATIVE_TRUTH_INDEX_SCHEMA,
+            "schema_version": "1.0",
+            "release_id": check_profile_contract.AHMEDML_NATIVE_TRUTH_RELEASE_ID,
+            "dataset_id": "ahmedml",
+            "dataset_revision": check_profile_contract.AHMEDML_NATIVE_TRUTH_DATASET_REVISION,
+            "source_identity_sha256": check_profile_contract.AHMEDML_NATIVE_TRUTH_SOURCE_IDENTITY_SHA256,
+            "profile_definition_sha256": check_profile_contract.AHMEDML_NATIVE_TRUTH_PROFILE_DEFINITION_SHA256,
+            "truth_source": deepcopy(
+                check_profile_contract.AHMEDML_NATIVE_TRUTH_SOURCE
+            ),
+        }
+        self.assertEqual(
+            check_profile_contract._ahmedml_common_header_errors(
+                header,
+                schema=check_profile_contract.AHMEDML_NATIVE_TRUTH_INDEX_SCHEMA,
+                label="fixture",
+            ),
+            [],
+        )
+        for key, value in (
+            ("schema", "wrong-schema"),
+            ("dataset_revision", "0" * 40),
+            ("truth_source", {"source_kind": "dummy"}),
+        ):
+            mutated = deepcopy(header)
+            mutated[key] = value
+            self.assertTrue(
+                check_profile_contract._ahmedml_common_header_errors(
+                    mutated,
+                    schema=check_profile_contract.AHMEDML_NATIVE_TRUTH_INDEX_SCHEMA,
+                    label="fixture",
+                )
+            )
+
+
 class DrivAerMLNativeProfileSeriesTests(unittest.TestCase):
     @staticmethod
     def rebind_case_identity(case: dict) -> None:

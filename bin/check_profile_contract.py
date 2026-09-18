@@ -14,6 +14,8 @@ import zipfile
 from pathlib import Path
 from typing import Any
 
+from export_windsorml_native_profile_truth import bundle_errors as windsorml_native_bundle_errors
+
 
 ROOT = Path(__file__).resolve().parents[1]
 GROUND_TRUTH_ROOT = ROOT / "assets" / "data" / "profile-ground-truth"
@@ -86,6 +88,54 @@ HILIFT_COMPACT_PREDICTION_FORMAT = (
 )
 HILIFT_COMPACT_PREVIEW_SUBMISSION_ID = (
     "hiliftaeroml-transolver-full360-candidate-v1"
+)
+AHMEDML_NATIVE_TRUTH_MASTER_SCHEMA = (
+    "fluidsbench-ahmedml-native-profile-truth-master-index-v1"
+)
+AHMEDML_NATIVE_TRUTH_INDEX_SCHEMA = (
+    "fluidsbench-ahmedml-native-profile-truth-index-v1"
+)
+AHMEDML_NATIVE_TRUTH_CHUNK_SCHEMA = (
+    "fluidsbench-ahmedml-native-profile-truth-chunk-v1"
+)
+AHMEDML_NATIVE_TRUTH_RELEASE_ID = (
+    "ahmedml-native-profile-truth-all316-v1-candidate"
+)
+AHMEDML_NATIVE_TRUTH_DATASET_REVISION = (
+    "02688c727cdb8dc8678e28abc6bbbb7e93c5fa15"
+)
+AHMEDML_NATIVE_TRUTH_SOURCE_IDENTITY_SHA256 = (
+    "56a620a5b335cef6cb0587e186df321eb907bbe46e8b81aa4de302b8fe73cf44"
+)
+AHMEDML_NATIVE_TRUTH_PROFILE_DEFINITION_SHA256 = (
+    "1048a0380f70de778e3e51db07d6910579f720d6f2dd1d9ad7179dbfe88d1cae"
+)
+AHMEDML_NATIVE_TRUTH_SOURCE = {
+    "source_kind": "native_cfd",
+    "analytical_dummy": False,
+    "native_quantity_source": (
+        "pinned_ahmedml_cell_data_via_frozen_evaluator_mapping"
+    ),
+}
+AHMEDML_NATIVE_TRUTH_CASE_COUNT = 316
+AHMEDML_NATIVE_TRUTH_CASE_SET_COUNT = 5
+AHMEDML_NATIVE_TRUTH_SERIES_PER_CASE = 7
+AHMEDML_NATIVE_TRUTH_SAMPLES_PER_SERIES = 128
+AHMEDML_NATIVE_TRUTH_SERIES = (
+    ("pressure_profiles", "upper_body_centerline", "cp", "x_over_l", 0.0, 1.0),
+    ("pressure_profiles", "underbody_centerline", "cp", "x_over_l", 0.0, 1.0),
+    ("pressure_profiles", "rear_slant_centerline", "cp", "s_over_slant", 0.0, 1.0),
+    ("velocity_profiles", "wake_vertical_x_0p25_l", "ux_over_uinf", "z_over_h", 0.0, 2.0),
+    ("velocity_profiles", "wake_vertical_x_0p50_l", "ux_over_uinf", "z_over_h", 0.0, 2.0),
+    ("velocity_profiles", "wake_vertical_x_1p00_l", "ux_over_uinf", "z_over_h", 0.0, 2.0),
+    (
+        "velocity_profiles",
+        "wake_lateral_x_0p50_l_z_0p50_h",
+        "ux_over_uinf",
+        "y_over_w",
+        -1.0,
+        1.0,
+    ),
 )
 NATIVE_DRIVAERML_INDEX_SCHEMA = "fluidsbench-drivaerml-native-profile-truth-index-v2"
 NATIVE_DRIVAERML_SPLIT_SCHEMA = (
@@ -2507,6 +2557,644 @@ def _decode_hilift_velocity_storage(data: bytes, count: int) -> bytes:
     return bytes(decoded)
 
 
+def ahmedml_series_errors(
+    series: Any,
+    expected: tuple[str, str, str, str, float, float],
+    label: str,
+) -> list[str]:
+    """Validate one exact AhmedML evaluator-owned native truth series."""
+
+    if not isinstance(series, dict):
+        return [f"{label}: series is not an object"]
+    expected_fields = {
+        "panel_id",
+        "station_id",
+        "quantity_id",
+        "coordinate_id",
+        "coordinate_unit",
+        "coordinate",
+        "value",
+        "sample_count",
+        "source",
+    }
+    errors: list[str] = []
+    if set(series) != expected_fields:
+        errors.append(f"{label}: series fields differ")
+    panel_id, station_id, quantity_id, coordinate_id, start, stop = expected
+    if (
+        series.get("panel_id") != panel_id
+        or series.get("station_id") != station_id
+        or series.get("quantity_id") != quantity_id
+        or series.get("coordinate_id") != coordinate_id
+        or series.get("coordinate_unit") != "1"
+        or series.get("sample_count") != AHMEDML_NATIVE_TRUTH_SAMPLES_PER_SERIES
+        or series.get("source")
+        != "evaluator_owned_frozen_native_cell_mapping"
+    ):
+        errors.append(f"{label}: series identity or source differs")
+    coordinate = series.get("coordinate")
+    values = series.get("value")
+    sample_count = AHMEDML_NATIVE_TRUTH_SAMPLES_PER_SERIES
+    if not finite_numbers(coordinate) or len(coordinate) != sample_count:
+        errors.append(f"{label}: coordinate must contain 128 finite samples")
+    else:
+        expected_coordinate = [
+            start + (stop - start) * index / (sample_count - 1)
+            for index in range(sample_count)
+        ]
+        if any(
+            not math.isclose(actual, target, rel_tol=0.0, abs_tol=2.0e-15)
+            for actual, target in zip(coordinate, expected_coordinate, strict=True)
+        ):
+            errors.append(f"{label}: coordinate grid differs from the frozen uniform grid")
+    if not finite_numbers(values) or len(values) != sample_count:
+        errors.append(f"{label}: value must contain 128 finite native-CFD samples")
+    return errors
+
+
+def _ahmedml_common_header_errors(
+    document: Any,
+    *,
+    schema: str,
+    label: str,
+) -> list[str]:
+    if not isinstance(document, dict):
+        return [f"{label}: document is not an object"]
+    errors: list[str] = []
+    if (
+        document.get("schema") != schema
+        or document.get("schema_version") != "1.0"
+        or document.get("release_id") != AHMEDML_NATIVE_TRUTH_RELEASE_ID
+        or document.get("dataset_id") != "ahmedml"
+        or document.get("dataset_revision")
+        != AHMEDML_NATIVE_TRUTH_DATASET_REVISION
+        or document.get("source_identity_sha256")
+        != AHMEDML_NATIVE_TRUTH_SOURCE_IDENTITY_SHA256
+        or document.get("profile_definition_sha256")
+        != AHMEDML_NATIVE_TRUTH_PROFILE_DEFINITION_SHA256
+        or document.get("truth_source") != AHMEDML_NATIVE_TRUTH_SOURCE
+    ):
+        errors.append(f"{label}: immutable AhmedML header differs")
+    return errors
+
+
+def _ahmedml_support_lineage(
+    submission_root: Path,
+    specification: dict[str, Any],
+    expected_by_case_set: dict[str, list[str]],
+) -> tuple[dict[str, tuple[str, str]], list[str]]:
+    """Read the checksum-bound support release and return case lineage pairs."""
+
+    label = "ahmedml/native-profile-truth/support-release"
+    errors: list[str] = []
+    support = specification.get("scoring_support", {})
+    declaration = support.get("candidate_manifest", {})
+    spec_root = submission_root / "benchmark-specs" / "ahmedml"
+    manifest_path = _safe_profile_path(
+        spec_root, spec_root, declaration.get("manifest_file")
+    )
+    if manifest_path is None:
+        errors.append(f"{label}: candidate manifest path is invalid")
+        return {}, errors
+    errors.extend(
+        _file_binding_errors(
+            manifest_path,
+            declaration.get("manifest_sha256"),
+            None,
+            label,
+        )
+    )
+    if not manifest_path.is_file():
+        return {}, errors
+    manifest = load_json(manifest_path)
+    if (
+        not isinstance(manifest, dict)
+        or manifest.get("release_id") != declaration.get("release_id")
+        or manifest.get("dataset_id") != "ahmedml"
+    ):
+        errors.append(f"{label}: support manifest header differs")
+        return {}, errors
+    case_set_records = {
+        item.get("id"): item
+        for item in manifest.get("case_sets", [])
+        if isinstance(item, dict) and isinstance(item.get("id"), str)
+    }
+    if set(case_set_records) != set(expected_by_case_set):
+        errors.append(f"{label}: support case-set membership differs")
+    lineage: dict[str, tuple[str, str]] = {}
+    for case_set_id, expected_case_ids in expected_by_case_set.items():
+        record = case_set_records.get(case_set_id, {})
+        index_path = _safe_profile_path(
+            manifest_path.parent,
+            manifest_path.parent,
+            record.get("index_file"),
+        )
+        errors.extend(
+            _file_binding_errors(
+                index_path,
+                record.get("index_sha256"),
+                None,
+                f"{label}/{case_set_id}/index",
+            )
+        )
+        if index_path is None or not index_path.is_file():
+            continue
+        index = load_json(index_path)
+        if (
+            index.get("release_id") != manifest.get("release_id")
+            or index.get("dataset_id") != "ahmedml"
+            or index.get("case_set_id") != case_set_id
+            or index.get("case_count") != len(expected_case_ids)
+        ):
+            errors.append(f"{label}/{case_set_id}: support index header differs")
+        flattened: list[str] = []
+        for chunk_index, descriptor in enumerate(index.get("chunks", [])):
+            chunk_label = f"{label}/{case_set_id}/chunk-{chunk_index:03d}"
+            if not isinstance(descriptor, dict):
+                errors.append(f"{chunk_label}: descriptor is not an object")
+                continue
+            chunk_path = _safe_profile_path(
+                manifest_path.parent, index_path.parent, descriptor.get("file")
+            )
+            errors.extend(
+                _file_binding_errors(
+                    chunk_path,
+                    descriptor.get("sha256"),
+                    None,
+                    chunk_label,
+                )
+            )
+            if chunk_path is None or not chunk_path.is_file():
+                continue
+            chunk = load_json(chunk_path)
+            cases = chunk.get("cases", []) if isinstance(chunk, dict) else []
+            case_ids = [
+                case.get("case_id") for case in cases if isinstance(case, dict)
+            ]
+            if (
+                chunk.get("release_id") != manifest.get("release_id")
+                or chunk.get("dataset_id") != "ahmedml"
+                or chunk.get("case_set_id") != case_set_id
+                or descriptor.get("case_ids") != case_ids
+                or descriptor.get("case_count") != len(case_ids)
+            ):
+                errors.append(f"{chunk_label}: support chunk binding differs")
+            flattened.extend(case_ids)
+            for case in cases:
+                if not isinstance(case, dict) or not isinstance(
+                    case.get("support_instances"), list
+                ):
+                    errors.append(f"{chunk_label}: malformed support case")
+                    continue
+                case_id = case.get("case_id")
+                instances = {
+                    item.get("support_id"): item
+                    for item in case["support_instances"]
+                    if isinstance(item, dict)
+                }
+                cp = instances.get("ahmedml-surface-cp-profiles-v1", {})
+                velocity = instances.get(
+                    "ahmedml-volume-velocity-profiles-v1", {}
+                )
+                cp_parameters = cp.get("parameters", {})
+                velocity_parameters = velocity.get("parameters", {})
+                support_sha = cp_parameters.get("case_support_manifest_sha256")
+                mapping_sha = cp_parameters.get("mapping_and_truth_sha256")
+                if (
+                    not valid_sha256(support_sha)
+                    or not valid_sha256(mapping_sha)
+                    or velocity_parameters.get("case_support_manifest_sha256")
+                    != support_sha
+                    or velocity_parameters.get("mapping_and_truth_sha256")
+                    != mapping_sha
+                    or cp_parameters.get("samples_per_station") != 128
+                    or velocity_parameters.get("samples_per_station") != 128
+                    or cp_parameters.get("station_count") != 3
+                    or velocity_parameters.get("station_count") != 4
+                ):
+                    errors.append(
+                        f"{chunk_label}/{case_id}: profile support lineage differs"
+                    )
+                    continue
+                previous = lineage.setdefault(case_id, (support_sha, mapping_sha))
+                if previous != (support_sha, mapping_sha):
+                    errors.append(
+                        f"{chunk_label}/{case_id}: duplicate support lineage differs"
+                    )
+        if flattened != expected_case_ids or len(set(flattened)) != len(flattened):
+            errors.append(
+                f"{label}/{case_set_id}: support cases are incomplete, duplicated, or reordered"
+            )
+    return lineage, errors
+
+
+def ahmedml_native_bundle_errors(
+    ground_truth_root: Path,
+    dataset_manifest: dict[str, Any],
+    submission_root: Path,
+) -> list[str]:
+    """Fail closed on the complete cross-repository AhmedML truth bundle."""
+
+    label = "ahmedml/native-profile-truth-all316-v1"
+    errors: list[str] = []
+    declaration = dataset_manifest.get("native_profile_truth")
+    expected_declaration = {
+        "source_kind": "native_cfd",
+        "analytical_dummy": False,
+        "dataset_revision": AHMEDML_NATIVE_TRUTH_DATASET_REVISION,
+        "source_identity_sha256": AHMEDML_NATIVE_TRUTH_SOURCE_IDENTITY_SHA256,
+        "profile_definition_sha256": AHMEDML_NATIVE_TRUTH_PROFILE_DEFINITION_SHA256,
+        "release_id": AHMEDML_NATIVE_TRUTH_RELEASE_ID,
+        "case_count": AHMEDML_NATIVE_TRUTH_CASE_COUNT,
+        "case_set_count": AHMEDML_NATIVE_TRUTH_CASE_SET_COUNT,
+        "series_per_case": AHMEDML_NATIVE_TRUTH_SERIES_PER_CASE,
+        "samples_per_series": AHMEDML_NATIVE_TRUTH_SAMPLES_PER_SERIES,
+        "master_index_file": "datasets/ahmedml/native-all316-v1/index.json",
+    }
+    if (
+        not isinstance(declaration, dict)
+        or set(declaration) != {*expected_declaration, "master_index_sha256"}
+        or any(declaration.get(key) != value for key, value in expected_declaration.items())
+        or not valid_sha256(declaration.get("master_index_sha256"))
+    ):
+        return [f"{label}: public native-CFD declaration differs"]
+
+    spec_root = submission_root / "benchmark-specs" / "ahmedml"
+    specification = load_json(spec_root / "submission-spec.json")
+    profile_binding = specification.get("profile_definition", {})
+    profile_path = _safe_profile_path(
+        spec_root, spec_root, profile_binding.get("file")
+    )
+    errors.extend(
+        _file_binding_errors(
+            profile_path,
+            profile_binding.get("sha256"),
+            None,
+            f"{label}/profile-definition",
+        )
+    )
+    source_binding = specification.get("scoring_support", {}).get(
+        "dataset_source", {}
+    )
+    source_path = _safe_profile_path(
+        spec_root, spec_root, source_binding.get("identity_file")
+    )
+    errors.extend(
+        _file_binding_errors(
+            source_path,
+            source_binding.get("identity_sha256"),
+            None,
+            f"{label}/source-identity",
+        )
+    )
+    if (
+        profile_binding.get("sha256")
+        != AHMEDML_NATIVE_TRUTH_PROFILE_DEFINITION_SHA256
+        or profile_binding.get("sample_count_per_series") != 128
+        or source_binding.get("revision") != AHMEDML_NATIVE_TRUTH_DATASET_REVISION
+        or source_binding.get("identity_sha256")
+        != AHMEDML_NATIVE_TRUTH_SOURCE_IDENTITY_SHA256
+    ):
+        errors.append(f"{label}: submission source/profile binding differs")
+
+    spec_splits = {
+        item.get("id"): item
+        for item in specification.get("splits", [])
+        if isinstance(item, dict) and isinstance(item.get("id"), str)
+    }
+    website_splits = {
+        item.get("id"): item
+        for item in dataset_manifest.get("splits", [])
+        if isinstance(item, dict) and isinstance(item.get("id"), str)
+    }
+    if set(spec_splits) != set(website_splits) or len(spec_splits) != 8:
+        errors.append(f"{label}: website split inventory differs")
+    expected_by_case_set: dict[str, list[str]] = {}
+    for split_id, split in spec_splits.items():
+        split_path = _safe_profile_path(
+            spec_root, spec_root, split.get("index_file")
+        )
+        errors.extend(
+            _file_binding_errors(
+                split_path,
+                split.get("sha256"),
+                None,
+                f"{label}/split-{split_id}",
+            )
+        )
+        if split_path is None or not split_path.is_file():
+            continue
+        split_index = load_json(split_path)
+        case_ids = split_index.get("case_ids", [])
+        case_set_id = split.get("case_set_id")
+        if (
+            not isinstance(case_ids, list)
+            or len(case_ids) != split.get("case_count")
+            or len(set(case_ids)) != len(case_ids)
+            or split_index.get("split_id") != split_id
+            or split_index.get("case_set_id") != case_set_id
+        ):
+            errors.append(f"{label}/split-{split_id}: split index differs")
+            continue
+        previous = expected_by_case_set.setdefault(case_set_id, case_ids)
+        if previous != case_ids:
+            errors.append(f"{label}/{case_set_id}: shared split cases differ")
+        website = website_splits.get(split_id, {})
+        if (
+            website.get("case_set_id") != case_set_id
+            or website.get("case_count") != len(case_ids)
+        ):
+            errors.append(f"{label}/split-{split_id}: website mapping differs")
+
+    support_lineage, support_errors = _ahmedml_support_lineage(
+        submission_root, specification, expected_by_case_set
+    )
+    errors.extend(support_errors)
+
+    master_path = _safe_profile_path(
+        ground_truth_root,
+        ground_truth_root,
+        declaration.get("master_index_file"),
+    )
+    errors.extend(
+        _file_binding_errors(
+            master_path,
+            declaration.get("master_index_sha256"),
+            None,
+            f"{label}/master-index",
+        )
+    )
+    if master_path is None or not master_path.is_file():
+        return errors
+    master = load_json(master_path)
+    expected_master_fields = {
+        "schema",
+        "schema_version",
+        "release_id",
+        "status",
+        "usage",
+        "generated_at",
+        "dataset_id",
+        "dataset_repository",
+        "dataset_revision",
+        "source_identity_sha256",
+        "profile_definition_sha256",
+        "truth_source",
+        "case_count",
+        "case_ids",
+        "case_set_count",
+        "case_sets",
+        "series_per_case",
+        "samples_per_series",
+        "derivation",
+    }
+    if not isinstance(master, dict) or set(master) != expected_master_fields:
+        errors.append(f"{label}: master index fields differ")
+        return errors
+    errors.extend(
+        _ahmedml_common_header_errors(
+            master, schema=AHMEDML_NATIVE_TRUTH_MASTER_SCHEMA, label=label
+        )
+    )
+    if (
+        master.get("status") != "candidate_owner_review_required"
+        or master.get("usage")
+        != "browser_visualization_only_not_metric_recomputation"
+        or master.get("dataset_repository") != "neashton/ahmedml"
+        or master.get("case_count") != AHMEDML_NATIVE_TRUTH_CASE_COUNT
+        or master.get("case_set_count") != AHMEDML_NATIVE_TRUTH_CASE_SET_COUNT
+        or master.get("series_per_case") != AHMEDML_NATIVE_TRUTH_SERIES_PER_CASE
+        or master.get("samples_per_series")
+        != AHMEDML_NATIVE_TRUTH_SAMPLES_PER_SERIES
+        or master.get("derivation")
+        != "exact_truth_arrays_from_checksum_verified_evaluator_case_support"
+        or not isinstance(master.get("generated_at"), str)
+        or not master["generated_at"].endswith("Z")
+    ):
+        errors.append(f"{label}: master release declaration differs")
+
+    expected_case_ids = sorted(
+        {case_id for cases in expected_by_case_set.values() for case_id in cases},
+        key=lambda value: int(value.removeprefix("run_")),
+    )
+    if master.get("case_ids") != expected_case_ids or len(expected_case_ids) != 316:
+        errors.append(f"{label}: master case order or membership differs")
+    master_case_sets = {
+        item.get("case_set_id"): item
+        for item in master.get("case_sets", [])
+        if isinstance(item, dict)
+    }
+    public_case_sets = {
+        item.get("id"): item
+        for item in dataset_manifest.get("case_sets", [])
+        if isinstance(item, dict)
+    }
+    if (
+        set(master_case_sets) != set(expected_by_case_set)
+        or set(public_case_sets) != set(expected_by_case_set)
+    ):
+        errors.append(f"{label}: case-set membership differs")
+
+    seen_cases: dict[str, str] = {}
+    for case_set_id, expected_cases in expected_by_case_set.items():
+        record = master_case_sets.get(case_set_id, {})
+        public = public_case_sets.get(case_set_id, {})
+        index_path = _safe_profile_path(
+            master_path.parent, master_path.parent, record.get("file")
+        )
+        errors.extend(
+            _file_binding_errors(
+                index_path,
+                record.get("sha256"),
+                record.get("size_bytes"),
+                f"{label}/{case_set_id}/index",
+            )
+        )
+        expected_public_file = (
+            f"datasets/ahmedml/native-all316-v1/{case_set_id}/index.json"
+        )
+        if (
+            record.get("case_count") != len(expected_cases)
+            or record.get("case_id_status") != "official"
+            or public.get("index_file") != expected_public_file
+            or public.get("index_sha256") != record.get("sha256")
+            or public.get("case_count") != len(expected_cases)
+            or public.get("case_id_status") != "official"
+        ):
+            errors.append(f"{label}/{case_set_id}: public/master binding differs")
+        if index_path is None or not index_path.is_file():
+            continue
+        index = load_json(index_path)
+        expected_index_fields = {
+            "schema",
+            "schema_version",
+            "release_id",
+            "status",
+            "usage",
+            "dataset_id",
+            "dataset_revision",
+            "source_identity_sha256",
+            "profile_definition_sha256",
+            "truth_source",
+            "case_set_id",
+            "case_id_status",
+            "case_count",
+            "case_ids",
+            "series_per_case",
+            "samples_per_series",
+            "chunks",
+        }
+        if not isinstance(index, dict) or set(index) != expected_index_fields:
+            errors.append(f"{label}/{case_set_id}: index fields differ")
+            continue
+        errors.extend(
+            _ahmedml_common_header_errors(
+                index,
+                schema=AHMEDML_NATIVE_TRUTH_INDEX_SCHEMA,
+                label=f"{label}/{case_set_id}",
+            )
+        )
+        if (
+            index.get("status") != "candidate_owner_review_required"
+            or index.get("usage")
+            != "browser_visualization_only_not_metric_recomputation"
+            or index.get("case_set_id") != case_set_id
+            or index.get("case_id_status") != "official"
+            or index.get("case_count") != len(expected_cases)
+            or index.get("case_ids") != expected_cases
+            or index.get("series_per_case") != 7
+            or index.get("samples_per_series") != 128
+        ):
+            errors.append(f"{label}/{case_set_id}: index contract differs")
+        flattened: list[str] = []
+        for chunk_index, descriptor in enumerate(index.get("chunks", [])):
+            chunk_label = f"{label}/{case_set_id}/chunk-{chunk_index:03d}"
+            if not isinstance(descriptor, dict) or set(descriptor) != {
+                "file",
+                "sha256",
+                "size_bytes",
+                "case_count",
+                "case_ids",
+                "series_count",
+            }:
+                errors.append(f"{chunk_label}: descriptor fields differ")
+                continue
+            chunk_path = _safe_profile_path(
+                master_path.parent, index_path.parent, descriptor.get("file")
+            )
+            errors.extend(
+                _file_binding_errors(
+                    chunk_path,
+                    descriptor.get("sha256"),
+                    descriptor.get("size_bytes"),
+                    chunk_label,
+                )
+            )
+            if chunk_path is None or not chunk_path.is_file():
+                continue
+            chunk = load_json(chunk_path)
+            expected_chunk_fields = {
+                "schema",
+                "schema_version",
+                "release_id",
+                "dataset_id",
+                "dataset_revision",
+                "source_identity_sha256",
+                "profile_definition_sha256",
+                "case_set_id",
+                "truth_source",
+                "case_count",
+                "case_ids",
+                "series_per_case",
+                "samples_per_series",
+                "cases",
+            }
+            if not isinstance(chunk, dict) or set(chunk) != expected_chunk_fields:
+                errors.append(f"{chunk_label}: chunk fields differ")
+                continue
+            errors.extend(
+                _ahmedml_common_header_errors(
+                    chunk,
+                    schema=AHMEDML_NATIVE_TRUTH_CHUNK_SCHEMA,
+                    label=chunk_label,
+                )
+            )
+            cases = chunk.get("cases", [])
+            case_ids = [
+                case.get("case_id") for case in cases if isinstance(case, dict)
+            ]
+            if (
+                chunk.get("case_set_id") != case_set_id
+                or chunk.get("case_count") != len(cases)
+                or chunk.get("case_ids") != case_ids
+                or chunk.get("series_per_case") != 7
+                or chunk.get("samples_per_series") != 128
+                or descriptor.get("case_count") != len(cases)
+                or descriptor.get("case_ids") != case_ids
+                or descriptor.get("series_count") != len(cases) * 7
+            ):
+                errors.append(f"{chunk_label}: chunk descriptor/header differs")
+            flattened.extend(case_ids)
+            for case_index, case in enumerate(cases):
+                case_label = f"{chunk_label}/case-{case_index}"
+                if not isinstance(case, dict) or set(case) != {
+                    "case_id",
+                    "truth_source",
+                    "lineage",
+                    "series",
+                }:
+                    errors.append(f"{case_label}: case fields differ")
+                    continue
+                case_id = case.get("case_id")
+                lineage = case.get("lineage")
+                if case.get("truth_source") != AHMEDML_NATIVE_TRUTH_SOURCE:
+                    errors.append(f"{case_label}: truth source differs")
+                expected_lineage = support_lineage.get(case_id)
+                if (
+                    not isinstance(lineage, dict)
+                    or set(lineage)
+                    != {
+                        "case_support_sha256",
+                        "profile_mapping_and_truth_sha256",
+                        "profile_definition_sha256",
+                    }
+                    or expected_lineage is None
+                    or lineage.get("case_support_sha256") != expected_lineage[0]
+                    or lineage.get("profile_mapping_and_truth_sha256")
+                    != expected_lineage[1]
+                    or lineage.get("profile_definition_sha256")
+                    != AHMEDML_NATIVE_TRUTH_PROFILE_DEFINITION_SHA256
+                ):
+                    errors.append(f"{case_label}: cross-repository lineage differs")
+                series = case.get("series")
+                if not isinstance(series, list) or len(series) != 7:
+                    errors.append(f"{case_label}: case must contain seven series")
+                else:
+                    for series_index, (item, expected) in enumerate(
+                        zip(series, AHMEDML_NATIVE_TRUTH_SERIES, strict=True)
+                    ):
+                        errors.extend(
+                            ahmedml_series_errors(
+                                item,
+                                expected,
+                                f"{case_label}/series-{series_index}",
+                            )
+                        )
+                fingerprint = hashlib.sha256(
+                    canonical_json_bytes(case)
+                ).hexdigest()
+                previous = seen_cases.setdefault(case_id, fingerprint)
+                if previous != fingerprint:
+                    errors.append(f"{case_label}: duplicate case payload differs")
+        if flattened != expected_cases or len(set(flattened)) != len(flattened):
+            errors.append(
+                f"{label}/{case_set_id}: truth cases are incomplete, duplicated, or reordered"
+            )
+    if set(seen_cases) != set(expected_case_ids):
+        errors.append(f"{label}: complete truth case coverage differs")
+    return errors
+
+
 def hiliftaeroml_compact_truth_errors(
     ground_truth_root: Path,
     dataset_manifest: dict[str, Any],
@@ -2545,7 +3233,7 @@ def hiliftaeroml_compact_truth_errors(
 
     spec_root = submission_root / "benchmark-specs" / "hiliftaeroml"
     spec = load_json(spec_root / "submission-spec.json")
-    compact_definition = spec.get("compact_profile_definition", {})
+    compact_definition = spec.get("profile_definition", {})
     public_binding = compact_definition.get("public_plot_ground_truth", {})
     binding_path = spec_root / str(public_binding.get("binding_file", ""))
     ground_truth_manifest = load_json(ground_truth_root / "manifest.json")
@@ -2631,7 +3319,11 @@ def hiliftaeroml_compact_truth_errors(
         },
     }
     if (
-        compact_definition.get("contract_id")
+        compact_definition.get("status") != "official"
+        or compact_definition.get("accepted_profile_formats")
+        != [HILIFT_COMPACT_PREDICTION_FORMAT]
+        or compact_definition.get("prior_profile_formats_accepted") is not False
+        or compact_definition.get("contract_id")
         != HILIFT_COMPACT_PROFILE_CONTRACT_ID
         or compact_definition.get("sha256")
         != HILIFT_COMPACT_PROFILE_CONTRACT_SHA256
@@ -3560,6 +4252,16 @@ def check(submission_root: Path) -> list[str]:
                 )
             )
             continue
+        if dataset_id == "ahmedml" and "native_profile_truth" in ground_truth_dataset:
+            errors.extend(
+                ahmedml_native_bundle_errors(
+                    GROUND_TRUTH_ROOT, ground_truth_dataset, submission_root
+                )
+            )
+            continue
+        if dataset_id == "windsorml":
+            errors.extend(windsorml_native_bundle_errors(GROUND_TRUTH_ROOT, ground_truth_dataset, submission_root))
+            continue
         spec_splits = {split["id"]: split for split in spec["splits"]}
         ground_truth_splits = {
             split["id"]: split for split in ground_truth_dataset.get("splits", [])
@@ -3742,6 +4444,8 @@ def check(submission_root: Path) -> list[str]:
                         )
                         if sample_count is None:
                             sample_count = panel.get("sample_count")
+                        if sample_count is None:
+                            sample_count = panel.get("exact_points")
                         if isinstance(sample_count, int) and (
                             not isinstance(coordinate, list)
                             or len(coordinate) != sample_count

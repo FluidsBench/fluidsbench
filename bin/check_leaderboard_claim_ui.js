@@ -99,10 +99,12 @@ window.__FluidsBenchClaimTest = {
   regionalPooled,
   regionalPrimaryMetricValue,
   regionalPrimaryWeighting,
+  regionalReportMatches,
   regionalReportUrl,
   regionalRules,
   regionalScope,
   regionalUsesWholeSupportMetric,
+  validAhmedRegionalReport,
   resolvedProfileCoordinateView,
   radarMetricAxes,
   radarNormalizedValue,
@@ -318,6 +320,156 @@ assert.equal(api.regionalUsesWholeSupportMetric(hiLiftVolumePressure), true);
 assert.equal(api.regionalUsesWholeSupportMetric(hiLiftSurfacePressure), false);
 assert.equal(api.regionalPrimaryMetricValue(hiLiftRegionFixture, "equal_entity", hiLiftVolumePressure), 3.7);
 assert.equal(api.regionalCaseStatistic(hiLiftRegionFixture, "equal_entity", "p90", "whole_support_normalized_rmse_percent"), 6.0);
+
+function ahmedRegionalMetric(relativeL2, errorFraction) {
+  const scalar = relativeL2 / 100;
+  return {
+    absolute_error: scalar,
+    squared_error: scalar * scalar,
+    squared_truth: 1,
+    total_weight: 1,
+    relative_l2_percent: relativeL2,
+    mae: scalar,
+    rmse: scalar,
+    fraction_of_support_squared_error: errorFraction,
+  };
+}
+
+function ahmedRegionalField(regionIds, primaryWeighting) {
+  const fraction = 1 / regionIds.length;
+  return {
+    case_count: 1,
+    entity_count: regionIds.length,
+    physical_weight: regionIds.length,
+    primary_weighting: primaryWeighting,
+    quantity: "fixture",
+    unit: "fixture",
+    regions: regionIds.map((regionId, code) => {
+      const metric = ahmedRegionalMetric(10, fraction);
+      const summary = {
+        pooled: { ...metric },
+        macro_case_mean: { relative_l2_percent: 10, mae: 0.1, rmse: 0.1 },
+        case_distribution: Object.fromEntries(
+          ["relative_l2_percent", "mae", "rmse"].map((metricId) => {
+            const value = metricId === "relative_l2_percent" ? 10 : 0.1;
+            return [
+              metricId,
+              {
+                minimum: value,
+                median: value,
+                p90: value,
+                maximum: value,
+                method: "linear_order_statistics_over_complete_cases",
+              },
+            ];
+          })
+        ),
+      };
+      return {
+        region_id: regionId,
+        code,
+        entity_count: 1,
+        entity_fraction: fraction,
+        physical_weight: 1,
+        physical_weight_fraction: fraction,
+        equal_entity: summary,
+        physical: JSON.parse(JSON.stringify(summary)),
+      };
+    }),
+  };
+}
+
+const ahmedRegionalBinding = {
+  format: "ahmedml-regional-diagnostics-aggregate-v2",
+  file: "regional-diagnostics.json",
+  sha256: "c".repeat(64),
+  contract_sha256: "467cf92356aa7bca0f6b1745f0ae756b1e3dacdb02d29ce61bc25da653e5b4b6",
+  definition_id: "ahmedml-native-regions-v2-candidate",
+  case_count: 1,
+  role: "report_only",
+  weight: 0,
+  official_score_changed: false,
+};
+const ahmedRegionalRow = {
+  id: "ahmed-regional-demo-v2",
+  dataset_id: "ahmedml",
+  split_id: "full",
+  prediction_scope: "surface_and_volume",
+  regional_diagnostics: ahmedRegionalBinding,
+};
+const ahmedSurfaceIds = ["streamwise_facing", "lateral_facing", "upward_facing", "downward_facing"];
+const ahmedVolumeIds = ["near_body", "wake", "farfield"];
+function ahmedSupport(definitionSha256, guide, regionIds, fields) {
+  return {
+    definition_sha256: definitionSha256,
+    definition: {
+      definition_id: `${guide}-fixture`,
+      support_id: `${guide}-native-fixture`,
+      guide,
+      coordinate_frame: "fixture",
+      region_source: "fixture",
+      partition_properties: "mutually_exclusive_and_exhaustive",
+      regions_in_code_order: regionIds.map((regionId, code) => ({ region_id: regionId, code, predicate: `fixture-${code}` })),
+      scoring_role: "report_only_zero_weight",
+      scoring_weight: 0,
+      semantic_limit: "fixture",
+    },
+    fields,
+  };
+}
+const ahmedRegionalReport = {
+  schema: "ahmedml-regional-diagnostics-aggregate-v2",
+  schema_version: 2,
+  status: "complete_report_only",
+  definition_id: "ahmedml-native-regions-v2-candidate",
+  contract_sha256: ahmedRegionalBinding.contract_sha256,
+  dataset_id: "ahmedml",
+  split_id: "full",
+  prediction_scope: "surface_and_volume",
+  case_count: 1,
+  case_ids: ["run_1"],
+  scoring: {
+    official_metric_inputs_changed: false,
+    official_score_changed: false,
+    role: "report_only",
+    weight: 0,
+  },
+  validation: {
+    all_case_reports_strictly_validated: true,
+    all_regional_sums_reconstruct_unchanged_global_field_sums: true,
+    exact_case_order_and_membership: true,
+    regional_values_consumed_by_official_score: false,
+  },
+  supports: {
+    "ahmedml-surface-four-normal-regions-v1": ahmedSupport(
+      ahmedRegionalBinding.contract_sha256,
+      "ahmed_surface",
+      ahmedSurfaceIds,
+      {
+        surface_pressure: ahmedRegionalField(ahmedSurfaceIds, "physical"),
+        surface_wall_shear: ahmedRegionalField(ahmedSurfaceIds, "physical"),
+      }
+    ),
+    "ahmedml-volume-three-geometric-regions-v1": ahmedSupport(
+      "338db5b806caec2883e2583e491b751546624d3f101c04ae644cf9357b1275d7",
+      "ahmed_volume",
+      ahmedVolumeIds,
+      {
+        volume_pressure: ahmedRegionalField(ahmedVolumeIds, "equal_entity"),
+        volume_velocity: ahmedRegionalField(ahmedVolumeIds, "equal_entity"),
+      }
+    ),
+  },
+};
+assert.deepEqual(api.regionalBinding(ahmedRegionalRow), ahmedRegionalBinding);
+const ahmedDefinition = api.regionalDatasetDefinition("AhmedML");
+assert.equal(api.validAhmedRegionalReport(ahmedRegionalReport, ahmedRegionalRow, ahmedRegionalBinding, ahmedDefinition), true);
+assert.equal(api.regionalReportMatches(ahmedRegionalReport, ahmedRegionalRow, ahmedRegionalBinding, ahmedDefinition), true);
+assert.equal(api.regionalFieldsForDataset("ahmedml").surface_pressure.supportId, "ahmedml-surface-four-normal-regions-v1");
+assert.equal(api.regionalRules(ahmedRegionalReport, api.regionalFieldsForDataset("ahmedml").surface_pressure).length, 4);
+const tamperedAhmedReport = JSON.parse(JSON.stringify(ahmedRegionalReport));
+tamperedAhmedReport.supports["ahmedml-surface-four-normal-regions-v1"].fields.surface_pressure.regions[0].physical.pooled.fraction_of_support_squared_error += 0.2;
+assert.equal(api.validAhmedRegionalReport(tamperedAhmedReport, ahmedRegionalRow, ahmedRegionalBinding, ahmedDefinition), false);
 
 api.state.metrics = new Map([["score", { id: "score", unit: "" }]]);
 const policy = {
@@ -1322,6 +1474,15 @@ manifest.datasets.forEach((dataset) => {
     api.state.split = split.name;
     const rankedRows = api.rowsForActiveSplit();
     rankedRows.forEach((row) => {
+      if (row.record_type === "development_fixture") {
+        assert.equal(row.rank, null, `${dataset.name}/${split.name}/${row.id} development fixture must not receive a rank`);
+        assert.equal(
+          row._ranking.source,
+          "non_ranked_development_fixture",
+          `${dataset.name}/${split.name}/${row.id} must retain explicit non-ranked fixture provenance`
+        );
+        return;
+      }
       assert.equal(
         row._ranking.source,
         "verified_generated_release",
@@ -1350,6 +1511,17 @@ async function verifyGeneratedClaimRecords() {
       api.state.split = split.name;
       for (const row of api.rowsForActiveSplit()) {
         await api.ensureClaimRecord(row);
+        if (row.record_type === "development_fixture") {
+          assert.equal(
+            api.claimRecordCheck(row)?.status,
+            "not_listed",
+            `${dataset.name}/${split.name}/${row.id} development fixture must not publish a claim record`
+          );
+          const eligibility = api.claimEligibility(row);
+          assert.equal(eligibility.academic_citation, false);
+          assert.equal(eligibility.promotion, false);
+          continue;
+        }
         assert.equal(api.claimRecordCheck(row)?.status, "verified", `${dataset.name}/${split.name}/${row.id} claim record must verify`);
       }
     }
@@ -2206,12 +2378,7 @@ async function verifyHiLiftCompactProfileOverlay() {
     ["deflection", ["Deflection", "caseset-c0ecb14de138", 360]],
     ["stall", ["Stall", "caseset-804491c8956e", 723]],
   ]);
-  const expectedRowsPerSplit = new Map(
-    [...expectedPreviewSplits].map(([splitId]) => [
-      splitId,
-      splitId === "scarce" ? 1 : 2,
-    ])
-  );
+  const expectedRowsPerSplit = new Map([...expectedPreviewSplits].map(([splitId]) => [splitId, splitId === "scarce" ? 1 : 2]));
   const previewRows = feed.filter((entry) => entry.dataset_id === "hiliftaeroml");
   assert.equal(
     previewRows.length,
@@ -2310,13 +2477,7 @@ async function verifyHiLiftCompactProfileOverlay() {
   assert.equal(api.profileSeriesCompatibility(truthCp, predictionCp), true);
   api.state.manifest.datasets = [{ name: "HiLiftAeroML", slug: "hiliftaeroml" }];
   api.state.dataset = "HiLiftAeroML";
-  const cpAxes = api.hiLiftProfileAxisRanges(
-    [
-      { finitePoints: truthCp.points },
-      { finitePoints: predictionCp.points },
-    ],
-    cpPanel
-  );
+  const cpAxes = api.hiLiftProfileAxisRanges([{ finitePoints: truthCp.points }, { finitePoints: predictionCp.points }], cpPanel);
   assert.equal(cpAxes.x.min, 1050);
   assert.equal(cpAxes.x.max, 1500);
   assert.equal(cpAxes.x.step, 50);
@@ -2335,10 +2496,7 @@ async function verifyHiLiftCompactProfileOverlay() {
   assert.equal(predictionVelocity.points.length, truthVelocity.points.length);
   assert.equal(api.profileSeriesCompatibility(truthVelocity, predictionVelocity), true);
   const velocityAxes = api.hiLiftProfileAxisRanges(
-    [
-      { finitePoints: truthVelocity.points },
-      { finitePoints: predictionVelocity.points },
-    ],
+    [{ finitePoints: truthVelocity.points }, { finitePoints: predictionVelocity.points }],
     velocityPanel
   );
   assert.equal(velocityAxes.x.min, 0);
@@ -2365,9 +2523,7 @@ function verifyHiLiftVelocityStorageDecoder() {
   const bitsView = new DataView(bitsBuffer);
   values.forEach((value, index) => bitsView.setFloat32(index * 4, value, true));
   const words = values.map((_value, index) => bitsView.getUint32(index * 4, true));
-  const deltas = words.map((word, index) =>
-    index === 0 ? word : (word - words[index - 1]) >>> 0
-  );
+  const deltas = words.map((word, index) => (index === 0 ? word : (word - words[index - 1]) >>> 0));
   const stored = new Array(count * 4);
   for (let index = 0; index < count; index += 1) {
     for (let lane = 0; lane < 4; lane += 1) {
@@ -2382,13 +2538,93 @@ function verifyHiLiftVelocityStorageDecoder() {
     Array.from(decoded, (_value, index) => decodedView.getUint32(index * 4, true)),
     words
   );
-  assert.throws(
-    () => api.decodeHiLiftVelocityStorage(stored.slice(1), count, "bad velocity"),
-    /storage length differs/
-  );
+  assert.throws(() => api.decodeHiLiftVelocityStorage(stored.slice(1), count, "bad velocity"), /storage length differs/);
+}
+
+async function verifyWindsorNativeGroundTruth() {
+  const previous = { ...api.state };
+  const manifest = JSON.parse(fs.readFileSync(path.join(submissionRoot, "leaderboard/manifest.json"), "utf8"));
+  const truthManifest = JSON.parse(fs.readFileSync(path.join(root, "assets/data/profile-ground-truth/manifest.json"), "utf8"));
+  const windsor = manifest.datasets.find((dataset) => dataset.slug === "windsorml");
+  api.state.manifest = manifest;
+  api.state.dataset = "WindsorML";
+  api.state.groundTruthManifest = truthManifest;
+  api.state.groundTruthManifestProvenance = { base_url: "https://example.test/profile-ground-truth/" };
+  api.state.groundTruthIndexes = new Map();
+  const cache = new Map();
+  try {
+    assert.deepEqual(
+      windsor.splits.map((split) => split.id),
+      ["full", "medium", "scarce", "super_scarce", "geometry", "high_drag", "low_drag", "image_wake"]
+    );
+    assert.equal(windsor.submission_count, 0);
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(submissionRoot, windsor.file), "utf8")), []);
+    api.renderReleaseMetadata();
+    assert.equal(elements.get("leaderboard-data-warning-title").textContent, "Native CFD ground truth");
+    assert.doesNotMatch(elements.get("leaderboard-data-warning-text").textContent, /dummy/);
+    const checked = new Set();
+    for (const split of windsor.splits) {
+      const index = await api.groundTruthIndex("WindsorML", split.name);
+      assert.equal(api.caseIds(index.index).length, split.case_count);
+      for (const caseId of api.caseIds(index.index)) {
+        if (checked.has(caseId)) continue;
+        checked.add(caseId);
+        const truth = await api.indexedProfileCase(index, caseId, cache, "WindsorML test");
+        assert.equal(truth._fluidsbenchWindsorNativeProfileTruth, true);
+        let count = 0;
+        for (const panel of windsor.diagnostic_panels) {
+          assert.equal(api.profileFamilies(panel).length, 2);
+          for (const family of api.profileFamilies(panel)) {
+            for (const station of api.profileStations(panel, family)) {
+              const series = api.profileSeries(truth, panel, station.id, panel.quantities[0], family);
+              assert.equal(series.points.length, 128);
+              assert.equal(series.droppedPointCount, 0);
+              assert.equal(series.nativeTruth, true);
+              assert.equal(series.scoringRole, family.placementMode === "relative" ? "report_only" : "ranked_candidate");
+              count += 1;
+            }
+          }
+        }
+        assert.equal(count, 16);
+      }
+    }
+    assert.equal(checked.size, 233);
+    const index = await api.groundTruthIndex("WindsorML", "Full");
+    const caseId = api.caseIds(index.index)[0];
+    const truth = await api.indexedProfileCase(index, caseId, cache, "WindsorML test");
+    const panel = windsor.diagnostic_panels[0];
+    const family = api.profileFamilies(panel)[0];
+    for (const mutation of [
+      (value) => value.series.pop(),
+      (value) => {
+        value.series[0].value[0] = null;
+      },
+      (value) => {
+        value.series[0].coordinate[1] = value.series[0].coordinate[0];
+      },
+      (value) => {
+        value.series[0].station_id = "prototype_0_25l";
+      },
+    ]) {
+      const bad = JSON.parse(JSON.stringify(truth));
+      mutation(bad);
+      assert.throws(() => api.profileSeries(bad, panel, family.stations[0].id, panel.quantities[0], family), /WindsorML/);
+    }
+    const cachedIndex = api.state.groundTruthIndexes.get(index.indexUrl);
+    const goodSchema = cachedIndex.data.schema;
+    cachedIndex.data.schema = "fluidsbench-profile-ground-truth-index-v1";
+    await assert.rejects(api.groundTruthIndex("WindsorML", "Full"), /cannot use legacy/);
+    cachedIndex.data.schema = goodSchema;
+    const chunk = [...cache.values()][0];
+    chunk.sha256 = "0".repeat(64);
+    await assert.rejects(api.indexedProfileCase(index, caseId, cache, "WindsorML test"), /checksum/);
+  } finally {
+    Object.assign(api.state, previous);
+  }
 }
 
 verifyDrivaerLegacyTruthFailsClosed()
+  .then(() => verifyWindsorNativeGroundTruth())
   .then(() => verifyNativeV3CpDisplayCoordinates())
   .then(() => verifyCurrentRun419ProfileFixture())
   .then(() => verifyRetainedNativeRun419Bundle())

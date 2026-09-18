@@ -14,7 +14,7 @@
       "release": "Hugging Face revision 02688c7",
       "license": "CC BY-SA 4.0",
       "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "availability": "500 field-bearing cases; approximately 2 TB for the complete repository",
+      "availability": "500 field-bearing cases; approximately 3.08 TB for the complete pinned repository",
       "contents": "STL geometry, native boundary VTP and volume VTU fields, force and geometry tables, CFD slices and images, eight split families, and one native polygon-area sidecar per boundary mesh.",
       "image": {
         "path": "/assets/img/datasets/ahmedml-flow.png",
@@ -44,7 +44,7 @@
       ],
       "operating_conditions": "The operating setup is fixed across the dataset, so the intended breadth comes from geometry rather than a boundary-condition sweep.",
       "sampling": "Latin hypercube sampling fills the six-dimensional parameter box with 500 geometry cases.",
-      "coverage": "The eight published source splits separate the random full-data task, nested data-efficiency tasks, and held-out geometry, force, and wake regimes. Their FluidsBench case bindings are still candidate definitions.",
+      "coverage": "The eight published source splits separate the random full-data task, nested data-efficiency tasks, and held-out geometry, force, and wake regimes. All eight candidate benchmark bindings now use the exact pinned public case IDs; the four nested data-efficiency splits share the same 50-case test set.",
       "source_url": "https://arxiv.org/abs/2407.20801",
       "source_label": "AhmedML paper and design-space table"
     },
@@ -52,11 +52,11 @@
       "status": "owner_review_required",
       "status_label": "Benchmark definition in preparation",
       "submissions_open": false,
-      "source_pin": "Not yet frozen",
-      "summary": "The current candidate scores native boundary pMean and wallShearStressMean, native-volume UMean and pMean, forces, and profile diagnostics. Public boundary_cell_area sidecars support area-weighted surface errors, but the eight FluidsBench case lists are still provisional and not open for submissions.",
+      "source_pin": "neashton/ahmedml @ 02688c727cdb8dc8678e28abc6bbbb7e93c5fa15",
+      "summary": "The owner-review candidate scores complete native boundary pMean and wallShearStressMean, complete native-volume UMean and pMean, reconstructed force coefficients, three 128-point surface Cp cuts, four 128-point wake-velocity profiles, and report-only near-body/wake/farfield diagnostics. Case IDs and source bytes are pinned, but public submissions remain closed pending owner approval.",
       "split_ids": ["full", "medium", "scarce", "super_scarce", "geometry", "high_drag", "low_drag", "image_wake"],
-      "case_id_status": "prototype_generated",
-      "contract_digest": "1c95ec2d7ea700ad609b658fe90fc8ecbbf4ea897f14ac6cb40e03774630d228"
+      "case_id_status": "official",
+      "contract_digest": "67a2231186a9eae2aed7fdef913130cdbaf758eab7e343ee91ce8e2667107c41"
     },
     "visual": {
       "inputs": "Ahmed geometry + flow conditions",
@@ -131,7 +131,7 @@
       "summary": "The candidate contract binds all 484 public cases, eight official split lists, pMeanTrim and wallShearStressMeanTrim on every native surface polygon, UMeanTrim and pMeanTrim on every native volume cell, constant-reference force truth, AutoCFD5 velocity profiles, and continuous Cp cuts. Surface area sidecars, equal-cell volume accumulation, and all-case native profile truth are published; evaluator freezing, remaining diagnostic review, and genuine-model sensitivity analysis remain before public submissions can open.",
       "split_ids": ["full", "medium", "scarce", "super_scarce", "geometry", "high_drag", "low_drag", "rear_separation"],
       "case_id_status": "official",
-      "contract_digest": "33219e1554ee05806181c28e00ef3f4f0cbcedc0143e8ce3441cd67244a7ec20"
+      "contract_digest": "114ab1ba624522c2af3700b03b425f554a45e8a1ac31d0e821bc48efa4a093dc"
     },
     "visual": {
       "inputs": "DrivAer geometry + flow conditions",
@@ -243,7 +243,7 @@
       "revision": "8a6ca32ae22c94f54df2186d1b0ccf9662a294c2",
       "revision_short": "8a6ca32",
       "revision_url": "https://huggingface.co/datasets/neashton/windsorml/tree/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2",
-      "checked_on": "2026-08-22",
+      "checked_on": "2026-09-17",
       "release": "Hugging Face revision 8a6ca32",
       "license": "CC BY-SA 4.0",
       "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
@@ -278,19 +278,19 @@
       ],
       "operating_conditions": "All cases use the AutoCFD wind-tunnel-style setup at nominal 40 m/s, Reynolds number 2.9 × 10⁶, and 2.5° yaw; flow conditions are fixed.",
       "sampling": "A deterministic, extendable Halton sequence samples 355 points in the seven-dimensional geometry space; complete per-run fields are available for 350.",
-      "coverage": "Eight source split families cover random, data-efficiency, and held-out regimes across the aggregate design list. The current FluidsBench contract still binds only one prototype case.",
+      "coverage": "Eight source split families are bound to the publicly available fields: four nested data-efficiency splits and four held-out regimes, covering 233 distinct test cases across five case sets.",
       "source_url": "https://arxiv.org/abs/2407.19320",
       "source_label": "WindsorML paper and geometry-variant table"
     },
     "benchmark": {
       "status": "owner_review_required",
-      "status_label": "Prototype benchmark definition",
+      "status_label": "Native benchmark candidate",
       "submissions_open": false,
-      "source_pin": "Not yet frozen",
-      "summary": "The candidate field definition uses cpavg and the cfxavg/cfyavg/cfzavg skin-friction vector on every native boundary point, plus velocityxavg/velocityyavg/velocityzavg and pressureavg on every native volume cell. Public dual-area sidecars and eight source split families now exist, but the FluidsBench contract still contains only one prototype case and has not bound the 350 complete field runs.",
-      "split_ids": ["default"],
-      "case_id_status": "prototype_generated",
-      "contract_digest": "0315194b332b7351754bd4cfd5468754b999644ac7b47abff67db1e1c12f63d2"
+      "source_pin": "Hugging Face revision 8a6ca32",
+      "summary": "All eight Hugging Face splits are bound to the available native field files. Ground-truth profiles cover all 233 distinct test cases, with fixed and body-height-relative families. No model results are published. Public submissions remain closed pending owner review and completion of the submission workflow.",
+      "split_ids": ["full", "medium", "scarce", "super_scarce", "geometry", "high_drag", "low_drag", "image_wake"],
+      "case_id_status": "official_intersected_with_published",
+      "contract_digest": "f0ded6cce0ed4015cc5f8b3b88649896a4a2208772bb9338f8f485ab9815af1a"
     },
     "visual": {
       "inputs": "Windsor geometry + WMLES conditions",
@@ -309,7 +309,7 @@
       "revision": "bbec30bcfc6103309c1375c5228b3ad0a586bfaf",
       "revision_short": "bbec30b",
       "revision_url": "https://huggingface.co/datasets/nvidia/HiLiftAeroML/tree/bbec30bcfc6103309c1375c5228b3ad0a586bfaf",
-      "checked_on": "2026-09-03",
+      "checked_on": "2026-09-18",
       "release": "Hugging Face revision bbec30b",
       "license": "CC BY 4.0",
       "license_url": "https://creativecommons.org/licenses/by/4.0/",
@@ -345,16 +345,16 @@
       ],
       "operating_conditions": "Each geometry is simulated at ten angles of attack from 4° to 22° in 2° steps, at Mach 0.2 and chord Reynolds number 1.6 × 10⁶.",
       "sampling": "Latin hypercube sampling supplies 180 geometry variants, crossed with the ten-angle sweep for 1,800 CFD cases.",
-      "coverage": "Fourteen published split families distinguish data efficiency, unseen geometry, single-angle tasks, angle extrapolation, high-deflection geometry, and stall behaviour. FluidsBench scoring bindings remain provisional.",
+      "coverage": "Fourteen official split labels distinguish data efficiency, unseen geometry, single-angle tasks, angle extrapolation, high-deflection geometry, and stall behaviour. FluidsBench binds eight exact ordered evaluation case sets covering 1,355 unique cases; public submissions remain closed.",
       "source_url": "https://arxiv.org/abs/2605.19565",
       "source_label": "HiLiftAeroML paper and parameter-range table"
     },
     "benchmark": {
       "status": "owner_review_required",
-      "status_label": "Prototype benchmark definition",
+      "status_label": "Closed benchmark candidate",
       "submissions_open": false,
-      "source_pin": "Not yet frozen",
-      "summary": "The source now publishes all fourteen deterministic splits, native-point surface area sidecars, invalid-volume-row records, and six documented field-integrated mean force/moment corrections. FluidsBench has candidate surface, volume, force, Cp-cut, and velocity-profile metrics, but its case lists and exact scored array bindings remain provisional and are not active for submissions.",
+      "source_pin": "nvidia/HiLiftAeroML @ bbec30b; closed-candidate evaluator @ 68899f7",
+      "summary": "The closed schema-v3 candidate binds all fourteen official splits, complete native surface and retained valid volume fields, integrated loads, ten Cp rows and five velocity stations. Compact-v2 is the sole selected participant profile format. Twenty-three real-model previews and plot-only CFD truth for all 1,355 evaluation cases are available. Public intake remains closed pending final source-content pins, scoring-support publication and owner approval.",
       "split_ids": [
         "full",
         "medium",
@@ -376,8 +376,8 @@
     },
     "visual": {
       "inputs": "CRM-HL geometry + angle of attack",
-      "support": "Candidate native aircraft boundary and flow volume",
-      "metrics": "Candidate surface and volume errors, forces, Cp cuts, and near-wall profiles"
+      "support": "Native aircraft boundary and retained valid volume points",
+      "metrics": "Native field errors, integrated loads, ten Cp rows and five velocity stations"
     }
   },
   "airfrans": {

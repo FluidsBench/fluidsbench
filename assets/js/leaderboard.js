@@ -52,6 +52,30 @@
   const hiLiftCompactTruthReleaseId = "hiliftaeroml-compact-profile-truth-all1355-v1";
   const hiLiftCompactTruthCaseCount = 1355;
   const hiLiftCompactTruthCaseSetCount = 8;
+  const ahmedNativeTruthSchemas = {
+    master: "fluidsbench-ahmedml-native-profile-truth-master-index-v1",
+    index: "fluidsbench-ahmedml-native-profile-truth-index-v1",
+    chunk: "fluidsbench-ahmedml-native-profile-truth-chunk-v1",
+    version: "1.0",
+  };
+  const ahmedNativeTruthReleaseId = "ahmedml-native-profile-truth-all316-v1-candidate";
+  const ahmedNativeDatasetRevision = "02688c727cdb8dc8678e28abc6bbbb7e93c5fa15";
+  const ahmedNativeSourceIdentitySha256 = "56a620a5b335cef6cb0587e186df321eb907bbe46e8b81aa4de302b8fe73cf44";
+  const ahmedNativeProfileDefinitionSha256 = "1048a0380f70de778e3e51db07d6910579f720d6f2dd1d9ad7179dbfe88d1cae";
+  const ahmedNativeTruthSource = {
+    source_kind: "native_cfd",
+    analytical_dummy: false,
+    native_quantity_source: "pinned_ahmedml_cell_data_via_frozen_evaluator_mapping",
+  };
+  const ahmedNativeSeriesContract = [
+    ["pressure_profiles", "upper_body_centerline", "cp", "x_over_l", 0, 1],
+    ["pressure_profiles", "underbody_centerline", "cp", "x_over_l", 0, 1],
+    ["pressure_profiles", "rear_slant_centerline", "cp", "s_over_slant", 0, 1],
+    ["velocity_profiles", "wake_vertical_x_0p25_l", "ux_over_uinf", "z_over_h", 0, 2],
+    ["velocity_profiles", "wake_vertical_x_0p50_l", "ux_over_uinf", "z_over_h", 0, 2],
+    ["velocity_profiles", "wake_vertical_x_1p00_l", "ux_over_uinf", "z_over_h", 0, 2],
+    ["velocity_profiles", "wake_lateral_x_0p50_l_z_0p50_h", "ux_over_uinf", "y_over_w", -1, 1],
+  ];
   const hiLiftCpStationIds = Array.from("abcdefghij", (letter) => `pressure_belt_${letter}`);
   const hiLiftVelocityStations = [
     ["B.2", "hlpw5_b_2"],
@@ -107,6 +131,59 @@
           label: "Volume velocity",
           domain: "volume",
           supportId: "drivaerml-volume-four-geometric-regions-v1",
+          globalMetricId: "volume_velocity_rel_l2",
+        },
+      },
+    },
+    ahmedml: {
+      reportSchema: "ahmedml-regional-diagnostics-aggregate-v2",
+      schemaVersion: 2,
+      contractSha256: "467cf92356aa7bca0f6b1745f0ae756b1e3dacdb02d29ce61bc25da653e5b4b6",
+      definitionId: "ahmedml-native-regions-v2-candidate",
+      layout: "supports",
+      supports: {
+        "ahmedml-surface-four-normal-regions-v1": {
+          definitionSha256: "467cf92356aa7bca0f6b1745f0ae756b1e3dacdb02d29ce61bc25da653e5b4b6",
+          primaryWeighting: "physical",
+          regions: ["streamwise_facing", "lateral_facing", "upward_facing", "downward_facing"],
+        },
+        "ahmedml-volume-three-geometric-regions-v1": {
+          definitionSha256: "338db5b806caec2883e2583e491b751546624d3f101c04ae644cf9357b1275d7",
+          primaryWeighting: "equal_entity",
+          regions: ["near_body", "wake", "farfield"],
+        },
+      },
+      fields: {
+        surface_pressure: {
+          id: "surface_pressure",
+          reportFieldId: "surface_pressure",
+          label: "Surface pressure",
+          domain: "surface",
+          supportId: "ahmedml-surface-four-normal-regions-v1",
+          globalMetricId: "surface_pressure_rel_l2",
+        },
+        surface_wall_shear: {
+          id: "surface_wall_shear",
+          reportFieldId: "surface_wall_shear",
+          label: "Surface wall shear",
+          domain: "surface",
+          supportId: "ahmedml-surface-four-normal-regions-v1",
+          globalMetricId: "surface_wall_shear_rel_l2",
+        },
+        volume_pressure: {
+          id: "volume_pressure",
+          reportFieldId: "volume_pressure",
+          label: "Volume pressure",
+          domain: "volume",
+          supportId: "ahmedml-volume-three-geometric-regions-v1",
+          globalMetricId: "volume_pressure_rel_l2",
+        },
+        volume_velocity: {
+          id: "volume_velocity",
+          reportFieldId: "volume_velocity",
+          label: "Volume velocity",
+          domain: "volume",
+          supportId: "ahmedml-volume-three-geometric-regions-v1",
           globalMetricId: "volume_velocity_rel_l2",
         },
       },
@@ -362,11 +439,29 @@
     );
   }
 
+  function exactAhmedNativeTruthSource(value) {
+    return (
+      value?.source_kind === ahmedNativeTruthSource.source_kind &&
+      value?.analytical_dummy === false &&
+      value?.native_quantity_source === ahmedNativeTruthSource.native_quantity_source &&
+      Object.keys(value || {}).length === 3
+    );
+  }
+
   function activeDatasetSlug() {
     return activeDataset()?.slug || slug(state.dataset || "");
   }
 
   function profileFamilies(panel) {
+    if (activeDatasetSlug() === "windsorml") {
+      return (panel.families || []).map((family) => ({
+        id: family.id,
+        placementMode: family.placement_mode,
+        label: family.label,
+        description: family.description,
+        stations: family.stations,
+      }));
+    }
     if (activeDatasetSlug() !== "drivaerml") {
       return [
         {
@@ -1093,7 +1188,7 @@
             const distribution = record(region?.case_distribution);
             return (
               !["ok", "empty", "zero_target_variance"].includes(r2Status) ||
-              ((r2Status === "ok") !== (r2 !== null)) ||
+              (r2Status === "ok") !== (r2 !== null) ||
               !validHiLiftCaseMacroMetric(macro.whole_support_normalized_rmse_percent, binding.case_count) ||
               !validHiLiftCaseMacroMetric(macro.relative_l2_percent, binding.case_count) ||
               !validHiLiftCaseMacroMetric(macro.r2, binding.case_count, true) ||
@@ -1119,6 +1214,148 @@
     return true;
   }
 
+  function closeRegionalValue(actual, expected) {
+    return Math.abs(actual - expected) <= 2e-10 * Math.max(1, Math.abs(expected));
+  }
+
+  function validAhmedRegionalReport(report, row, binding, definition) {
+    const validation = record(report.validation);
+    if (
+      report.definition_id !== definition.definitionId ||
+      report.split_id !== row?.split_id ||
+      report.case_count !== binding.case_count ||
+      !Array.isArray(report.case_ids) ||
+      report.case_ids.length !== binding.case_count ||
+      new Set(report.case_ids).size !== binding.case_count ||
+      validation.all_case_reports_strictly_validated !== true ||
+      validation.all_regional_sums_reconstruct_unchanged_global_field_sums !== true ||
+      validation.exact_case_order_and_membership !== true ||
+      validation.regional_values_consumed_by_official_score !== false
+    ) {
+      return false;
+    }
+    const supports = record(report.supports);
+    const expectedSupports = record(definition.supports);
+    if (
+      Object.keys(supports).length !== Object.keys(expectedSupports).length ||
+      Object.keys(expectedSupports).some((supportId) => !Object.hasOwn(supports, supportId))
+    ) {
+      return false;
+    }
+    for (const [supportId, expectedSupport] of Object.entries(expectedSupports)) {
+      const support = record(supports[supportId]);
+      const supportDefinition = record(support.definition);
+      const rules = Array.isArray(supportDefinition.regions_in_code_order)
+        ? supportDefinition.regions_in_code_order
+        : [];
+      if (
+        support.definition_sha256 !== expectedSupport.definitionSha256 ||
+        supportDefinition.scoring_role !== "report_only_zero_weight" ||
+        supportDefinition.scoring_weight !== 0 ||
+        supportDefinition.partition_properties !== "mutually_exclusive_and_exhaustive" ||
+        rules.length !== expectedSupport.regions.length ||
+        rules.some(
+          (rule, index) =>
+            rule?.region_id !== expectedSupport.regions[index] ||
+            rule?.code !== index ||
+            typeof rule?.predicate !== "string" ||
+            !rule.predicate
+        )
+      ) {
+        return false;
+      }
+      const fields = record(support.fields);
+      const expectedFields = Object.values(definition.fields)
+        .filter((field) => field.supportId === supportId)
+        .map((field) => field.reportFieldId);
+      if (
+        Object.keys(fields).length !== expectedFields.length ||
+        expectedFields.some((fieldId) => !Object.hasOwn(fields, fieldId))
+      ) {
+        return false;
+      }
+      for (const fieldId of expectedFields) {
+        const field = record(fields[fieldId]);
+        const regions = Array.isArray(field.regions) ? field.regions : [];
+        if (
+          field.case_count !== binding.case_count ||
+          field.primary_weighting !== expectedSupport.primaryWeighting ||
+          finiteNumber(field.entity_count) === null ||
+          finiteNumber(field.entity_count) <= 0 ||
+          finiteNumber(field.physical_weight) === null ||
+          finiteNumber(field.physical_weight) <= 0 ||
+          regions.length !== expectedSupport.regions.length ||
+          regions.some(
+            (region, index) =>
+              region?.region_id !== expectedSupport.regions[index] ||
+              region?.code !== index ||
+              !Number.isSafeInteger(region?.entity_count) ||
+              region.entity_count < 1 ||
+              finiteNumber(region?.physical_weight) === null ||
+              finiteNumber(region?.physical_weight) <= 0
+          ) ||
+          !fractionsReconstruct(regions, "entity_fraction") ||
+          !fractionsReconstruct(regions, "physical_weight_fraction")
+        ) {
+          return false;
+        }
+        for (const weighting of ["equal_entity", "physical"]) {
+          let errorFractionTotal = 0;
+          let squaredErrorTotal = 0;
+          for (const region of regions) {
+            const metrics = record(record(region[weighting]).pooled);
+            const absoluteError = finiteNumber(metrics.absolute_error);
+            const squaredError = finiteNumber(metrics.squared_error);
+            const squaredTruth = finiteNumber(metrics.squared_truth);
+            const totalWeight = finiteNumber(metrics.total_weight);
+            const relativeL2 = finiteNumber(metrics.relative_l2_percent);
+            const mae = finiteNumber(metrics.mae);
+            const rmse = finiteNumber(metrics.rmse);
+            const errorFraction = finiteNumber(metrics.fraction_of_support_squared_error);
+            const macro = record(region[weighting]).macro_case_mean;
+            const distribution = record(region[weighting]).case_distribution;
+            if (
+              [absoluteError, squaredError, squaredTruth, totalWeight, relativeL2, mae, rmse, errorFraction].some(
+                (value) => value === null || value < 0
+              ) ||
+              squaredTruth <= 0 ||
+              totalWeight <= 0 ||
+              !closeRegionalValue(relativeL2, 100 * Math.sqrt(squaredError / squaredTruth)) ||
+              !closeRegionalValue(mae, absoluteError / totalWeight) ||
+              !closeRegionalValue(rmse, Math.sqrt(squaredError / totalWeight))
+            ) {
+              return false;
+            }
+            for (const metricId of ["relative_l2_percent", "mae", "rmse"]) {
+              const macroValue = finiteNumber(record(macro)[metricId]);
+              const values = ["minimum", "median", "p90", "maximum"].map((key) =>
+                finiteNumber(record(record(distribution)[metricId])[key])
+              );
+              if (
+                macroValue === null ||
+                macroValue < 0 ||
+                values.some((value) => value === null || value < 0) ||
+                values.some((value, index) => index > 0 && values[index - 1] > value) ||
+                record(record(distribution)[metricId]).method !==
+                  "linear_order_statistics_over_complete_cases"
+              ) {
+                return false;
+              }
+            }
+            errorFractionTotal += errorFraction;
+            squaredErrorTotal += squaredError;
+          }
+          if (
+            !closeRegionalValue(errorFractionTotal, squaredErrorTotal === 0 ? 0 : 1)
+          ) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
   function regionalReportMatches(report, row, binding, definition) {
     const scoring = record(report.scoring);
     if (
@@ -1134,6 +1371,9 @@
       scoring.official_score_changed !== false
     ) {
       return false;
+    }
+    if (slug(row?.dataset_id || "") === "ahmedml") {
+      return validAhmedRegionalReport(report, row, binding, definition);
     }
     if (definition.layout === "supports") {
       return record(report.validation).regional_values_consumed_by_official_score === false;
@@ -2274,6 +2514,94 @@
     return state.groundTruthManifest;
   }
 
+  const windsorNativeBinding = {
+    schema_version: "1.0",
+    release_id: "windsorml-native-profile-truth-v1-candidate",
+    dataset_id: "windsorml",
+    dataset_revision: "8a6ca32ae22c94f54df2186d1b0ccf9662a294c2",
+    profile_support_manifest_sha256: "e660311ef82ec19347e91eeb1753c1f0af4c1bd65ba01491fb47ac960da51376",
+    profile_definition_sha256: "d58014ae66d92ea5ffce3c4f3b8e206447873d563d8bc3ffb4cbeee81539e056",
+    source_identity_sha256: "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+    source_kind: "native_cfd",
+    analytical_dummy: false,
+    status: "candidate_owner_review_required",
+    usage: "browser_visualization_only_not_metric_recomputation",
+    series_per_case: 16,
+    samples_per_series: 128,
+  };
+  const windsorCaseSets = {
+    full: ["baseline-test", 35],
+    medium: ["baseline-test", 35],
+    scarce: ["baseline-test", 35],
+    super_scarce: ["baseline-test", 35],
+    geometry: ["geometry-test", 71],
+    high_drag: ["high_drag-test", 70],
+    low_drag: ["low_drag-test", 70],
+    image_wake: ["image_wake-test", 71],
+  };
+  const windsorStationIds = {
+    windsorml_velocity_constant_v1: [
+      "wake_vertical_x_0p05l",
+      "wake_vertical_x_0p10l",
+      "wake_vertical_x_0p25l",
+      "wake_vertical_x_0p50l",
+      "wake_lateral_x_0p10l_y_0p194",
+    ],
+    windsorml_velocity_relative_v1: [
+      "wake_vertical_x_0p05l_relative",
+      "wake_vertical_x_0p10l_relative",
+      "wake_vertical_x_0p25l_relative",
+      "wake_vertical_x_0p50l_relative",
+      "wake_lateral_x_0p10l_relative",
+    ],
+    windsorml_cp_constant_v1: ["cp_centreline_upper", "cp_base_vertical", "cp_side_horizontal_y_0p194"],
+    windsorml_cp_relative_v1: ["cp_centreline_upper_relative", "cp_base_vertical_relative", "cp_side_horizontal_relative"],
+  };
+
+  function exactWindsorNativeBinding(value) {
+    return Object.entries(windsorNativeBinding).every(([key, expected]) => value?.[key] === expected);
+  }
+
+  function validateWindsorNativeCase(profileCase) {
+    const expected = Object.entries(windsorStationIds).flatMap(([family, stations]) => stations.map((station) => [family, station]));
+    if (
+      !validSha256(profileCase?.profile_support_sha256) ||
+      !Number.isFinite(profileCase?.body_height_m) ||
+      profileCase.body_height_m <= 0 ||
+      profileCase?.reference_velocity_m_s !== 42.1 ||
+      !Array.isArray(profileCase?.series) ||
+      profileCase.series.length !== expected.length
+    ) {
+      throw new Error("WindsorML native profile case lacks complete pinned support");
+    }
+    for (const [index, [family, station]] of expected.entries()) {
+      const series = profileCase.series[index];
+      const velocity = family.includes("_velocity_");
+      const relative = family.includes("_relative_");
+      const ids = series?.[velocity ? "native_cell_ids" : "native_point_ids"];
+      if (
+        series?.family_id !== family ||
+        series?.station_id !== station ||
+        series?.panel_id !== (velocity ? "velocity_profiles" : "pressure_profiles") ||
+        series?.quantity_id !== (velocity ? "ux_over_uinf" : "cp") ||
+        series?.placement_mode !== (relative ? "relative" : "constant") ||
+        series?.scoring_role !== (relative ? "report_only" : "ranked_candidate") ||
+        series?.sample_count !== 128 ||
+        !["m", "1"].includes(series?.coordinate_unit) ||
+        !["x", "y", "z", "eta", "x_over_l"].includes(series?.coordinate_id) ||
+        !Array.isArray(ids) ||
+        ids.length !== 128 ||
+        ids.some((id) => !Number.isSafeInteger(id) || id < 0) ||
+        [series?.coordinate, series?.value].some(
+          (array) => !Array.isArray(array) || array.length !== 128 || array.some((value) => !Number.isFinite(value))
+        ) ||
+        series.coordinate.some((value, i) => i > 0 && value <= series.coordinate[i - 1])
+      ) {
+        throw new Error(`WindsorML ${family}/${station} must contain the complete finite 128-point native series`);
+      }
+    }
+  }
+
   async function groundTruthIndex(datasetName, splitName) {
     const manifest = await ensureGroundTruthManifest();
     const dataset = (manifest.datasets || []).find((candidate) => candidate.name === datasetName);
@@ -2292,8 +2620,44 @@
     const nativeProfileTruth = nativeTruthVersion !== null;
     const drivaermlDataset = datasetName === "DrivAerML" || dataset?.id === "drivaerml";
     const hiLiftDataset = datasetName === "HiLiftAeroML" || dataset?.id === "hiliftaeroml";
+    const ahmedDataset = datasetName === "AhmedML" || dataset?.id === "ahmedml";
+    const windsorDataset = datasetName === "WindsorML" || dataset?.id === "windsorml";
+    const windsorNativeTruth = cached.data?.schema === "windsorml-native-profile-truth-index-v1";
+    if (windsorDataset !== windsorNativeTruth) {
+      throw new Error(`${datasetName} cannot use legacy, analytical, or another dataset's WindsorML truth index`);
+    }
+    if (windsorNativeTruth) {
+      const declaration = dataset?.native_profile_truth;
+      const expected = windsorCaseSets[split?.id];
+      const indexedIds = caseIds(cached.data);
+      if (
+        !exactWindsorNativeBinding(declaration) ||
+        declaration.case_count !== 233 ||
+        declaration.case_set_count !== 5 ||
+        !exactWindsorNativeBinding(cached.data) ||
+        !expected ||
+        caseSet.id !== expected[0] ||
+        cached.data.case_set_id !== caseSet.id ||
+        cached.data.case_id_status !== "official_intersected_with_published" ||
+        split.case_count !== expected[1] ||
+        caseSet.case_count !== expected[1] ||
+        cached.data.case_count !== expected[1] ||
+        !Array.isArray(cached.data.case_ids) ||
+        cached.data.case_ids.length !== expected[1] ||
+        indexedIds.length !== expected[1] ||
+        new Set(indexedIds).size !== expected[1] ||
+        indexedIds.some((id, i) => id !== cached.data.case_ids[i]) ||
+        cached.data.chunks.some(
+          (entry) => entry.case_ids.length !== 1 || entry.file !== `../cases/${entry.case_ids[0]}.json` || !validSha256(entry.sha256)
+        )
+      ) {
+        throw new Error(`${datasetName} native CFD truth index has incomplete coverage or a stale contract binding`);
+      }
+    }
     const hiLiftCompactTruth =
       cached.data?.schema === hiLiftCompactTruthSchemas.index && cached.data?.schema_version === hiLiftCompactTruthSchemas.version;
+    const ahmedNativeTruth =
+      cached.data?.schema === ahmedNativeTruthSchemas.index && cached.data?.schema_version === ahmedNativeTruthSchemas.version;
     if (drivaermlDataset && !nativeProfileTruth) {
       throw new Error(
         `${datasetName} profile ground truth must use a checksum-bound native CFD v2 or v3 release; legacy or analytical indexes are unavailable`
@@ -2307,6 +2671,12 @@
     }
     if (hiLiftDataset && !hiLiftCompactTruth) {
       throw new Error(`${datasetName} ground truth must use the checksum-bound compact Native CFD release for every official case set`);
+    }
+    if (ahmedNativeTruth && !ahmedDataset) {
+      throw new Error(`${datasetName} cannot use the AhmedML native profile-truth schema`);
+    }
+    if (ahmedDataset && dataset?.native_profile_truth && !ahmedNativeTruth) {
+      throw new Error(`${datasetName} ground truth must use its checksum-bound 128-point Native CFD release`);
     }
     let nativeChunkBaseUrl = null;
     let nativeMasterChunks = null;
@@ -2511,6 +2881,106 @@
         throw new Error(`${datasetName} compact Native CFD truth index has incomplete coverage or a stale contract binding`);
       }
     }
+    if (ahmedNativeTruth) {
+      const declaration = dataset?.native_profile_truth;
+      const indexedIds = caseIds(cached.data);
+      const indexedChunks = cached.data?.chunks || [];
+      if (
+        declaration?.source_kind !== "native_cfd" ||
+        declaration?.analytical_dummy !== false ||
+        declaration?.dataset_revision !== ahmedNativeDatasetRevision ||
+        declaration?.source_identity_sha256 !== ahmedNativeSourceIdentitySha256 ||
+        declaration?.profile_definition_sha256 !== ahmedNativeProfileDefinitionSha256 ||
+        declaration?.release_id !== ahmedNativeTruthReleaseId ||
+        declaration?.case_count !== 316 ||
+        declaration?.case_set_count !== 5 ||
+        declaration?.series_per_case !== 7 ||
+        declaration?.samples_per_series !== 128 ||
+        !declaration?.master_index_file ||
+        !validSha256(declaration?.master_index_sha256)
+      ) {
+        throw new Error(`${datasetName} native CFD truth lacks its exact all-316 release declaration`);
+      }
+      if (
+        cached.data?.release_id !== ahmedNativeTruthReleaseId ||
+        cached.data?.status !== "candidate_owner_review_required" ||
+        cached.data?.usage !== "browser_visualization_only_not_metric_recomputation" ||
+        cached.data?.dataset_id !== "ahmedml" ||
+        cached.data?.dataset_revision !== ahmedNativeDatasetRevision ||
+        cached.data?.source_identity_sha256 !== ahmedNativeSourceIdentitySha256 ||
+        cached.data?.profile_definition_sha256 !== ahmedNativeProfileDefinitionSha256 ||
+        cached.data?.case_set_id !== caseSet.id ||
+        cached.data?.case_id_status !== "official" ||
+        cached.data?.case_count !== caseSet.case_count ||
+        cached.data?.case_count !== split?.case_count ||
+        cached.data?.series_per_case !== 7 ||
+        cached.data?.samples_per_series !== 128 ||
+        !exactAhmedNativeTruthSource(cached.data?.truth_source) ||
+        !Array.isArray(cached.data?.case_ids) ||
+        cached.data.case_ids.length !== caseSet.case_count ||
+        indexedIds.length !== caseSet.case_count ||
+        indexedIds.some((caseId, index) => caseId !== cached.data.case_ids[index]) ||
+        new Set(indexedIds).size !== indexedIds.length ||
+        !Array.isArray(indexedChunks) ||
+        indexedChunks.some(
+          (entry) =>
+            !entry?.file ||
+            !validSha256(entry.sha256) ||
+            entry.case_count !== (entry.case_ids || []).length ||
+            entry.series_count !== 7 * entry.case_count
+        )
+      ) {
+        throw new Error(`${datasetName} native CFD truth index has incomplete coverage or a stale contract binding`);
+      }
+      const masterIndexUrl = fileUrl(
+        declaration.master_index_file,
+        state.groundTruthManifestProvenance?.base_url || groundTruthBaseUrl
+      );
+      if (!state.groundTruthIndexes.has(masterIndexUrl)) {
+        state.groundTruthIndexes.set(
+          masterIndexUrl,
+          await fetchJsonWithProvenance(masterIndexUrl, `${datasetName} native profile-truth master index`)
+        );
+      }
+      const masterLoaded = state.groundTruthIndexes.get(masterIndexUrl);
+      const master = masterLoaded.data;
+      const masterCaseSets = master?.case_sets || [];
+      if (
+        masterLoaded.sha256 !== declaration.master_index_sha256 ||
+        master?.schema !== ahmedNativeTruthSchemas.master ||
+        master?.schema_version !== ahmedNativeTruthSchemas.version ||
+        master?.release_id !== ahmedNativeTruthReleaseId ||
+        master?.status !== "candidate_owner_review_required" ||
+        master?.usage !== "browser_visualization_only_not_metric_recomputation" ||
+        master?.dataset_id !== "ahmedml" ||
+        master?.dataset_revision !== ahmedNativeDatasetRevision ||
+        master?.source_identity_sha256 !== ahmedNativeSourceIdentitySha256 ||
+        master?.profile_definition_sha256 !== ahmedNativeProfileDefinitionSha256 ||
+        master?.case_count !== 316 ||
+        !Array.isArray(master?.case_ids) ||
+        master.case_ids.length !== 316 ||
+        new Set(master.case_ids).size !== 316 ||
+        master?.case_set_count !== 5 ||
+        !Array.isArray(masterCaseSets) ||
+        masterCaseSets.length !== 5 ||
+        new Set(masterCaseSets.map((entry) => entry.case_set_id)).size !== 5 ||
+        master?.series_per_case !== 7 ||
+        master?.samples_per_series !== 128 ||
+        !exactAhmedNativeTruthSource(master?.truth_source)
+      ) {
+        throw new Error(`${datasetName} native CFD master index has incomplete or stale all-316 coverage`);
+      }
+      const masterCaseSet = masterCaseSets.find((entry) => entry.case_set_id === caseSet.id);
+      if (
+        !masterCaseSet ||
+        masterCaseSet.sha256 !== cached.sha256 ||
+        masterCaseSet.case_count !== caseSet.case_count ||
+        masterCaseSet.case_id_status !== "official" ||
+        new URL(masterCaseSet.file, new URL(".", masterIndexUrl)).href !== indexUrl
+      ) {
+        throw new Error(`${datasetName} case-set truth is not bound by the checksum-verified all-316 master index`);
+      }
+    }
     return {
       index: cached.data,
       indexUrl,
@@ -2522,6 +2992,8 @@
       nativeChunkBaseUrl,
       nativeMasterChunks,
       hiLiftCompactTruth,
+      ahmedNativeTruth,
+      windsorNativeTruth,
     };
   }
 
@@ -2600,6 +3072,18 @@
     if (!entry.sha256 || !cached.sha256 || entry.sha256 !== cached.sha256) {
       throw new Error(`${label} profile chunk checksum does not match its index`);
     }
+    if (context.windsorNativeTruth) {
+      if (
+        cached.data?.schema !== "windsorml-native-profile-truth-chunk-v1" ||
+        !exactWindsorNativeBinding(cached.data) ||
+        !Array.isArray(cached.data.cases) ||
+        cached.data.cases.length !== 1 ||
+        cached.data.cases[0]?.case_id !== caseId
+      ) {
+        throw new Error(`${label} WindsorML native profile chunk has an unsupported or stale contract binding`);
+      }
+      validateWindsorNativeCase(cached.data.cases[0]);
+    }
     if (context.hiLiftCompactTruth) {
       if (
         cached.data?.schema !== hiLiftCompactTruthSchemas.chunk ||
@@ -2623,6 +3107,61 @@
         cached.data?.case_set_id !== context.caseSetId
       ) {
         throw new Error(`${label} compact HiLift prediction chunk has an unsupported or stale contract binding`);
+      }
+    }
+    if (context.ahmedNativeTruth) {
+      const loadedCaseIds = (cached.data?.cases || []).map((candidate) => candidate.case_id);
+      if (
+        cached.data?.schema !== ahmedNativeTruthSchemas.chunk ||
+        cached.data?.schema_version !== ahmedNativeTruthSchemas.version ||
+        cached.data?.release_id !== ahmedNativeTruthReleaseId ||
+        cached.data?.dataset_id !== "ahmedml" ||
+        cached.data?.dataset_revision !== ahmedNativeDatasetRevision ||
+        cached.data?.source_identity_sha256 !== ahmedNativeSourceIdentitySha256 ||
+        cached.data?.profile_definition_sha256 !== ahmedNativeProfileDefinitionSha256 ||
+        cached.data?.case_set_id !== context.caseSetId ||
+        cached.data?.series_per_case !== 7 ||
+        cached.data?.samples_per_series !== 128 ||
+        !exactAhmedNativeTruthSource(cached.data?.truth_source) ||
+        cached.data?.case_count !== loadedCaseIds.length ||
+        loadedCaseIds.length !== (entry.case_ids || []).length ||
+        (cached.data?.case_ids || []).some((loadedCaseId, index) => loadedCaseId !== loadedCaseIds[index]) ||
+        loadedCaseIds.some((loadedCaseId, index) => loadedCaseId !== (entry.case_ids || [])[index]) ||
+        (cached.data?.cases || []).some(
+          (candidate) =>
+            !exactAhmedNativeTruthSource(candidate?.truth_source) ||
+            !Array.isArray(candidate?.series) ||
+            candidate.series.length !== ahmedNativeSeriesContract.length ||
+            candidate.series.some(
+              (series, seriesIndex) => {
+                const [panelId, stationId, quantityId, coordinateId, start, end] =
+                  ahmedNativeSeriesContract[seriesIndex] || [];
+                const coordinate = series?.coordinate;
+                const values = series?.value;
+                return (
+                  series?.panel_id !== panelId ||
+                  series?.station_id !== stationId ||
+                  series?.quantity_id !== quantityId ||
+                  series?.coordinate_id !== coordinateId ||
+                  series?.coordinate_unit !== "1" ||
+                  series?.source !== "evaluator_owned_frozen_native_cell_mapping" ||
+                  series?.sample_count !== 128 ||
+                  !Array.isArray(coordinate) ||
+                  !Array.isArray(values) ||
+                  coordinate.length !== 128 ||
+                  values.length !== 128 ||
+                  coordinate.some(
+                    (value, sampleIndex) =>
+                      !Number.isFinite(Number(value)) ||
+                      Math.abs(Number(value) - (start + ((end - start) * sampleIndex) / 127)) > 1e-12
+                  ) ||
+                  values.some((value) => !Number.isFinite(Number(value)))
+                );
+              }
+            )
+        )
+      ) {
+        throw new Error(`${label} AhmedML native profile chunk has an unsupported or stale contract binding`);
       }
     }
     if (context.hiLiftCompactTruth || context.hiLiftCompactPrediction) {
@@ -2669,6 +3208,9 @@
     if (context.nativeProfileTruth && !exactNativeTruthSource(profileCase.truth_source)) {
       throw new Error(`${label} native profile case lacks its exact pinned non-analytical CFD truth declaration`);
     }
+    if (context.ahmedNativeTruth && !exactAhmedNativeTruthSource(profileCase.truth_source)) {
+      throw new Error(`${label} AhmedML profile case lacks its exact pinned non-analytical CFD truth declaration`);
+    }
     const relativeProfileV3 = cached.data?.schema_version === drivaermlRelativeProfileSchemaVersion;
     if (context.nativeProfileTruth || relativeProfileV3) await bindProfileCoordinateIdentities(profileCase);
     return {
@@ -2678,6 +3220,8 @@
       _fluidsbenchRelativeProfileV3: relativeProfileV3,
       _fluidsbenchHiLiftCompactTruth: Boolean(context.hiLiftCompactTruth),
       _fluidsbenchHiLiftCompactPrediction: Boolean(context.hiLiftCompactPrediction),
+      _fluidsbenchAhmedNativeProfileTruth: Boolean(context.ahmedNativeTruth),
+      _fluidsbenchWindsorNativeProfileTruth: Boolean(context.windsorNativeTruth),
       _fluidsbenchHiLiftIndex: context.hiLiftCompactTruth ? context.index : null,
       _fluidsbenchArtifactBaseUrl:
         context.hiLiftCompactTruth || context.hiLiftCompactPrediction ? new URL(".", context.indexUrl).href : baseUrl,
@@ -2743,7 +3287,27 @@
     return rounded === null ? "N/A" : rounded.toFixed(policy.decimal_places);
   }
 
+  function isNonRankedDevelopmentFixture(row) {
+    return row?.record_type === "development_fixture";
+  }
+
+  function nonRankedDevelopmentFixtureRanking(row, policy, rankedResultCount) {
+    return {
+      ...policy,
+      value: finiteNumber(row?.metricValues?.[policy.metric_id]),
+      ranked_value: null,
+      display_value: "Non-ranked",
+      unit: metricDefinition(policy.metric_id)?.unit || "",
+      rank: null,
+      ranked_result_count: rankedResultCount,
+      tied: false,
+      tie_count: 0,
+      source: "non_ranked_development_fixture",
+    };
+  }
+
   function generatedRanking(row, policy) {
+    if (isNonRankedDevelopmentFixture(row)) return null;
     const generated = row.ranking;
     if (!state.feedVerified || !generated || typeof generated !== "object") return null;
     const requiredNumberFields = ["value", "ranked_value", "rank", "ranked_result_count", "tie_count"];
@@ -2867,27 +3431,38 @@
 
   function rowsForActiveSplit() {
     const allRows = (state.rows.get(state.dataset) || []).filter((row) => row.split === state.split);
+    const rankableRows = allRows.filter((row) => !isNonRankedDevelopmentFixture(row));
     const policy = rankingPolicy();
-    const fallback = fallbackRankings(allRows, policy);
+    const fallback = fallbackRankings(rankableRows, policy);
     const fallbackById = new Map(fallback.map((item) => [item.row.id, item.ranking]));
-    const generated = allRows.map((row) => generatedRanking(row, policy));
+    const generated = rankableRows.map((row) => generatedRanking(row, policy));
     const generatedIsConsistent =
-      generated.length && generated.every((item, index) => generatedRankingMatches(item, fallbackById.get(allRows[index].id)));
+      generated.length && generated.every((item, index) => generatedRankingMatches(item, fallbackById.get(rankableRows[index].id)));
+    let rankedRows;
     if (generatedIsConsistent) {
-      const generatedById = new Map(allRows.map((row, index) => [row.id, generated[index]]));
-      return fallback.map(({ row }) => {
+      const generatedById = new Map(rankableRows.map((row, index) => [row.id, generated[index]]));
+      rankedRows = fallback.map(({ row }) => {
         const verifiedRanking = { ...generatedById.get(row.id), source: "verified_generated_release" };
         return { ...row, rank: verifiedRanking.rank, _ranking: verifiedRanking };
       });
+    } else {
+      const generatedWasPresent = rankableRows.some((row) => row.ranking && typeof row.ranking === "object");
+      rankedRows = fallback.map(({ row, ranking: rowRanking }) => {
+        const verifiedFallback = {
+          ...rowRanking,
+          source: generatedWasPresent ? "computed_fallback_generated_release_mismatch" : "computed_fallback_legacy_release",
+        };
+        return { ...row, rank: verifiedFallback.rank, _ranking: verifiedFallback };
+      });
     }
-    const generatedWasPresent = allRows.some((row) => row.ranking && typeof row.ranking === "object");
-    return fallback.map(({ row, ranking: rowRanking }) => {
-      const verifiedFallback = {
-        ...rowRanking,
-        source: generatedWasPresent ? "computed_fallback_generated_release_mismatch" : "computed_fallback_legacy_release",
-      };
-      return { ...row, rank: verifiedFallback.rank, _ranking: verifiedFallback };
-    });
+    const rankedResultCount = fallback[0]?.ranking?.ranked_result_count || 0;
+    const developmentFixtures = allRows
+      .filter(isNonRankedDevelopmentFixture)
+      .map((row) => {
+        const fixtureRanking = nonRankedDevelopmentFixtureRanking(row, policy, rankedResultCount);
+        return { ...row, rank: null, _ranking: fixtureRanking };
+      });
+    return [...rankedRows, ...developmentFixtures];
   }
 
   function revisionRowsForActiveSplit() {
@@ -3079,12 +3654,16 @@
     const dataWarningTitle = element("leaderboard-data-warning-title");
     const dataWarningText = element("leaderboard-data-warning-text");
     const officialRelease = release.status === "official";
+    const windsorTruthOnly = activeDatasetSlug() === "windsorml" && activeDataset()?.submission_count === 0;
     if (dataWarning) dataWarning.className = `leaderboard-data-warning${officialRelease ? " is-official" : ""}`;
-    if (dataWarningTitle) dataWarningTitle.textContent = officialRelease ? "Official release" : "Prototype results";
+    if (dataWarningTitle)
+      dataWarningTitle.textContent = windsorTruthOnly ? "Native CFD ground truth" : officialRelease ? "Official release" : "Prototype results";
     if (dataWarningText) {
-      dataWarningText.textContent = officialRelease
-        ? " — submitted packages are validated and maintainer-approved."
-        : " — illustrative dummy data; not citable or suitable for leaderboard claims.";
+      dataWarningText.textContent = windsorTruthOnly
+        ? " — all eight WindsorML splits are available below. No model results have been submitted; the benchmark is awaiting owner review."
+        : officialRelease
+          ? " — submitted packages are validated and maintainer-approved."
+          : " — illustrative dummy data; not citable or suitable for leaderboard claims.";
     }
     element("leaderboard-release-id").textContent = release.id || "Unversioned";
     const details = [];
@@ -4101,6 +4680,11 @@
     return trainingRegimeDefinition(row.training_regime)?.label || row.training_regime || "Not supplied";
   }
 
+  function resultStatusLabel(row) {
+    if (row?.record_type === "development_fixture") return "Development fixture · non-ranked";
+    return humanize(row?.approvalStatus);
+  }
+
   function targetDataLabel(value) {
     const labels = {
       none: "None",
@@ -4138,7 +4722,7 @@
       modelTypes: row.modelTypes.join(", ") || "Not supplied",
       training: trainingLabel(row),
       predictionData: predictionAvailability(row).label,
-      status: humanize(row.approvalStatus),
+      status: resultStatusLabel(row),
       parameters: formatNumber(row.parameterCount, 2),
       date: row.date || "Not supplied",
     };
@@ -4218,7 +4802,7 @@
       cell.appendChild(chip("leaderboard-training", predictionAvailability(submission).label));
       return;
     } else if (column.key === "status") {
-      cell.appendChild(chip("leaderboard-training", humanize(submission.approvalStatus)));
+      cell.appendChild(chip("leaderboard-training", resultStatusLabel(submission)));
       return;
     }
     cell.textContent = cellValue(submission, column);
@@ -4234,7 +4818,10 @@
       const cell = document.createElement("td");
       cell.colSpan = Math.max(1, activeColumns().length);
       cell.className = "leaderboard-empty";
-      cell.textContent = "No leaderboard rows match this dataset, split, and model type.";
+      cell.textContent =
+        activeDatasetSlug() === "windsorml" && activeDataset()?.submission_count === 0
+          ? "No WindsorML model results yet. Explore native CFD ground-truth profiles below."
+          : "No leaderboard rows match this dataset, split, and model type.";
       row.appendChild(cell);
       body.appendChild(row);
       return;
@@ -5275,6 +5862,22 @@
     return fields[requested] || fields.surface_pressure || Object.values(fields)[0] || null;
   }
 
+  function configureRegionalFieldSelection() {
+    const select = element("regional-field");
+    const fields = Object.values(regionalFieldsForDataset());
+    if (!select || !fields.length) return fields[0] || null;
+    const requested = select.value;
+    const selected = fields.some((field) => field.id === requested)
+      ? requested
+      : (fields.find((field) => field.id === "surface_pressure") || fields[0]).id;
+    populateSelect(
+      select,
+      fields.map((field) => ({ value: field.id, label: field.label })),
+      selected
+    );
+    return fields.find((field) => field.id === select.value) || fields[0];
+  }
+
   function regionalPrimaryWeighting(fieldReport, field) {
     if (field?.primaryWeighting) return field.primaryWeighting;
     return fieldReport?.primary_weighting === "physical" ? "physical" : "equal_entity";
@@ -5359,6 +5962,13 @@
       aft_airframe_wake_envelope_proxy: "Aft-airframe wake envelope",
       near_aircraft_flow_envelope: "Near-aircraft flow envelope",
       farfield_and_remaining: "Farfield & remaining",
+      near_body: "Near body",
+      wake: "Wake envelope",
+      farfield: "Farfield & remaining",
+      streamwise_facing: "Streamwise-facing",
+      lateral_facing: "Lateral-facing",
+      upward_facing: "Upward-facing",
+      downward_facing: "Downward-facing",
     };
     return labels[regionId] || humanize(regionId);
   }
@@ -5471,6 +6081,50 @@
     </div>`;
   }
 
+  function ahmedRegionalVolumeGuide(rules) {
+    const byId = new Map(rules.map((rule, index) => [rule.region_id, { rule, index }]));
+    const color = (regionId) => regionalPalette[(byId.get(regionId)?.index || 0) % regionalPalette.length];
+    return `<div class="leaderboard-volume-region-guide">
+      <svg viewBox="0 0 760 235" role="img" aria-label="AhmedML three-zone volume partition in a streamwise x-z projection">
+        <rect x="55" y="25" width="665" height="168" rx="8" fill="${color("farfield")}1f" stroke="${color("farfield")}" stroke-width="1.5"/>
+        <rect x="220" y="88" width="205" height="105" fill="${color("near_body")}46" stroke="${color("near_body")}" stroke-width="2"/>
+        <rect x="425" y="88" width="245" height="105" fill="${color("wake")}46" stroke="${color("wake")}" stroke-width="2"/>
+        <g class="leaderboard-volume-region-labels">
+          <text x="82" y="52">farfield / remaining</text>
+          <text x="322" y="142" text-anchor="middle">near body</text>
+          <text x="548" y="142" text-anchor="middle">wake envelope</text>
+        </g>
+        <g class="leaderboard-volume-region-axis"><line x1="55" y1="205" x2="720" y2="205"/>
+          <text x="390" y="230" text-anchor="middle">streamwise x / body length</text>
+          <text x="220" y="220" text-anchor="middle">−1.25</text><text x="425" y="220" text-anchor="middle">0</text><text x="670" y="220" text-anchor="middle">2</text>
+        </g>
+      </svg>
+      <div class="leaderboard-regional-zone-list">${rules.map(regionalGuideCard).join("")}</div>
+    </div>`;
+  }
+
+  function ahmedRegionalSurfaceGuide(rules) {
+    const byId = new Map(rules.map((rule, index) => [rule.region_id, { rule, index }]));
+    const color = (regionId) => regionalPalette[(byId.get(regionId)?.index || 0) % regionalPalette.length];
+    return `<div class="leaderboard-hilift-region-guide">
+      <svg viewBox="0 0 760 285" role="img" aria-label="AhmedML dominant outward-normal surface orientation bins">
+        <path d="M145 184 L208 88 L478 88 L590 132 L625 184 Z" fill="none" stroke="#667085" stroke-width="4"/>
+        <path d="M145 184 L625 184" stroke="${color("downward_facing")}" stroke-width="16" opacity="0.82"/>
+        <path d="M211 88 L474 88" stroke="${color("upward_facing")}" stroke-width="16" opacity="0.82"/>
+        <path d="M583 130 L624 181" stroke="${color("streamwise_facing")}" stroke-width="16" opacity="0.82"/>
+        <ellipse cx="350" cy="136" rx="235" ry="86" fill="none" stroke="${color("lateral_facing")}" stroke-width="8" stroke-dasharray="12 8" opacity="0.82"/>
+        <g class="leaderboard-volume-region-labels">
+          <text x="343" y="66" text-anchor="middle">upward-facing dominant normal</text>
+          <text x="343" y="219" text-anchor="middle">downward-facing dominant normal</text>
+          <text x="635" y="126">streamwise-facing</text>
+          <text x="98" y="137" text-anchor="end">lateral-facing</text>
+          <text x="380" y="260" text-anchor="middle">schematic orientation guide; bins follow each polygon's outward area vector</text>
+        </g>
+      </svg>
+      <div class="leaderboard-regional-zone-list">${rules.map(regionalGuideCard).join("")}</div>
+    </div>`;
+  }
+
   function hiLiftRegionalSurfaceGuide(rules) {
     const byId = new Map(rules.map((rule, index) => [rule.region_id, { rule, index }]));
     const color = (regionId) => regionalPalette[(byId.get(regionId)?.index || 0) % regionalPalette.length];
@@ -5543,6 +6197,8 @@
     const guides = {
       hilift_surface: hiLiftRegionalSurfaceGuide,
       hilift_volume: hiLiftRegionalVolumeGuide,
+      ahmed_surface: ahmedRegionalSurfaceGuide,
+      ahmed_volume: ahmedRegionalVolumeGuide,
     };
     const guide = guides[definition.guide] || (field.domain === "surface" ? regionalSurfaceGuide : regionalVolumeGuide);
     element("regional-zone-guide").innerHTML = guide(rules);
@@ -5644,9 +6300,7 @@
             callbacks: {
               label(context) {
                 const region = context.dataset.regionalValues?.[context.dataIndex];
-                const lines = [
-                  `${context.dataset.label}: ${regionalNumber(context.raw)}`,
-                ];
+                const lines = [`${context.dataset.label}: ${regionalNumber(context.raw)}`];
                 if (wholeSupportPrimary) {
                   lines.push(
                     `Pooled whole-volume-normalized RMSE: ${regionalNumber(regionalPooled(region, weighting)?.whole_support_normalized_rmse_percent)}`,
@@ -5673,7 +6327,7 @@
       documents.length
     } explicitly selected compatible result${
       documents.length === 1 ? "" : "s"
-    }, using ${weightingLabel}. The four released geometric regions are mutually exclusive and exhaustive.${normalizationNote} Regional diagnostics have zero official scoring weight and do not change the official field or overall score. ${releaseStamp()}.`;
+    }, using ${weightingLabel}. The ${rules.length} released geometric regions are mutually exclusive and exhaustive.${normalizationNote} Regional diagnostics have zero official scoring weight and do not change the official field or overall score. ${releaseStamp()}.`;
     setChartSummary(
       "regional-chart-summary",
       `${field.label} ${primaryCaption} bar chart for ${state.dataset}, ${state.split}; ${documents.length} selected compatible submissions across ${rules.length} exhaustive regions. ${weightingLabel}; lower is better. Regional diagnostics have zero official scoring weight.`
@@ -5731,8 +6385,14 @@
     );
     if (values.some((value) => value.median_case_primary_metric_percent !== null)) {
       columns.push(
-        { label: wholeSupportPrimary ? "Median case whole-volume NRMSE (%)" : "Median case rel. L2 (%)", value: (value) => regionalNumber(value.median_case_primary_metric_percent) },
-        { label: wholeSupportPrimary ? "P90 case whole-volume NRMSE (%)" : "P90 case rel. L2 (%)", value: (value) => regionalNumber(value.p90_case_primary_metric_percent) }
+        {
+          label: wholeSupportPrimary ? "Median case whole-volume NRMSE (%)" : "Median case rel. L2 (%)",
+          value: (value) => regionalNumber(value.median_case_primary_metric_percent),
+        },
+        {
+          label: wholeSupportPrimary ? "P90 case whole-volume NRMSE (%)" : "P90 case rel. L2 (%)",
+          value: (value) => regionalNumber(value.p90_case_primary_metric_percent),
+        }
       );
     }
     renderNumericTable(
@@ -5748,10 +6408,10 @@
     const version = ++state.regionalLoadVersion;
     const datasetDefinition = regionalDatasetDefinition();
     if (!datasetDefinition) {
-      clearRegionalExplorer("Regional native-field diagnostics are currently available for DrivAerML and HiLiftAeroML.");
+      clearRegionalExplorer("Regional native-field diagnostics are currently available for DrivAerML, HiLiftAeroML, and AhmedML.");
       return;
     }
-    const field = regionalFieldDefinition();
+    const field = configureRegionalFieldSelection() || regionalFieldDefinition();
     if (!field) {
       clearRegionalExplorer("This dataset does not define any regional fields.");
       return;
@@ -6172,7 +6832,11 @@
       for (let sourceIndex = sourceStart; sourceIndex < sourceStop; sourceIndex += 1) {
         if (!support.velocityMask[sourceIndex]) {
           if (activeSegmentStart !== null) {
-            segments.push({ emitted_index_start: activeSegmentStart, emitted_index_stop: coordinate.length, segment_id: `${stationId}-valid-run-${run}` });
+            segments.push({
+              emitted_index_start: activeSegmentStart,
+              emitted_index_stop: coordinate.length,
+              segment_id: `${stationId}-valid-run-${run}`,
+            });
             activeSegmentStart = null;
             run += 1;
           }
@@ -6184,7 +6848,11 @@
         sampleIndex.push(sourceIndex);
       }
       if (activeSegmentStart !== null) {
-        segments.push({ emitted_index_start: activeSegmentStart, emitted_index_stop: coordinate.length, segment_id: `${stationId}-valid-run-${run}` });
+        segments.push({
+          emitted_index_start: activeSegmentStart,
+          emitted_index_stop: coordinate.length,
+          segment_id: `${stationId}-valid-run-${run}`,
+        });
       }
       series.push({
         ...hiLiftSeriesBase({
@@ -6961,6 +7629,28 @@
     const label = `${source?.case_id || "profile case"}/${panel.id}/${expectedFamily || "legacy"}/${stationId}/${quantity.id}`;
     if (matches.length !== 1) throw new Error(`${label} is ambiguous because ${matches.length} matching series were supplied`);
     const selected = matches[0];
+    if (source?._fluidsbenchWindsorNativeProfileTruth) {
+      validateWindsorNativeCase(source);
+      const parsed = legacyProfileSeries(selected);
+      return {
+        ...parsed,
+        legacy: false,
+        familyId: selected.family_id,
+        placementMode: selected.placement_mode,
+        stationId: selected.station_id,
+        quantityId: selected.quantity_id,
+        scoringRole: selected.scoring_role,
+        coordinateId: selected.coordinate_id,
+        coordinateUnit: selected.coordinate_unit,
+        supportIdentity: source.profile_support_sha256,
+        representation: "materialized",
+        nativeTruth: true,
+        nativeTruthSource: windsorNativeBinding,
+        nativeDatasetRevision: windsorNativeBinding.dataset_revision,
+        selectedSeries: selected,
+        materializedSeries: selected,
+      };
+    }
     if (!selected.family_id) {
       const legacy = legacyProfileSeries(selected);
       return legacy ? { ...legacy, selectedSeries: selected, materializedSeries: selected } : null;
@@ -6979,16 +7669,7 @@
       else requireExactSubmittedSeriesFields(selected, "shared_alias", label);
       requireProfileDescriptors(selected, label, nativeTruth, nativeTruthVersion);
       if (
-        [
-          "coordinate",
-          "display_coordinate",
-          "value",
-          "prediction",
-          "sample_index",
-          "raw_native_cell_id",
-          "segments",
-          "unsupported_samples",
-        ].some(
+        ["coordinate", "display_coordinate", "value", "prediction", "sample_index", "raw_native_cell_id", "segments", "unsupported_samples"].some(
           (field) => field in selected
         )
       ) {
@@ -7306,12 +7987,21 @@
   }
 
   function verifiedNativeGroundTruthCase(profileCase) {
-    return Boolean(profileCase?._fluidsbenchNativeProfileTruth || profileCase?._fluidsbenchHiLiftCompactTruth);
+    return Boolean(
+      profileCase?._fluidsbenchNativeProfileTruth ||
+        profileCase?._fluidsbenchHiLiftCompactTruth ||
+        profileCase?._fluidsbenchAhmedNativeProfileTruth ||
+        profileCase?._fluidsbenchWindsorNativeProfileTruth
+    );
   }
 
   function publicGroundTruthLabel(profileCase) {
     if (profileCase?._fluidsbenchHiLiftCompactTruth) return "Native CFD ground truth (plot-only)";
-    return profileCase?._fluidsbenchNativeProfileTruth ? "Native CFD ground truth" : "Ground truth";
+    return profileCase?._fluidsbenchNativeProfileTruth ||
+      profileCase?._fluidsbenchAhmedNativeProfileTruth ||
+      profileCase?._fluidsbenchWindsorNativeProfileTruth
+      ? "Native CFD ground truth"
+      : "Ground truth";
   }
 
   function renderProfileChart(index) {
@@ -7477,7 +8167,9 @@
         ? verifiedNativeGroundTruthCase(state.groundTruthCase)
           ? state.groundTruthCase?._fluidsbenchHiLiftCompactTruth
             ? "checksum-bound plot-only Native CFD ground truth on the compact 128-point-per-graph support and "
-            : `pinned Native CFD ground truth (${nativeDrivaermlDatasetRevision}) and `
+            : state.groundTruthCase?._fluidsbenchAhmedNativeProfileTruth
+              ? `pinned 128-point Native CFD ground truth (${ahmedNativeDatasetRevision}) and `
+              : `pinned Native CFD ground truth (${nativeDrivaermlDatasetRevision}) and `
           : "public ground truth and "
         : ""
     }${submissionCurveCount} explicitly selected ${resultDataOriginLabel()} model curve${submissionCurveCount === 1 ? "" : "s"}. ${lineProcessing} ${
@@ -8889,7 +9581,13 @@
           )}</dd></div>`
       )
       .join("");
-    const summaryRank = rankContext ? `#${rankContext.rank} of ${rankContext.ranked_result_count}` : "Superseded version";
+    const summaryRank = rankContext
+      ? `#${rankContext.rank} of ${rankContext.ranked_result_count}`
+      : !isLatestRevision(row)
+        ? "Superseded version"
+        : row.record_type === "development_fixture"
+          ? "Non-ranked development fixture"
+          : "Not ranked";
     const summaryRankingLabel = plainMetricLabel(metricDefinition(ranking().metric_id)) || "Ranking score";
     const packageValidationLabel =
       dataRelease().status === "official" ? humanize(validation.status || "not recorded") : "Prototype fixture — not applicable";
@@ -8930,6 +9628,7 @@
         ${detailsRow("Submission ID", row.id)}
         ${detailsRow("Result series", revision.series_id)}
         ${detailsRow("Version", revisionLabel(row))}
+        ${detailsRow("Record type", row.record_type === "development_fixture" ? "Non-ranked development fixture" : humanize(row.record_type))}
         ${detailsRow("Supersedes", revision.supersedes)}
         ${detailsRow("Change summary", revision.change_summary || (revision.version === 1 ? "Initial published result." : null))}
         ${detailsRow("Dataset version", row.dataset_version)}
@@ -9230,6 +9929,13 @@
     renderScatterChart();
     void prepareRegionalExplorer();
     void refreshProfileContext();
+    const truthOnly = activeDatasetSlug() === "windsorml" && activeDataset()?.submission_count === 0;
+    element("leaderboard-radar-panel").hidden = truthOnly;
+    element("comparison-model-description").closest("fieldset").hidden = truthOnly;
+    if (truthOnly) {
+      element("leaderboard-advanced-analysis").open = true;
+      activateAnalysisTab("profiles");
+    }
   }
 
   function resizeVisibleCharts() {

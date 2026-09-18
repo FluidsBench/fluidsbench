@@ -86,27 +86,27 @@
               <code>velocityzavg</code>, and <code>pressureavg</code> in VTK <code>CellData</code>
             </td>
             <td>Every cell carrying those velocity components and pressure</td>
-            <td>Unweighted cell (each cell counts equally) primary; volume-weighted secondary</td>
+            <td>Equal native cell only; the candidate contract does not use cell-volume weights</td>
           </tr>
           {% when "hiliftaeroml" %}
           <tr>
             <td>Three-dimensional aircraft boundary</td>
             <td>
-              <code>geo_LHC&lt;id&gt;_AoA_&lt;angle&gt;/boundary_geo_LHC&lt;id&gt;_AoA_&lt;angle&gt;.vtu.tgz</code>, VTK <code>PointData</code>; the
-              matching <code>boundary_dual_area_*.npy</code> is public in exact native-point order; the final scoring release will pin the exact
-              scored array names
+              <code>geo_LHC&lt;id&gt;_AoA_&lt;angle&gt;/boundary_geo_LHC&lt;id&gt;_AoA_&lt;angle&gt;.vtu.tgz</code>, VTK <code>PointData</code>:
+              pressure <code>PROJ(AVG(P))</code> and wall shear <code>AVG(TAU_WALL(0))</code>, <code>AVG(TAU_WALL(1))</code>,
+              <code>AVG(TAU_WALL(2))</code>. The public <code>boundary_dual_area_*.npy</code> uses the identical native-point order.
             </td>
-            <td>Every point carrying each scored boundary field</td>
+            <td>Every native boundary point, preserving raw point IDs and order</td>
             <td>Area-weighted primary; unweighted point (each point counts equally) secondary</td>
           </tr>
           <tr>
             <td>Three-dimensional flow volume</td>
             <td>
-              <code>geo_LHC&lt;id&gt;_AoA_&lt;angle&gt;/volume_geo_LHC&lt;id&gt;_AoA_&lt;angle&gt;.vtu.tgz</code>, VTK <code>PointData</code>; the
-              final scoring release will pin the exact scored array names
+              <code>geo_LHC&lt;id&gt;_AoA_&lt;angle&gt;/volume_geo_LHC&lt;id&gt;_AoA_&lt;angle&gt;.vtu.tgz</code>, VTK <code>PointData</code>:
+              pressure <code>avg(P)</code> and three-component velocity <code>avg(u)</code>
             </td>
-            <td>Every point carrying each scored volume field</td>
-            <td>Unweighted point (each point counts equally) primary; volume-weighted secondary</td>
+            <td>Every native point retained by raw Float32 <code>avg(P) != 0.0</code>, before normalization</td>
+            <td>One equal weight per retained valid point; no volume-weighted secondary metric</td>
           </tr>
           {% when "drivaernetplusplus" %}
           <tr>
@@ -208,6 +208,16 @@
         Use the public <code>boundary_cell_area_&lt;run&gt;.npy</code> value for each surface polygon in the identical native VTP cell order. Each
         volume cell contributes one equal unit to the volume numerator and denominator.
       </li>
+      {% elsif include.slug == "hiliftaeroml" %}
+      <li>
+        Use the published native nodal dual area for primary surface relative L2, and retain equal-node surface relative L2 as a secondary diagnostic.
+        Each retained valid volume point contributes one unit weight; this candidate has no dual-volume weighting requirement.
+      </li>
+      <li>
+        Score relative errors on <code>(P-p_inf)/q_inf</code>, <code>tau_wall/q_inf</code> and <code>U/|U_inf|</code>. For vector relative L2, one
+        point weight multiplies the squared three-component magnitude. Apply the raw volume validity mask before normalization and preserve the
+        retained raw point IDs through chunking.
+      </li>
       {% else %}
       <li>
         Surface and one-dimensional curve fields use area- or length-weighted relative L2 as the primary value and unweighted relative L2 as the
@@ -229,8 +239,7 @@
     </ul>
     <p>
       Sharing complete prediction fields is optional. A contributor may link versioned predictions in an external public repository, but the
-      submission package itself stays small and records exact coverage plus the per-case sufficient statistics used to reproduce both relative-L2
-      values.
+      submission package records exact coverage plus the per-case sufficient statistics used to reproduce each required relative-L2 value.
     </p>
   </div>
 </details>

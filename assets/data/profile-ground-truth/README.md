@@ -6,8 +6,8 @@ submissions. Evaluation cases remain a declared test partition and must not be u
 preprocessing statistics.
 
 The top-level review release and legacy analytical fixtures remain explicitly marked `prototype_dummy_data`; they are not native CFD
-truth and must not be presented as such. DrivAerML and the complete 1,355-case HiLiftAeroML release are explicit exceptions within this
-review release: their separately declared, checksum-bound `native_cfd` bundles contain dataset-owner-produced native values and are
+truth and must not be presented as such. DrivAerML, the complete 1,355-case HiLiftAeroML release, and the complete 316-case AhmedML
+release are explicit exceptions within this review release: their separately declared, checksum-bound `native_cfd` bundles contain dataset-owner-produced native values and are
 never sourced from the analytical fixture generator. Publishing either reference bundle does not make a leaderboard result official. An
 official result still requires a validated submission package and maintainer approval; none of the current rows is official or
 approved. Public code, model,
@@ -92,6 +92,29 @@ python3 bin/export_hiliftaeroml_compact_profile_truth.py \
   --output-root assets/data/profile-ground-truth/datasets/hiliftaeroml/compact-all1355-v1 \
   --source-repository https://github.com/neilashton/fluidsbench-submission \
   --source-revision <full-commit-sha> \
+  --generated-at YYYY-MM-DDTHH:MM:SSZ
+```
+
+AhmedML uses a separate candidate native-profile contract under
+`datasets/ahmedml/native-all316-v1`. It covers all 316 unique cases in the
+five official test case sets used by the eight published split families. Each
+case contains three surface Cp cuts and four wake-velocity profiles, each with
+exactly 128 samples. Coordinates and truth values come only from the
+checksum-bound evaluator-owned native-cell mappings; analytical curves and
+participant-supplied profile values are rejected. The JSON release is for
+browser visualization, not metric recomputation, and does not open AhmedML
+submissions or make the development fixture rank eligible.
+
+After all evaluator-owned local case support has been verified, regenerate
+the AhmedML native bundle and atomically replace its manifest declaration
+with:
+
+```bash
+python3 bin/export_ahmedml_native_profile_truth.py \
+  --submission-repository ../fluidsbench-submission \
+  --support-root /authorized/local/ahmedml-scoring-support-v1-candidate \
+  --output assets/data/profile-ground-truth/datasets/ahmedml/native-all316-v1 \
+  --manifest assets/data/profile-ground-truth/manifest.json \
   --generated-at YYYY-MM-DDTHH:MM:SSZ
 ```
 

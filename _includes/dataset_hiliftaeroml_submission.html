@@ -1,0 +1,65 @@
+{% assign hilift_submission_ref = site.submission_source_ref | default: 'main' %}
+<details class="dataset-inline-disclosure dataset-submission-disclosure">
+  <summary>
+    <span>Prepare a HiLiftAeroML candidate result</span>
+    <small>Native inference, packaging and local validation</small>
+  </summary>
+  <div class="dataset-inline-disclosure-body">
+    <p>
+      <strong>Public submissions are closed.</strong> The current workflow supports local or benchmark-owner-coordinated schema-v3 dry runs. Follow
+      the
+      <a
+        href="https://github.com/neilashton/fluidsbench-submission/blob/{{ hilift_submission_ref }}/benchmark-specs/hiliftaeroml/PARTICIPANT_GUIDE.md"
+        >HiLiftAeroML participant guide</a
+      >
+      and its
+      <a href="https://github.com/neilashton/fluidsbench-submission/tree/{{ hilift_submission_ref }}/examples/hiliftaeroml-v3-candidate"
+        >package configuration and commands</a
+      >.
+    </p>
+    <ol>
+      <li>
+        Select one official split label and use its exact ordered evaluation cases. Train and select checkpoints using the matching source training
+        and validation definitions; evaluation fields must not influence fitting or preprocessing statistics.
+      </li>
+      <li>
+        Run your model to predict pressure and three-component wall shear at every native boundary point, and pressure and three-component velocity at
+        every retained valid volume point. All four fields are required. Map any different model representation onto these supports and document that
+        mapping; the evaluator derives loads and profiles from the same complete predictions.
+      </li>
+      <li>
+        Run the frozen evaluator over every case, accumulating chunk statistics before complete-case and split reductions. Retain its case receipts,
+        metrics and profile products. The assembler requires the separately provided candidate scoring truth/support; the public browser plot bundle
+        cannot supply this dependency.
+      </li>
+      <li>
+        Assemble the package with the documented HiLiftAeroML adapter. Include the method and training regime, raw loaded checkpoint hashes, measured
+        training/inference compute, discretization records, case metrics, prediction profiles and evaluation evidence. Full native prediction files
+        and public code or model artifacts are optional.
+      </li>
+    </ol>
+    <p>
+      Compact-v2 is the sole selected participant profile format. Each case submits a prediction-only NPZ with compact Cp values and velocity
+      predictions; geometry, masks, weights and truth remain in evaluator-owned support. The existing contract identifiers retain their historical
+      candidate suffix. Selecting this format does not open public intake or complete the remaining evaluator-release approval.
+    </p>
+    <p>For an assembled compact-v2 candidate, validate locally from the submission repository:</p>
+    <pre><code>python scripts/validate_submission.py \
+  --candidate-dry-run \
+  --profile-support-release /path/to/hiliftaeroml-compact-profile-support-v2-candidate \
+  /path/to/hiliftaeroml-my-method-v2</code></pre>
+    <p>
+      A passing dry run validates the local package. It does not approve, register or publish a result. Use the candidate route while intake is
+      closed; <code>--contributor-stage</code> becomes appropriate only after an official scoring-support release opens. Remaining source, support
+      publication and owner-review requirements are recorded in the
+      <a
+        href="https://github.com/neilashton/fluidsbench-submission/blob/{{ hilift_submission_ref }}/benchmark-specs/hiliftaeroml/CANDIDATE_ACTIVATION_CHECKLIST.md"
+        >activation checklist</a
+      >.
+    </p>
+    <p>
+      Submitters run inference and the evaluator. Required maintainer validation checks the submitted package, exact coverage and hash chain; it does
+      not rerun the model or recompute base metrics from full prediction fields. Approval of an official result remains a separate step.
+    </p>
+  </div>
+</details>
