@@ -481,21 +481,108 @@
       "name": "WindsorML",
       "splits": [
         {
-          "id": "default",
-          "label": "Default",
-          "case_set_id": "default",
-          "case_count": 1
+          "id": "full",
+          "label": "Full",
+          "case_set_id": "baseline-test",
+          "case_count": 35
+        },
+        {
+          "id": "medium",
+          "label": "Medium",
+          "case_set_id": "baseline-test",
+          "case_count": 35
+        },
+        {
+          "id": "scarce",
+          "label": "Scarce",
+          "case_set_id": "baseline-test",
+          "case_count": 35
+        },
+        {
+          "id": "super_scarce",
+          "label": "Super scarce",
+          "case_set_id": "baseline-test",
+          "case_count": 35
+        },
+        {
+          "id": "geometry",
+          "label": "Geometry OOD",
+          "case_set_id": "geometry-test",
+          "case_count": 71
+        },
+        {
+          "id": "high_drag",
+          "label": "High drag",
+          "case_set_id": "high_drag-test",
+          "case_count": 70
+        },
+        {
+          "id": "low_drag",
+          "label": "Low drag",
+          "case_set_id": "low_drag-test",
+          "case_count": 70
+        },
+        {
+          "id": "image_wake",
+          "label": "Image wake",
+          "case_set_id": "image_wake-test",
+          "case_count": 71
         }
       ],
       "case_sets": [
         {
-          "id": "default",
-          "index_file": "datasets/windsorml/default/index.json",
-          "index_sha256": "d852b7393b4ced22ac8877468275e7bb66372ca0a250a92cda64240ef2ab19e1",
-          "case_count": 1,
-          "case_id_status": "prototype_generated"
+          "id": "baseline-test",
+          "index_file": "datasets/windsorml/baseline-test/index.json",
+          "index_sha256": "44593cef001d842ba62d575a244def6a1ff52905123b64510e3373c94f0f3f0c",
+          "case_count": 35,
+          "case_id_status": "official_intersected_with_published"
+        },
+        {
+          "id": "geometry-test",
+          "index_file": "datasets/windsorml/geometry-test/index.json",
+          "index_sha256": "26fe8e241aaa821eb7a4f47008ce0ebb75170cf2600c74b0e3ada5a1893b2998",
+          "case_count": 71,
+          "case_id_status": "official_intersected_with_published"
+        },
+        {
+          "id": "high_drag-test",
+          "index_file": "datasets/windsorml/high_drag-test/index.json",
+          "index_sha256": "dab08bcfe94ce4207282ec897b6bc224374a075096024189ade811c7d7c23b56",
+          "case_count": 70,
+          "case_id_status": "official_intersected_with_published"
+        },
+        {
+          "id": "low_drag-test",
+          "index_file": "datasets/windsorml/low_drag-test/index.json",
+          "index_sha256": "c77d9f8382b6bcf78e8c35e0b579c43f2cad2435c831120be2e90c5910c28113",
+          "case_count": 70,
+          "case_id_status": "official_intersected_with_published"
+        },
+        {
+          "id": "image_wake-test",
+          "index_file": "datasets/windsorml/image_wake-test/index.json",
+          "index_sha256": "a2489d4ad25d003fa820f40bd58557feea746d077da0e47b30795ef9418d038c",
+          "case_count": 71,
+          "case_id_status": "official_intersected_with_published"
         }
-      ]
+      ],
+      "native_profile_truth": {
+        "schema_version": "1.0",
+        "release_id": "windsorml-native-profile-truth-v1-candidate",
+        "dataset_id": "windsorml",
+        "dataset_revision": "8a6ca32ae22c94f54df2186d1b0ccf9662a294c2",
+        "profile_support_manifest_sha256": "e660311ef82ec19347e91eeb1753c1f0af4c1bd65ba01491fb47ac960da51376",
+        "profile_definition_sha256": "d58014ae66d92ea5ffce3c4f3b8e206447873d563d8bc3ffb4cbeee81539e056",
+        "source_identity_sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+        "source_kind": "native_cfd",
+        "analytical_dummy": false,
+        "status": "candidate_owner_review_required",
+        "usage": "browser_visualization_only_not_metric_recomputation",
+        "series_per_case": 16,
+        "samples_per_series": 128,
+        "case_count": 233,
+        "case_set_count": 5
+      }
     },
     {
       "id": "vki-ls59",

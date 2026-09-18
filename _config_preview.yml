@@ -2,5 +2,6 @@
 url: https://fluidsbench.org
 baseurl: /review-x4n7q9m2vk6p
 preview_mode: true
-leaderboard_base_url: https://raw.githubusercontent.com/neilashton/fluidsbench-submission/dev/
-submission_source_ref: dev
+# Paired WindsorML candidate: fluidsbench-submission PR #33. Keep CI on this same revision.
+leaderboard_base_url: https://raw.githubusercontent.com/neilashton/fluidsbench-submission/6c895baefd2b80c50acb1a1564e4204d4bc7be29/
+submission_source_ref: 6c895baefd2b80c50acb1a1564e4204d4bc7be29

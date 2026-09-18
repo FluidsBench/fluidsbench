@@ -33,7 +33,7 @@
     "radar_metric_ids": ["surface_pressure_rel_l2", "volume_velocity_rel_l2", "cl_r2", "velocity_profile_r2"]
   },
   "windsorml": {
-    "headline_metric_ids": ["overall_score", "surface_pressure_rel_l2", "volume_velocity_physical_rel_l2", "velocity_profile_r2", "c_drag_mae"],
+    "headline_metric_ids": ["overall_score", "surface_pressure_rel_l2", "volume_velocity_rel_l2", "velocity_profile_r2", "c_drag_mae"],
     "radar_metric_ids": ["surface_pressure_rel_l2", "volume_velocity_rel_l2", "velocity_profile_r2", "cd_r2"]
   },
   "vki-ls59": {

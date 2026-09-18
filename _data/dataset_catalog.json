@@ -243,7 +243,7 @@
       "revision": "8a6ca32ae22c94f54df2186d1b0ccf9662a294c2",
       "revision_short": "8a6ca32",
       "revision_url": "https://huggingface.co/datasets/neashton/windsorml/tree/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2",
-      "checked_on": "2026-08-22",
+      "checked_on": "2026-09-17",
       "release": "Hugging Face revision 8a6ca32",
       "license": "CC BY-SA 4.0",
       "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
@@ -278,19 +278,19 @@
       ],
       "operating_conditions": "All cases use the AutoCFD wind-tunnel-style setup at nominal 40 m/s, Reynolds number 2.9 × 10⁶, and 2.5° yaw; flow conditions are fixed.",
       "sampling": "A deterministic, extendable Halton sequence samples 355 points in the seven-dimensional geometry space; complete per-run fields are available for 350.",
-      "coverage": "Eight source split families cover random, data-efficiency, and held-out regimes across the aggregate design list. The current FluidsBench contract still binds only one prototype case.",
+      "coverage": "Eight source split families are bound to the publicly available fields: four nested data-efficiency splits and four held-out regimes, covering 233 distinct test cases across five case sets.",
       "source_url": "https://arxiv.org/abs/2407.19320",
       "source_label": "WindsorML paper and geometry-variant table"
     },
     "benchmark": {
       "status": "owner_review_required",
-      "status_label": "Prototype benchmark definition",
+      "status_label": "Native benchmark candidate",
       "submissions_open": false,
-      "source_pin": "Not yet frozen",
-      "summary": "The candidate field definition uses cpavg and the cfxavg/cfyavg/cfzavg skin-friction vector on every native boundary point, plus velocityxavg/velocityyavg/velocityzavg and pressureavg on every native volume cell. Public dual-area sidecars and eight source split families now exist, but the FluidsBench contract still contains only one prototype case and has not bound the 350 complete field runs.",
-      "split_ids": ["default"],
-      "case_id_status": "prototype_generated",
-      "contract_digest": "0315194b332b7351754bd4cfd5468754b999644ac7b47abff67db1e1c12f63d2"
+      "source_pin": "Hugging Face revision 8a6ca32",
+      "summary": "All eight Hugging Face splits are bound to the available native field files. Ground-truth profiles cover all 233 distinct test cases, with fixed and body-height-relative families. No model results are published. Public submissions remain closed pending owner review and completion of the submission workflow.",
+      "split_ids": ["full", "medium", "scarce", "super_scarce", "geometry", "high_drag", "low_drag", "image_wake"],
+      "case_id_status": "official_intersected_with_published",
+      "contract_digest": "f0ded6cce0ed4015cc5f8b3b88649896a4a2208772bb9338f8f485ab9815af1a"
     },
     "visual": {
       "inputs": "Windsor geometry + WMLES conditions",
