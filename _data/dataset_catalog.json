@@ -354,7 +354,7 @@
       "status_label": "Closed benchmark candidate",
       "submissions_open": false,
       "source_pin": "nvidia/HiLiftAeroML @ bbec30b; closed-candidate evaluator @ 68899f7",
-      "summary": "The closed schema-v3 candidate binds all fourteen official splits, complete native surface and retained valid volume fields, integrated loads, ten Cp rows and five velocity stations. Twenty-three real-model previews and plot-only CFD truth for all 1,355 evaluation cases are available. Public intake remains closed pending final source-content pins, scoring-support publication and owner approval.",
+      "summary": "The closed schema-v3 candidate binds all fourteen official splits, complete native surface and retained valid volume fields, integrated loads, ten Cp rows and five velocity stations. Compact-v2 is the sole selected participant profile format. Twenty-three real-model previews and plot-only CFD truth for all 1,355 evaluation cases are available. Public intake remains closed pending final source-content pins, scoring-support publication and owner approval.",
       "split_ids": [
         "full",
         "medium",

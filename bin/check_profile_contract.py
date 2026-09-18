@@ -3233,7 +3233,7 @@ def hiliftaeroml_compact_truth_errors(
 
     spec_root = submission_root / "benchmark-specs" / "hiliftaeroml"
     spec = load_json(spec_root / "submission-spec.json")
-    compact_definition = spec.get("compact_profile_definition", {})
+    compact_definition = spec.get("profile_definition", {})
     public_binding = compact_definition.get("public_plot_ground_truth", {})
     binding_path = spec_root / str(public_binding.get("binding_file", ""))
     ground_truth_manifest = load_json(ground_truth_root / "manifest.json")
@@ -3319,7 +3319,11 @@ def hiliftaeroml_compact_truth_errors(
         },
     }
     if (
-        compact_definition.get("contract_id")
+        compact_definition.get("status") != "official"
+        or compact_definition.get("accepted_profile_formats")
+        != [HILIFT_COMPACT_PREDICTION_FORMAT]
+        or compact_definition.get("prior_profile_formats_accepted") is not False
+        or compact_definition.get("contract_id")
         != HILIFT_COMPACT_PROFILE_CONTRACT_ID
         or compact_definition.get("sha256")
         != HILIFT_COMPACT_PROFILE_CONTRACT_SHA256

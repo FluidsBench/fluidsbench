@@ -318,7 +318,7 @@ compact_masthead: true
     </div>
     <p>
       Preserve the evaluator's valid rows and segment boundaries. Invalid rows carry zero scoring weight; do not fill them or create integration
-      edges across gaps. The native-v1 format retains invalid rows explicitly, while compact-v2 stores only the evaluator-selected valid predictions.
+      edges across gaps. Evaluator support retains invalid rows explicitly, while the sole participant format, compact-v2, stores only the evaluator-selected valid predictions.
     </p>
   </section>
 
