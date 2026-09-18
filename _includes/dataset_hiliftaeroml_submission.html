@@ -39,15 +39,15 @@
       </li>
     </ol>
     <p>
-      The current bound profile contract is native-v1. Retained previews also exercise an inactive compact-v2 alternative with prediction-only NPZ
-      artifacts and evaluator-owned geometry, masks and truth. Compact-v2 has not been activated for public intake; use the guide's matching format,
-      support release and validation command rather than mixing the two representations.
+      Compact-v2 is the sole selected participant profile format. Each case submits a prediction-only NPZ with compact Cp values and velocity
+      predictions; geometry, masks, weights and truth remain in evaluator-owned support. The existing contract identifiers retain their historical
+      candidate suffix. Selecting this format does not open public intake or complete the remaining evaluator-release approval.
     </p>
-    <p>For an assembled native-v1 candidate, validate locally from the submission repository:</p>
+    <p>For an assembled compact-v2 candidate, validate locally from the submission repository:</p>
     <pre><code>python scripts/validate_submission.py \
   --candidate-dry-run \
-  --candidate-profile-truth-release /path/to/hiliftaeroml-native-profile-truth-v1-candidate \
-  /path/to/hiliftaeroml-my-method-v1</code></pre>
+  --profile-support-release /path/to/hiliftaeroml-compact-profile-support-v2-candidate \
+  /path/to/hiliftaeroml-my-method-v2</code></pre>
     <p>
       A passing dry run validates the local package. It does not approve, register or publish a result. Use the candidate route while intake is
       closed; <code>--contributor-stage</code> becomes appropriate only after an official scoring-support release opens. Remaining source, support
