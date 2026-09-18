@@ -14,6 +14,22 @@ compact_masthead: true
   {% include dataset_intro.html slug="hiliftaeroml" %}
 
   <section class="dataset-panel">
+    <h3>Current benchmark status</h3>
+    <p>
+      HiLiftAeroML is a <strong>closed schema-v3 candidate</strong>. All fourteen official evaluation labels are bound to eight exact ordered
+      case sets, covering 1,355 unique cases. The evaluator is frozen at
+      <a href="https://github.com/neilashton/fluidsbench-submission/tree/68899f780d96b70f2badb5658971c87af0b17172">revision 68899f7</a>
+      for local candidate dry runs. Public submissions remain closed pending the final source-content pins, scoring-support publication and
+      benchmark-owner approval.
+    </p>
+    <p>
+      The development leaderboard contains 23 retained real-model previews: eleven Transolver and twelve GeoTransolver results. These are
+      pre-release references, not official or citable benchmark results. Public Cp and velocity plot truth covers all 1,355 cases; that plotting
+      derivative omits scoring weights and cannot replace the evaluator's separate scoring-truth release.
+    </p>
+  </section>
+
+  <section class="dataset-panel">
     <h3>Dataset summary</h3>
     <dl class="dataset-facts">
       <div>
@@ -51,7 +67,7 @@ compact_masthead: true
     {% include dataset_getting_started.html slug="hiliftaeroml" %}
   </section>
 
-  {% include dataset_design_space.html slug="hiliftaeroml" %}
+{% include dataset_design_space.html slug="hiliftaeroml" %}
 
   <section class="dataset-panel">
     <h3>Source correction: mean force and moment coefficients</h3>
@@ -70,8 +86,8 @@ compact_masthead: true
       for the exact old and new values, method, and hashes.
     </p>
     <p>
-      This records a source-data correction only. The HiLiftAeroML FluidsBench scoring contract remains provisional and is not yet pinned for
-      submissions.
+      These tables document source provenance. The candidate evaluator obtains both prediction and truth loads by integrating the corresponding
+      complete native surface fields with the same convention. It does not substitute the corrected CSV values for the scored truth loads.
     </p>
   </section>
 
@@ -79,8 +95,12 @@ compact_masthead: true
     <h3>Published source splits</h3>
     <p>
       The Hugging Face source publishes these fourteen deterministic split families over all 1,800 cases. The table gives the exact manifest IDs and
-      counts. The corresponding FluidsBench case files are still marked <code>prototype_generated</code>, so they remain development bindings until
-      the exact scored arrays, masks, weights, evaluator, and case lists are finalized.
+      counts. The corresponding FluidsBench evaluation files contain official case IDs. Each package declares one label and preserves the exact
+      order in its FluidsBench split file; that order differs from the source manifest's display order.
+    </p>
+    <p>
+      Full, Medium, Scarce and Super scarce share one 360-case test set. The four Geometry labels share another 360-case test set. Their different
+      training regimes remain distinct tasks. Use the matching source training and validation definitions, and reserve all test fields for evaluation.
     </p>
 
     <div class="dataset-table-wrap">
@@ -230,7 +250,7 @@ compact_masthead: true
   </section>
 
   <section class="dataset-panel">
-    {% include dataset_submission.html slug="hiliftaeroml" dataset="HiLiftAeroML" %}
+    {% include dataset_hiliftaeroml_submission.html %}
 
   </section>
 
@@ -241,10 +261,11 @@ compact_masthead: true
   <section class="dataset-panel">
     <h3>Cp stations</h3>
     <p>
-      Submit all ten CRM-HL wing pressure rows A through J defined by the official HLPW-5 postprocessing instructions.
+      The evaluator derives all ten CRM-HL wing pressure rows A through J from the complete native surface prediction.
       Figure 15 of the <a href="https://arxiv.org/abs/2605.19565">HiLiftAeroML paper</a> plots A, D, G, and I as a
       validation subset; those four examples are not the complete workshop station set. Rows run progressively from
-      inboard to outboard. Use the exact ID below and provide full-scale <code>x</code> coordinates in inches.
+      inboard to outboard. The frozen support supplies the exact geometry, graph identities and coordinates in inches; retain them in the required
+      profile format rather than constructing or sorting a new pressure trace.
     </p>
     <div class="dataset-table-wrap">
       <table class="dataset-table compact">
@@ -266,20 +287,19 @@ compact_masthead: true
       </table>
     </div>
     <p>
-      The exact HLPW-5 cutting-plane equations and element-specific extraction macros are available in the
-      <a href="https://aiaa-hlpw.org/HLPW/index-workshop5.html">workshop archive</a>. The development leaderboard curves use
-      checksum-bound predictions from retained Transolver and GeoTransolver inference, with the same workshop station coverage
-      and coordinate convention as the public plot-only ground truth.
+      The <a href="https://aiaa-hlpw.org/HLPW/index-workshop5.html">HLPW-5 workshop archive</a> provides the source cutting-plane definitions.
+      For FluidsBench, use the evaluator-owned extraction support and retain every disconnected physical graph and its segment lengths. Do not
+      join separate branches or bridge gaps. Development curves pair checksum-bound retained model predictions with public plot-only CFD truth.
     </p>
   </section>
 
   <section class="dataset-panel">
     <h3>Velocity stations</h3>
     <p>
-      Use all 16 locations from the official HLPW-5 Case 2.4 velocity-profile template. Each trace is extracted vertically
-      at fixed full-scale <code>x,y</code> coordinates, with <code>z_offset_in = z - z_surface</code>. Coordinates are in
-      inches and station IDs must match the values below. The development leaderboard traces are checksum-bound retained
-      inference predictions; the locations and coordinate convention are taken from the
+      The candidate uses exactly five HLPW-5 locations: <strong>B.2, B.3, C.1, C.2 and C.3</strong>. Each station has 801 requested rows on
+      evaluator-owned support, with an authoritative validity mask and explicit gaps. Profiles compare velocity magnitude
+      <code>|U| / |U_inf|</code>. The display uses full-scale coordinates in inches and <code>z_offset_in = z - z_surface</code>.
+      The source station geometry is documented in the
       <a href="https://aiaa-hlpw.org/HLPW/index-workshop5.html">HLPW-5 workshop archive</a>.
     </p>
     <div class="dataset-table-wrap">
@@ -288,25 +308,18 @@ compact_masthead: true
           <tr><th>Station ID</th><th>HLPW-5 label</th><th>x (in)</th><th>y (in)</th><th>z surface (in)</th></tr>
         </thead>
         <tbody>
-          <tr><td><code>hlpw5_a_1</code></td><td>A.1</td><td>1034.9500</td><td>137.9135</td><td>191.7500</td></tr>
-          <tr><td><code>hlpw5_a_2</code></td><td>A.2</td><td>1071.2212</td><td>160.9808</td><td>195.4808</td></tr>
-          <tr><td><code>hlpw5_a_3</code></td><td>A.3</td><td>1365.5096</td><td>227.1058</td><td>183.1173</td></tr>
-          <tr><td><code>hlpw5_a_4</code></td><td>A.4</td><td>1385.4231</td><td>128.3423</td><td>156.9615</td></tr>
-          <tr><td><code>hlpw5_a_5</code></td><td>A.5</td><td>1421.5757</td><td>129.1298</td><td>148.0621</td></tr>
-          <tr><td><code>hlpw5_a_6</code></td><td>A.6</td><td>1444.4584</td><td>225.9062</td><td>167.1960</td></tr>
-          <tr><td><code>hlpw5_b_1</code></td><td>B.1</td><td>1163.5769</td><td>379.9615</td><td>190.8654</td></tr>
           <tr><td><code>hlpw5_b_2</code></td><td>B.2</td><td>1203.7442</td><td>374.8077</td><td>208.4231</td></tr>
           <tr><td><code>hlpw5_b_3</code></td><td>B.3</td><td>1398.1731</td><td>360.8769</td><td>205.5577</td></tr>
-          <tr><td><code>hlpw5_b_4</code></td><td>B.4</td><td>1493.6878</td><td>361.0165</td><td>173.5348</td></tr>
           <tr><td><code>hlpw5_c_1</code></td><td>C.1</td><td>1699.5212</td><td>964.3962</td><td>258.4827</td></tr>
           <tr><td><code>hlpw5_c_2</code></td><td>C.2</td><td>1730.9519</td><td>956.0558</td><td>258.5019</td></tr>
           <tr><td><code>hlpw5_c_3</code></td><td>C.3</td><td>1762.3500</td><td>949.1462</td><td>255.5058</td></tr>
-          <tr><td><code>hlpw5_d_1</code></td><td>D.1</td><td>1799.3942</td><td>1152.4692</td><td>268.0192</td></tr>
-          <tr><td><code>hlpw5_d_2</code></td><td>D.2</td><td>1821.0673</td><td>1152.2827</td><td>270.1462</td></tr>
-          <tr><td><code>hlpw5_d_3</code></td><td>D.3</td><td>1842.7404</td><td>1152.2058</td><td>271.0212</td></tr>
         </tbody>
       </table>
     </div>
+    <p>
+      Preserve the evaluator's valid rows and segment boundaries. Invalid rows carry zero scoring weight; do not fill them or create integration
+      edges across gaps. The native-v1 format retains invalid rows explicitly, while compact-v2 stores only the evaluator-selected valid predictions.
+    </p>
   </section>
 
   <section class="dataset-panel">
@@ -315,107 +328,103 @@ compact_masthead: true
       <div>
         <dt>Relative L2 error</dt>
         <dd>
-          For each evaluation/test geometry, map predictions to every entity in the release-bound public field support and return predictions and
-          targets to dimensional physical space, \(q^\ast = T_q^{-1}(q)\). Calculate both paired relative-L2 values from the accumulated
-          sufficient statistics: area-weighted L2 is primary on the boundary, while unweighted point L2 (each point counts equally) is primary in the flow volume.
-          Report the complete-case percentages first, then take the arithmetic mean of the geometry-level values.
+          For each evaluation case, use the nondimensional field bases below and calculate
+          \(100\sqrt{\sum_i w_i\lVert\hat q_i-q_i\rVert^2 / \sum_i w_i\lVert q_i\rVert^2}\).
+          Surface primary metrics use the published nodal dual areas, with equal-node values as secondary diagnostics. Volume metrics use one unit
+          per retained valid native point; no volume-weighted secondary metric is required. Sum the numerator and denominator across all chunks before
+          taking the square root, then macro-average the complete-case percentages equally.
         </dd>
       </div>
       <div>
         <dt>Relative L1 error</dt>
         <dd>
-          When reported as a supplementary metric, relative L1 uses the same complete dimensional support and the primary weighting for that domain.
-          Calculate a percentage for each geometry, then take the arithmetic mean of the geometry-level percentages.
+          Supplementary relative L1 uses the same nondimensional fields and primary spatial weights. For vectors, accumulate absolute errors and
+          absolute truth over all three components. Calculate the complete-case percentage before the equal-case macro average.
         </dd>
       </div>
       <div>
-        <dt>Dimensional evaluation</dt>
+        <dt>Field bases and dimensional diagnostics</dt>
         <dd>
-          Relative L1 and L2 metrics are not computed on normalized, standardized, or non-dimensional training targets. If
-          a model predicts normalized values, the submission/evaluator must undo that transform before scoring. For
-          HiLiftAeroML this means pressure, wall shear, and velocity are evaluated in the dataset-native physical units;
-          C<sub>d</sub>, C<sub>l</sub>, and Cp-cut comparisons remain coefficient-based by definition.
+          Relative L1/L2 use <code>(P-p_inf)/q_inf</code>, <code>tau_wall/q_inf</code> and <code>U/|U_inf|</code>, using each case's freestream
+          references. Undo model-specific standardization to reach these bases. Separate MAE/RMSE diagnostics are inverse-scaled per case to Pa for
+          pressure and wall shear, and m/s for velocity, before equal-case aggregation. Vector relative L2 uses the full three-component magnitude;
+          vector MAE/RMSE use the evaluator's per-component convention.
         </dd>
       </div>
       <div>
         <dt>Surface pressure relative L1/L2</dt>
         <dd>
-          Relative L1 and L2 error for dimensional surface pressure <code>p_surface_pred</code> against the evaluator
-          surface pressure values. Cp is used only for the Cp-cut comparisons and plots.
+          Relative L1/L2 for <code>Cp = (P-p_inf)/q_inf</code> at every native boundary point. This is a full-surface field metric; the separate
+          Cp-cut metric uses evaluator-derived one-dimensional traces.
         </dd>
       </div>
       <div>
         <dt>Surface wall-shear relative L1/L2</dt>
         <dd>
-          Relative L1 and L2 error for the wall-shear vector \(\tau_w = (\tau_{w,x}, \tau_{w,y}, \tau_{w,z})\) on the
-          CRM-HL aircraft surface.
+          Relative L1/L2 for all three components of <code>tau_wall/q_inf</code> at every native boundary point, with the published nodal dual areas.
         </dd>
       </div>
       <div>
         <dt>Volume velocity relative L1/L2</dt>
         <dd>
-          Relative L1 and L2 error for the velocity vector \(u = (u_x, u_y, u_z)\) on every field-bearing
-          <code>PointData</code> location in the released volume VTU.
+          Relative L1/L2 for the three-component vector <code>U/|U_inf|</code> on every retained native volume point. The evaluator retains a point
+          when raw Float32 <code>avg(P) != 0.0</code>, before normalization; predictions cannot change this mask.
         </dd>
       </div>
       <div>
         <dt>Volume pressure relative L1/L2</dt>
-        <dd>Relative L1 and L2 error for pressure on every field-bearing point in the same public volume VTU.</dd>
+        <dd>Relative L1/L2 for <code>(P-p_inf)/q_inf</code> on the same retained valid volume points, each with one equal weight.</dd>
       </div>
       <div>
         <dt>Coefficient of determination</dt>
         <dd>
-          For scalar values \(y_i\), \(R^2 = 1 - \sum_i(\hat{y}_i - y_i)^2 / \sum_i(y_i - \bar{y})^2\). Higher is
-          better; 1.0 is perfect.
+          \(R^2 = 1 - \mathrm{SSE}/\mathrm{SST}\), using the weights, truth-centering groups and case aggregation specified for each metric below.
+          Higher is better; 1.0 is perfect. Profile metrics do not use one mean across all cases and samples.
         </dd>
       </div>
       <div>
         <dt>C<sub>d</sub> and C<sub>l</sub> R<sup>2</sup></dt>
         <dd>
-          R<sup>2</sup> computed over all evaluated cases using predicted drag coefficient <code>cd_pred</code> and lift
-          coefficient <code>cl_pred</code>. HiLiftAeroML also reports pitching-moment R<sup>2</sup> in the paper; the
-          current leaderboard stores C<sub>d</sub> and C<sub>l</sub> for consistency with the automotive tables.
+          Separate equal-case R<sup>2</sup> values over the selected split. The evaluator integrates pressure and viscous loads from the complete
+          native surface prediction and uses the same integration for truth. It applies each case's <code>qRef</code>, <code>areaRef</code> and angle
+          convention, including the <code>q_inf/qRef</code> conversion exactly once; a separately predicted force head cannot replace this integration.
         </dd>
       </div>
       <div>
-        <dt>Force R<sup>2</sup></dt>
-        <dd>Mean of C<sub>d</sub> R<sup>2</sup> and C<sub>l</sub> R<sup>2</sup>.</dd>
+        <dt>Load diagnostics</dt>
+        <dd>
+          Drag, lift and pitching-moment MAE are required diagnostics. Pitching moment uses exact degree-two surface integration about
+          <code>forcesCoR</code> with <code>qRef * areaRef * chordRef</code> normalization. It has no additional composite weight.
+        </dd>
       </div>
       <div>
         <dt>Cp cut R<sup>2</sup></dt>
         <dd>
-          One global R<sup>2</sup> over all selected wing-section surface pressure coefficient samples from the held-out
-          test cases. The evaluator flattens <code>cp_pred</code> and ground-truth <code>cp</code> across
-          <code>case_id</code>, <code>cut_id</code>, <code>station_id</code>, and section sample locations before computing
-          R<sup>2</sup>. The plotted pressure belt is chosen with the leaderboard station selector.
-        </dd>
-      </div>
-      <div>
-        <dt>Cp cut comparisons</dt>
-        <dd>
-          Per-case and per-cut R<sup>2</sup> values can be reported as profile comparisons, but the leaderboard ranking should use
-          the global held-out score so that cases with low Cp variance do not dominate through unstable per-case
-          averages.
+          Within each case, center truth independently in every connected physical cut graph. Use physical arc-length weights and pool graph SSE
+          and SST across rows A–J to calculate one case R<sup>2</sup>. Macro-average those complete-case R<sup>2</sup> values equally across the split.
+          The leaderboard station selector chooses a displayed row; it does not restrict scoring to that row.
         </dd>
       </div>
       <div>
         <dt>Velocity profile R<sup>2</sup></dt>
         <dd>
-          R<sup>2</sup> over the HLPW-5 A.1-D.3 profile samples. The leaderboard score is computed on
-          <code>u_over_u_inf_pred</code>, flattened across evaluated cases, all 16 stations, and vertical sample locations.
+          Compare <code>|U| / |U_inf|</code> at B.2, B.3, C.1, C.2 and C.3. Center truth within each station, use physical polyline arc-length
+          weights and pool station SSE and SST within the case. Macro-average the complete-case R<sup>2</sup> values equally. Invalid rows and gaps
+          follow the frozen support and receive no invented values or connecting edges.
         </dd>
       </div>
     </dl>
   </section>
 
   <section class="dataset-panel">
-    <h3>Default overall score</h3>
+    <h3>Candidate overall score</h3>
     <p>
-      The leaderboard can be ranked by any individual metric. Its default ranking is a bounded 0-100 weighted score:
+      The closed candidate computes a bounded 0–100 score with 50% field, 25% force and 25% profile weight. These preview values are not official
+      leaderboard claims. Each field error <code>E_q</code> below is a relative-L2 percentage on the stated nondimensional basis.
     </p>
     <p>
-      Relative L1 fields are reported as sortable supplementary metrics, but they are not included in this default score unless a
-      future benchmark rule assigns them weights.
+      Relative L1, dimensional MAE/RMSE and pitching-moment MAE are supplementary diagnostics. Complete regional reports may also be included at zero
+      weight; none of these adds a component to the score below.
     </p>
     <pre><code>S_error(q) = 100 * max(0, 1 - E_q / cap_q)
 S_R2(q)    = 100 * min(1, max(0, R2_q))
@@ -431,22 +440,22 @@ S_overall  = sum(weight_q * S_q)</code></pre>
         </thead>
         <tbody>
           <tr>
-            <td>Dimensional surface pressure, area-weighted relative L2</td>
+            <td>Surface Cp, area-weighted relative L2</td>
             <td>15%</td>
             <td>15% cap</td>
           </tr>
           <tr>
-            <td>Dimensional surface wall shear, area-weighted relative L2</td>
+            <td>Surface tau_wall/q_inf, area-weighted relative L2</td>
             <td>10%</td>
             <td>20% cap</td>
           </tr>
           <tr>
-            <td>Dimensional volume velocity, unweighted point relative L2</td>
+            <td>Volume U/|U_inf|, equal-valid-point relative L2</td>
             <td>15%</td>
             <td>12% cap</td>
           </tr>
           <tr>
-            <td>Dimensional volume pressure, unweighted point relative L2</td>
+            <td>Volume (P-p_inf)/q_inf, equal-valid-point relative L2</td>
             <td>10%</td>
             <td>15% cap</td>
           </tr>
@@ -481,7 +490,7 @@ S_overall  = sum(weight_q * S_q)</code></pre>
       <li><a href="https://caemldatasets.org/hiliftaeroml/">HiLiftAeroML dataset page</a></li>
       <li><a href="https://arxiv.org/abs/2605.19565">HiLiftAeroML paper</a></li>
       <li><a href="https://huggingface.co/datasets/nvidia/HiLiftAeroML">HiLiftAeroML Hugging Face dataset</a></li>
-      <li><a href="https://huggingface.co/datasets/nvidia/HiLiftAeroML/blob/main/splits/README.md">HiLiftAeroML split README</a></li>
+      <li><a href="https://huggingface.co/datasets/nvidia/HiLiftAeroML/blob/bbec30bcfc6103309c1375c5228b3ad0a586bfaf/splits/README.md">HiLiftAeroML split README</a></li>
       <li><a href="https://aiaa-hlpw.org/HLPW/index-workshop5.html">HLPW-5 workshop archive and submission templates</a></li>
       <li><a href="https://ntrs.nasa.gov/citations/20240014255">NASA HLPW-5 workshop summary</a></li>
       <li><a href="{{ '/' | relative_url }}">CFD leaderboard prototype</a></li>
