@@ -12,21 +12,22 @@ chart:
   vega_lite: true
 ---
 
-<div class="leaderboard-page">
+<div class="leaderboard-page ux-leaderboard">
   <header class="leaderboard-masthead">
     <div class="leaderboard-masthead-copy">
-      <h1>FluidsBench Leaderboard</h1>
-      <p>Compare published surrogate-model results across fluid-dynamics datasets.</p>
+      <p class="ux-eyebrow">Open benchmarks for scientific machine learning</p>
+      <h1>Fluidsbench leaderboard</h1>
+      <p>Assess physics AI surrogate models across realistic fluid dynamics datasets</p>
     </div>
     <div class="leaderboard-source-row">
-      <span id="submission-status" class="leaderboard-submit-status">Submissions are currently closed.</span>
+      <span id="submission-status" class="leaderboard-submit-status"></span>
       <button
         id="open-submission-repo"
         class="leaderboard-submit-button"
         type="button"
         aria-describedby="submission-status"
         disabled
-      >Submit a result - coming soon</button>
+      >Submissions opening soon</button>
     </div>
   </header>
 
@@ -35,19 +36,75 @@ chart:
     <span id="leaderboard-data-warning-text">checking the selected leaderboard data release.</span>
   </aside>
 
-  <details class="leaderboard-release-disclosure" id="leaderboard-release-details">
-    <summary>
-      <span id="leaderboard-release-compact">Loading release details...</span>
-      <span class="leaderboard-summary-action">Release details and downloads</span>
-    </summary>
-    <div class="leaderboard-release-bar" aria-label="Leaderboard data release">
-      <div class="leaderboard-release-summary">
-        <span class="leaderboard-release-label">Full release identifier</span>
-        <strong id="leaderboard-release-id">Loading...</strong>
-        <span id="leaderboard-release-meta" class="leaderboard-release-meta"></span>
-        <a id="leaderboard-release-source" href="#" target="_blank" rel="noopener noreferrer" hidden>View source</a>
+  <div id="leaderboard-release-warning" class="leaderboard-profile-warning" role="alert" hidden></div>
+
+  <section class="leaderboard-controls" aria-label="Leaderboard filters">
+    <div class="leaderboard-control">
+      <label class="leaderboard-control-title" for="dataset-filter">Dataset</label>
+      <select id="dataset-filter" data-leaderboard-dataset-select></select>
+    </div>
+    <div class="leaderboard-control">
+      <label class="leaderboard-control-title" for="split-filter">Split</label>
+      <select id="split-filter" data-leaderboard-split-select></select>
+    </div>
+    <details class="ux-filters ux-menu">
+      <summary>More filters <span aria-hidden="true">⌄</span></summary>
+      <div class="ux-menu-content">    <div class="leaderboard-control">
+      <label class="leaderboard-control-title" for="type-filter">Model type</label>
+      <select id="type-filter"><option value="">All model types</option></select>
+    </div>
+    <div class="leaderboard-control leaderboard-version-control" id="leaderboard-version-control">
+      <span class="leaderboard-control-title">Result versions</span>
+      <label for="show-all-versions" class="leaderboard-version-toggle">
+        <input id="show-all-versions" type="checkbox">
+        <span>Show previous versions</span>
+      </label>
+    </div>
       </div>
-      <div class="leaderboard-release-actions" aria-label="Research data actions">
+    </details>
+    <a id="ux-dataset-link" class="ux-dataset-link" href="{{ '/datasets/' | relative_url }}">About this dataset <span aria-hidden="true">↗</span></a>
+  </section>
+
+  <div id="leaderboard-error" class="leaderboard-load-error" role="alert" hidden></div>
+  <div id="leaderboard-load-status" class="leaderboard-load-status" role="status" hidden></div>
+  <div id="leaderboard-profile-warning" class="leaderboard-profile-warning" role="status" hidden></div>
+
+  <div class="ux-workspace-tabs" role="tablist" aria-label="Benchmark workspace">
+    <button id="ux-tab-leaderboard" type="button" role="tab" aria-selected="true" aria-controls="ux-panel-leaderboard" data-workspace-tab="leaderboard">Leaderboard</button>
+    <button id="ux-tab-compare" type="button" role="tab" aria-selected="false" aria-controls="leaderboard-advanced-analysis" data-workspace-tab="compare">Compare <span id="ux-compare-count">0</span></button>
+    <button id="ux-tab-methodology" type="button" role="tab" aria-selected="false" aria-controls="leaderboard-methodology" data-workspace-tab="methodology">Methodology</button>
+  </div>
+  <div class="leaderboard-table-area" id="ux-panel-leaderboard" role="tabpanel" aria-labelledby="ux-tab-leaderboard" data-workspace-panel="leaderboard">
+    <div class="ux-results-heading"><div><h2>Model results</h2><p id="ux-results-summary">Loading results…</p></div><span class="ux-score-hint">Select models to compare</span></div>
+    <div class="leaderboard-table-toolbar">
+      <label class="ux-sort-label" for="ux-sort">Sort by <select id="ux-sort"></select></label>
+      <button id="ux-sort-direction" class="leaderboard-action-button" type="button" aria-label="Reverse sort direction">↑</button>
+      <div class="leaderboard-metric-view-controls" role="group" aria-label="Leaderboard metric detail level">
+
+        <button
+          id="leaderboard-metric-view-toggle"
+          class="leaderboard-metric-view-toggle"
+          type="button"
+          aria-controls="leaderboard-table leaderboard-column-controls"
+          aria-expanded="false"
+        >Show all metrics</button>
+        <span id="leaderboard-metric-view-status" class="leaderboard-metric-view-status" role="status"></span>
+      </div>
+      <div
+        class="leaderboard-column-controls"
+        id="leaderboard-column-controls"
+        role="group"
+        aria-label="Visible full-view column groups"
+        hidden
+      >
+        <span class="leaderboard-column-controls-label">Full-view groups</span>
+        <div class="leaderboard-column-toggles" id="leaderboard-column-toggles"></div>
+      </div>
+    </div>
+
+
+
+    <details class="ux-menu ux-table-download"><summary>Download results <span aria-hidden="true">↓</span></summary><div class="ux-menu-content">      <div class="leaderboard-release-actions" aria-label="Research data actions">
         <label class="leaderboard-export-scope" for="leaderboard-export-scope">
           <span>Download rows</span>
           <select id="leaderboard-export-scope">
@@ -71,69 +128,67 @@ chart:
         >
           <i class="fa-solid fa-quote-left" aria-hidden="true"></i><span>Cite this release</span>
         </button>
+      </div></div></details>
+    <section class="leaderboard-table-wrap" aria-label="CFD leaderboard table">
+      <table class="leaderboard-table" id="leaderboard-table">
+        <thead><tr id="leaderboard-header-row"></tr></thead>
+        <tbody id="leaderboard-body"></tbody>
+      </table>
+    </section>
+
+  </div>
+
+  <div class="ux-result-footer">  <details class="leaderboard-release-disclosure" id="leaderboard-release-details">
+    <summary>
+      <span id="leaderboard-release-compact">Loading release details...</span>
+      <span class="leaderboard-summary-action">Release details</span>
+    </summary>
+    <div class="leaderboard-release-bar" aria-label="Leaderboard data release">
+      <div class="leaderboard-release-summary">
+        <span class="leaderboard-release-label">Full release identifier</span>
+        <strong id="leaderboard-release-id">Loading...</strong>
+        <span id="leaderboard-release-meta" class="leaderboard-release-meta"></span>
+        <a id="leaderboard-release-source" href="#" target="_blank" rel="noopener noreferrer" hidden>View source</a>
       </div>
+
       <p id="leaderboard-claim-eligibility" class="leaderboard-claim-eligibility" role="status" hidden></p>
       <p id="leaderboard-release-action-status" class="leaderboard-sr-only" role="status"></p>
     </div>
-  </details>
-  <div id="leaderboard-release-warning" class="leaderboard-profile-warning" role="alert" hidden></div>
 
-  <section class="leaderboard-controls" aria-label="Leaderboard filters">
-    <div class="leaderboard-control">
-      <label class="leaderboard-control-title" for="dataset-filter">Dataset</label>
-      <select id="dataset-filter" data-leaderboard-dataset-select></select>
+  </details></div>
+  <details class="leaderboard-progressive-panel leaderboard-analysis" id="leaderboard-advanced-analysis" data-workspace-panel="compare" role="tabpanel" aria-labelledby="ux-tab-compare" open hidden>
+    <summary>
+      <span>Explore detailed figures</span>
+      <small>Metric comparison, scatter plots and profile curves</small>
+    </summary>
+    <div class="leaderboard-progressive-body">
+  <fieldset class="leaderboard-model-picker" aria-describedby="comparison-model-description">
+    <legend>Compare models</legend>
+    <p id="comparison-model-description">
+      Select up to 12 models in the leaderboard. Your selection applies to every chart.
+    </p>
+    <div class="leaderboard-model-picker-actions">
+      <button id="select-all-comparison-models" class="leaderboard-action-button" type="button">Select top 3</button>
+      <button id="clear-comparison-models" class="leaderboard-action-button" type="button">Clear</button>
+      <span id="comparison-model-count" role="status"></span>
     </div>
-    <div class="leaderboard-control">
-      <label class="leaderboard-control-title" for="split-filter">Split</label>
-      <select id="split-filter" data-leaderboard-split-select></select>
-    </div>
-    <div class="leaderboard-control">
-      <label class="leaderboard-control-title" for="type-filter">Model type</label>
-      <select id="type-filter"><option value="">All model types</option></select>
-    </div>
-    <div class="leaderboard-control leaderboard-version-control" id="leaderboard-version-control">
-      <span class="leaderboard-control-title">Result versions</span>
-      <label for="show-all-versions" class="leaderboard-version-toggle">
-        <input id="show-all-versions" type="checkbox">
-        <span>Show previous versions</span>
-      </label>
-    </div>
-  </section>
+    <button class="leaderboard-action-button" type="button" data-open-workspace="leaderboard">Edit selection</button>
+    <div id="ux-selected-models" class="ux-selected-models"></div>
+  </fieldset>
 
-  <div id="leaderboard-error" class="leaderboard-load-error" role="alert" hidden></div>
-  <div id="leaderboard-load-status" class="leaderboard-load-status" role="status" hidden></div>
-  <div id="leaderboard-profile-warning" class="leaderboard-profile-warning" role="status" hidden></div>
+  <div class="leaderboard-analysis-tabs" role="tablist" aria-label="Detailed figure type">
+    <button id="analysis-tab-comparison" type="button" role="tab" aria-selected="true" aria-controls="analysis-panel-comparison" data-analysis-tab="comparison">Metrics</button>
+    <button id="analysis-tab-scatter" type="button" role="tab" aria-selected="false" aria-controls="analysis-panel-scatter" data-analysis-tab="scatter">Trade-offs</button>
+    <button id="analysis-tab-profiles" type="button" role="tab" aria-selected="false" aria-controls="analysis-panel-profiles" data-analysis-tab="profiles">Profiles</button>
+    <button id="analysis-tab-regional" type="button" role="tab" aria-selected="false" aria-controls="analysis-panel-regional" data-analysis-tab="regional">Regions</button>
+  </div>
 
-  <div class="leaderboard-table-area">
-    <div class="leaderboard-table-toolbar">
-      <div class="leaderboard-metric-view-controls" role="group" aria-label="Leaderboard metric detail level">
-        <span class="leaderboard-column-controls-label">Metric columns</span>
-        <button
-          id="leaderboard-metric-view-toggle"
-          class="leaderboard-metric-view-toggle"
-          type="button"
-          aria-controls="leaderboard-table leaderboard-column-controls"
-          aria-expanded="false"
-        >Show all metrics</button>
-        <span id="leaderboard-metric-view-status" class="leaderboard-metric-view-status" role="status"></span>
-      </div>
-      <div
-        class="leaderboard-column-controls"
-        id="leaderboard-column-controls"
-        role="group"
-        aria-label="Visible full-view column groups"
-        hidden
-      >
-        <span class="leaderboard-column-controls-label">Full-view groups</span>
-        <div class="leaderboard-column-toggles" id="leaderboard-column-toggles"></div>
-      </div>
-    </div>
-
-    <details class="leaderboard-radar-panel" id="leaderboard-radar-panel" open>
+    <details class="leaderboard-radar-panel" id="leaderboard-radar-panel" data-analysis-panel="comparison">
       <summary>
         <span class="leaderboard-radar-title">Compare model strengths</span>
-        <span class="leaderboard-radar-subtitle">Published score transforms · 100 is better</span>
+        <span class="leaderboard-radar-subtitle">Normalised scores · 100 is better</span>
       </summary>
+      <p id="ux-radar-selection-note" class="ux-chart-notes"></p>
       <div class="leaderboard-radar-content">
         <div class="leaderboard-radar-visual">
           <div class="leaderboard-radar-chart-frame">
@@ -154,64 +209,13 @@ chart:
             </p>
           </details>
         </div>
-        <aside class="leaderboard-radar-controls" aria-labelledby="radar-model-heading">
-          <div>
-            <h3 id="radar-model-heading">Models compared</h3>
-            <p>Choose up to four results. The leading three visible results are selected initially.</p>
-          </div>
-          <div class="leaderboard-radar-actions">
-            <button id="select-top-radar-models" class="leaderboard-action-button" type="button">Select top 3</button>
-            <button id="clear-radar-models" class="leaderboard-action-button" type="button">Clear</button>
-            <span id="radar-model-count" role="status"></span>
-          </div>
-          <div id="radar-model-options" class="leaderboard-radar-model-options"></div>
-          <ul id="radar-model-summary" class="leaderboard-radar-model-summary" aria-label="Selected model overall scores"></ul>
-        </aside>
+
       </div>
       <details class="leaderboard-numeric-data leaderboard-radar-data">
         <summary>View normalized comparison data</summary>
         <div id="radar-data-table" class="leaderboard-data-table-wrap"></div>
       </details>
     </details>
-
-    <section class="leaderboard-table-wrap" aria-label="CFD leaderboard table">
-      <table class="leaderboard-table" id="leaderboard-table">
-        <thead><tr id="leaderboard-header-row"></tr></thead>
-        <tbody id="leaderboard-body"></tbody>
-      </table>
-    </section>
-    <details class="leaderboard-ranking-disclosure">
-      <summary>How ranking works</summary>
-      <p id="leaderboard-ranking-policy" class="leaderboard-ranking-policy"></p>
-    </details>
-
-  </div>
-
-  <details class="leaderboard-progressive-panel leaderboard-analysis" id="leaderboard-advanced-analysis">
-    <summary>
-      <span>Explore detailed figures</span>
-      <small>Metric comparison, scatter plots and profile curves</small>
-    </summary>
-    <div class="leaderboard-progressive-body">
-  <fieldset class="leaderboard-model-picker" aria-describedby="comparison-model-description">
-    <legend>Models shown in detailed figures</legend>
-    <p id="comparison-model-description">
-      Choose models for the figures below. Up to twelve can be shown; any unavailable values are identified in the figure summary.
-    </p>
-    <div class="leaderboard-model-picker-actions">
-      <button id="select-all-comparison-models" class="leaderboard-action-button" type="button">Select up to 12</button>
-      <button id="clear-comparison-models" class="leaderboard-action-button" type="button">Clear</button>
-      <span id="comparison-model-count" role="status"></span>
-    </div>
-    <div id="comparison-model-options" class="leaderboard-model-options"></div>
-  </fieldset>
-
-  <div class="leaderboard-analysis-tabs" role="tablist" aria-label="Detailed figure type">
-    <button id="analysis-tab-comparison" type="button" role="tab" aria-selected="true" aria-controls="analysis-panel-comparison" data-analysis-tab="comparison">Metric comparison</button>
-    <button id="analysis-tab-scatter" type="button" role="tab" aria-selected="false" aria-controls="analysis-panel-scatter" data-analysis-tab="scatter">Metric scatter</button>
-    <button id="analysis-tab-profiles" type="button" role="tab" aria-selected="false" aria-controls="analysis-panel-profiles" data-analysis-tab="profiles">Profiles</button>
-    <button id="analysis-tab-regional" type="button" role="tab" aria-selected="false" aria-controls="analysis-panel-regional" data-analysis-tab="regional">Field regions</button>
-  </div>
 
   <section class="leaderboard-panel leaderboard-comparison-panel" id="analysis-panel-comparison" role="tabpanel" aria-labelledby="analysis-tab-comparison" data-analysis-panel="comparison">
     <div class="leaderboard-panel-heading">
@@ -278,14 +282,15 @@ chart:
   </section>
 
   <div id="analysis-panel-profiles" role="tabpanel" aria-labelledby="analysis-tab-profiles" data-analysis-panel="profiles" hidden>
+    <label class="ux-profile-view" for="ux-profile-view">Profile quantity <select id="ux-profile-view" aria-label="Profile quantity"></select></label>
     <div id="leaderboard-profile-panels" class="leaderboard-profile-panels"></div>
   </div>
 
   <section class="leaderboard-panel leaderboard-regional-panel" id="analysis-panel-regional" role="tabpanel" aria-labelledby="analysis-tab-regional" data-analysis-panel="regional" hidden>
     <div class="leaderboard-panel-heading">
       <div>
-        <h3>Native field regions</h3>
-        <p>Explore where selected DrivAerML, HiLiftAeroML, and AhmedML native-field errors occur. HiLift volume fields default to equal-case regional RMSE normalized by each case's whole-volume truth RMS; local relative L2 and R2 remain in the numeric diagnostics. These checksum-bound reports have zero official scoring weight.</p>
+        <h3>Where do models make errors?</h3>
+        <p>Regional diagnostics show where predictions differ from native CFD. These plots do not affect the benchmark score.</p><details class="ux-chart-notes"><summary>Aggregation details</summary><p>Available for DrivAerML, HiLiftAeroML and AhmedML. HiLift volume fields use equal-case regional RMSE, normalised by each case's whole-volume truth RMS. Local relative L2 and R2 remain in the numeric diagnostics.</p></details>
       </div>
       <div class="chart-control-row">
         <div class="chart-control">
@@ -329,12 +334,17 @@ chart:
     </div>
   </details>
 
-  <details class="leaderboard-progressive-panel leaderboard-methodology" id="leaderboard-methodology">
+  <details class="leaderboard-progressive-panel leaderboard-methodology" id="leaderboard-methodology" data-workspace-panel="methodology" role="tabpanel" aria-labelledby="ux-tab-methodology" open hidden>
     <summary>
       <span>Methodology and definitions</span>
       <small>Ranking, metrics, splits and training terminology</small>
     </summary>
     <div class="leaderboard-progressive-body leaderboard-definitions" aria-label="Leaderboard definitions">
+    <div class="ux-methodology-intro"><p class="ux-eyebrow">Understand the benchmark</p><h2>What do the scores mean?</h2><p>Compare results within the same dataset and split. The benchmark score combines the published metrics; it is not a percentage accuracy.</p></div>
+    <details class="leaderboard-ranking-disclosure" open>
+      <summary>How ranking works</summary>
+      <p id="leaderboard-ranking-policy" class="leaderboard-ranking-policy"></p>
+    </details>
     <details class="metric-definitions" id="metric-definitions">
       <summary>Metric definitions</summary>
       <div class="leaderboard-definition-body">

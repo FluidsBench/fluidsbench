@@ -63,7 +63,7 @@ compact_masthead: true
     </dl>
   </section>
 
-  <section class="dataset-panel dataset-getting-started">
+  <section id="dataset-start" class="dataset-panel dataset-getting-started">
     {% include dataset_getting_started.html slug="hiliftaeroml" %}
   </section>
 
@@ -254,7 +254,7 @@ compact_masthead: true
 
   </section>
 
-  <section class="dataset-panel">
+  <section id="dataset-evaluation" class="dataset-panel">
     {% include dataset_scoring_contract.html slug="hiliftaeroml" dataset="HiLiftAeroML" %}
   </section>
 
@@ -493,7 +493,7 @@ S_overall  = sum(weight_q * S_q)</code></pre>
       <li><a href="https://huggingface.co/datasets/nvidia/HiLiftAeroML/blob/bbec30bcfc6103309c1375c5228b3ad0a586bfaf/splits/README.md">HiLiftAeroML split README</a></li>
       <li><a href="https://aiaa-hlpw.org/HLPW/index-workshop5.html">HLPW-5 workshop archive and submission templates</a></li>
       <li><a href="https://ntrs.nasa.gov/citations/20240014255">NASA HLPW-5 workshop summary</a></li>
-      <li><a href="{{ '/' | relative_url }}">CFD leaderboard prototype</a></li>
+      <li><a href="{{ '/' | relative_url }}?dataset=hiliftaeroml">CFD leaderboard prototype</a></li>
     </ul>
   </section>
 </div>

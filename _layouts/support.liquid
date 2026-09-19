@@ -1,0 +1,15 @@
+---
+layout: default
+---
+<article class="ux-support-page{% if page.support_class %} {{ page.support_class }}{% endif %}">
+  <header class="ux-page-heading">
+    {% if page.eyebrow %}
+      <p class="ux-page-eyebrow">{{ page.eyebrow }}</p>
+    {% endif %}
+    <h1>{{ page.page_title }}</h1>
+    {% if page.page_description %}
+      <p class="ux-page-description">{{ page.page_description }}</p>
+    {% endif %}
+  </header>
+  {{ content }}
+</article>

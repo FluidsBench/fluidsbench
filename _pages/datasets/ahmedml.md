@@ -43,11 +43,11 @@ compact_masthead: true
     </dl>
   </section>
 
-  <section class="dataset-panel dataset-getting-started">
+  <section id="dataset-start" class="dataset-panel dataset-getting-started">
     {% include dataset_getting_started.html slug="ahmedml" %}
   </section>
 
-  {% include dataset_design_space.html slug="ahmedml" %}
+{% include dataset_design_space.html slug="ahmedml" %}
 
   <section class="dataset-panel">
     <h3>Published source splits</h3>
@@ -135,7 +135,7 @@ compact_masthead: true
 
   </section>
 
-  <section class="dataset-panel">
+  <section id="dataset-evaluation" class="dataset-panel">
     {% include dataset_scoring_contract.html slug="ahmedml" dataset="AhmedML" %}
   </section>
 
@@ -357,7 +357,7 @@ S_overall  = sum(weight_q * S_q)</code></pre>
     <ul>
       <li><a href="https://caemldatasets.org/ahmedml/">AhmedML dataset page</a></li>
       <li><a href="https://arxiv.org/abs/2407.20801">AhmedML paper</a></li>
-      <li><a href="{{ '/' | relative_url }}">Automotive CFD leaderboard prototype</a></li>
+      <li><a href="{{ '/' | relative_url }}?dataset=ahmedml">Automotive CFD leaderboard prototype</a></li>
     </ul>
   </section>
 </div>

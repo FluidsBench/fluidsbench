@@ -1,5 +1,12 @@
 {% assign dataset = site.data.dataset_catalog[include.slug] %}
-<section class="dataset-overview" data-dataset-id="{{ include.slug }}">
+<div class="ux-dataset-topline">
+  <a href="{{ '/datasets/' | relative_url }}">← All datasets</a
+  ><a class="ux-primary-link" href="{{ '/' | relative_url }}?dataset={{ dataset.name | slugify }}">View {{ dataset.name }} leaderboard →</a>
+</div>
+<nav class="ux-dataset-sections" aria-label="Dataset guide sections">
+  <a href="#dataset-overview">Overview</a><a href="#dataset-start">Get the data</a><a href="#dataset-evaluation">Evaluation</a>
+</nav>
+<section id="dataset-overview" class="dataset-overview" data-dataset-id="{{ include.slug }}">
   <div class="dataset-overview-copy">
     <p class="dataset-kicker">{{ dataset.category }}</p>
     <h2>Overview</h2>

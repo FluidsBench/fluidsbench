@@ -53,18 +53,18 @@ compact_masthead: true
     </dl>
   </section>
 
-  <section class="dataset-panel dataset-getting-started">
+  <section id="dataset-start" class="dataset-panel dataset-getting-started">
     {% include dataset_getting_started.html slug="drivaernetplusplus" %}
   </section>
 
-  {% include dataset_design_space.html slug="drivaernetplusplus" %}
+{% include dataset_design_space.html slug="drivaernetplusplus" %}
 
   <section class="dataset-panel">
     {% include dataset_submission.html slug="drivaernetplusplus" dataset="DrivAerNet++" %}
 
   </section>
 
-  <section class="dataset-panel">
+  <section id="dataset-evaluation" class="dataset-panel">
     {% include dataset_scoring_contract.html slug="drivaernetplusplus" dataset="DrivAerNet++" %}
   </section>
 

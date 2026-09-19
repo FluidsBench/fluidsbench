@@ -1,68 +1,50 @@
 ---
-layout: home
-title: about
+layout: support
+title: About
 permalink: /about/
-nav: true
-nav_order: 2
-page_title: "About FluidsBench"
-page_subtitle: A public benchmark designed for comparable, citable evaluation of AI surrogate models in fluid dynamics
-description: Learn how FluidsBench evaluates CFD surrogate models and meet the academic and industry team behind the benchmark.
+page_title: About FluidsBench
+page_description: A shared foundation for assessing physics AI surrogate models.
+description: The purpose, evaluation principles and people behind FluidsBench.
+hide_header_background: true
 ---
 
-<div class="about-page">
-  <section class="about-intro" aria-label="About the benchmark">
-    <p class="about-lead">
-      FluidsBench is designed to make official results from AI surrogate models easier to compare, inspect, and cite. It brings public fluid-dynamics datasets, dataset-specific evaluation rules, and versioned leaderboard releases into one benchmark.
-    </p>
-    <p>
-      Results in this field are often reported using different meshes, splits, fields, and metrics. FluidsBench retains the scientific requirements of each dataset while providing one consistent process for submitting and publishing results. Each published result remains tied to its dataset, split, and release so that a paper or public claim can be checked later.
-    </p>
-    <nav class="about-links" aria-label="Explore FluidsBench">
-      <a href="{{ '/' | relative_url }}">View the leaderboard <span aria-hidden="true">&rarr;</span></a>
-      <a href="{{ '/datasets/' | relative_url }}">Explore the datasets <span aria-hidden="true">&rarr;</span></a>
-    </nav>
+<p class="ux-page-lead">FluidsBench brings public fluid dynamics datasets, consistent evaluation rules and inspectable results together. Our aim is to make model comparisons useful for research and engineering.</p>
+
+<div class="ux-feature-grid">
+  <section class="ux-feature">
+    <span class="ux-section-number" aria-hidden="true">01</span>
+    <h2>Realistic flows</h2>
+    <p>Explore datasets spanning vehicle, aircraft and turbomachinery aerodynamics, with evaluation that respects each physical problem.</p>
+    <a href="{{ '/datasets/' | relative_url }}">Explore datasets <span aria-hidden="true">→</span></a>
   </section>
-
-  <section class="about-process" aria-labelledby="about-process-title">
-    <p class="about-eyebrow">Benchmark process</p>
-    <h2 id="about-process-title">How it works</h2>
-    <div class="about-process-grid">
-      <article class="about-process-step">
-        <span class="about-process-number" aria-hidden="true">01</span>
-        <h3>Define the evaluation</h3>
-        <p>Dataset teams define the public test cases, native scoring locations, required fields, and metrics.</p>
-      </article>
-      <article class="about-process-step">
-        <span class="about-process-number" aria-hidden="true">02</span>
-        <h3>Evaluate and package</h3>
-        <p>Model authors run their own models and provide every reported metric and required profile prediction.</p>
-      </article>
-      <article class="about-process-step">
-        <span class="about-process-number" aria-hidden="true">03</span>
-        <h3>Validate and publish</h3>
-        <p>FluidsBench checks each package for the required structure and internal consistency, then turns approved submitter-provided values into leaderboard tables and plots against public ground truth.</p>
-      </article>
-    </div>
-    <p class="about-process-note">
-      FluidsBench does not run submitted models or recalculate reported metrics from prediction fields. Links to public code, model, and environment artifacts are optional and are displayed when supplied.
-    </p>
+  <section class="ux-feature">
+    <span class="ux-section-number" aria-hidden="true">02</span>
+    <h2>Comparable evaluations</h2>
+    <p>Defined test cases, scoring locations and metrics give models a common basis for comparison within each benchmark.</p>
+    <a href="{{ '/run/' | relative_url }}">See the evaluation process <span aria-hidden="true">→</span></a>
   </section>
+  <section class="ux-feature">
+    <span class="ux-section-number" aria-hidden="true">03</span>
+    <h2>Evidence behind results</h2>
+    <p>Inspect reported metrics, flow profiles and validation records. Versioned releases keep results tied to the evaluation that produced them.</p>
+    <a href="{{ '/' | relative_url }}">Explore the leaderboard <span aria-hidden="true">→</span></a>
+  </section>
+</div>
 
-  <aside class="about-status" role="note" aria-label="Current benchmark status">
-    <span class="about-status-label">Current phase</span>
-    <p>
-      <strong>Prototype:</strong> submissions are currently closed. All displayed results are illustrative dummy data, not official results, and must not be cited or promoted.
-    </p>
-  </aside>
+<aside class="ux-page-notice" aria-label="Current benchmark status">
+  <strong>In development</strong>
+  <p>Submissions are currently closed. Prototype and pre-release results are not official benchmark results and must not be cited as such.</p>
+</aside>
 
-{% include people_grid.liquid people=site.data.people.organisers id="organisers" heading="Organising committee" variant="organisers" %}
-
-{% include people_grid.liquid people=site.data.people.advisory_board id="advisory-board" heading="Scientific and industrial advisory board" variant="advisory" %}
-
-  <section class="about-contact" aria-labelledby="about-contact-title">
-    <h2 id="about-contact-title">Questions?</h2>
-    <p>
-      For questions about the benchmark, datasets, or submissions, email <a href="mailto:admin@fluidsbench.org">admin@fluidsbench.org</a>.
-    </p>
+<div class="ux-info-grid">
+  <section>
+    <h2>People and governance</h2>
+    <p>The organising committee develops FluidsBench with scientific and industrial advisers. Dataset teams define the evaluation requirements; maintainers review result packages before publication.</p>
+    <a href="{{ '/contributors/' | relative_url }}">Meet the contributors <span aria-hidden="true">→</span></a>
+  </section>
+  <section>
+    <h2>Get in touch</h2>
+    <p>For questions about the project, collaborations or adding a dataset, contact <a href="mailto:admin@fluidsbench.org">admin@fluidsbench.org</a>.</p>
+    <a href="{{ '/community/' | relative_url }}">Join the community <span aria-hidden="true">→</span></a>
   </section>
 </div>

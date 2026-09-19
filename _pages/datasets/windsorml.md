@@ -47,7 +47,7 @@ compact_masthead: true
     </dl>
   </section>
 
-  <section class="dataset-panel dataset-getting-started">
+  <section id="dataset-start" class="dataset-panel dataset-getting-started">
     {% include dataset_getting_started.html slug="windsorml" %}
   </section>
 
@@ -89,7 +89,7 @@ compact_masthead: true
 
   </section>
 
-  <section class="dataset-panel">
+  <section id="dataset-evaluation" class="dataset-panel">
     {% include dataset_scoring_contract.html slug="windsorml" dataset="WindsorML" %}
   </section>
 
@@ -294,7 +294,7 @@ S_overall  = sum(weight_q * S_q)</code></pre>
     <ul>
       <li><a href="https://caemldatasets.org/windsorml/">WindsorML dataset page</a></li>
       <li><a href="https://arxiv.org/abs/2407.19320">WindsorML paper</a></li>
-      <li><a href="{{ '/' | relative_url }}">Automotive CFD leaderboard prototype</a></li>
+      <li><a href="{{ '/' | relative_url }}?dataset=windsorml">Automotive CFD leaderboard prototype</a></li>
     </ul>
   </section>
 </div>

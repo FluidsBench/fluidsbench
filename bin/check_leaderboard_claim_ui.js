@@ -446,15 +446,10 @@ const ahmedRegionalReport = {
     regional_values_consumed_by_official_score: false,
   },
   supports: {
-    "ahmedml-surface-four-normal-regions-v1": ahmedSupport(
-      ahmedRegionalBinding.contract_sha256,
-      "ahmed_surface",
-      ahmedSurfaceIds,
-      {
-        surface_pressure: ahmedRegionalField(ahmedSurfaceIds, "physical"),
-        surface_wall_shear: ahmedRegionalField(ahmedSurfaceIds, "physical"),
-      }
-    ),
+    "ahmedml-surface-four-normal-regions-v1": ahmedSupport(ahmedRegionalBinding.contract_sha256, "ahmed_surface", ahmedSurfaceIds, {
+      surface_pressure: ahmedRegionalField(ahmedSurfaceIds, "physical"),
+      surface_wall_shear: ahmedRegionalField(ahmedSurfaceIds, "physical"),
+    }),
     "ahmedml-volume-three-geometric-regions-v1": ahmedSupport(
       "338db5b806caec2883e2583e491b751546624d3f101c04ae644cf9357b1275d7",
       "ahmed_volume",
@@ -473,7 +468,9 @@ assert.equal(api.regionalReportMatches(ahmedRegionalReport, ahmedRegionalRow, ah
 assert.equal(api.regionalFieldsForDataset("ahmedml").surface_pressure.supportId, "ahmedml-surface-four-normal-regions-v1");
 assert.equal(api.regionalRules(ahmedRegionalReport, api.regionalFieldsForDataset("ahmedml").surface_pressure).length, 4);
 const tamperedAhmedReport = JSON.parse(JSON.stringify(ahmedRegionalReport));
-tamperedAhmedReport.supports["ahmedml-surface-four-normal-regions-v1"].fields.surface_pressure.regions[0].physical.pooled.fraction_of_support_squared_error += 0.2;
+tamperedAhmedReport.supports[
+  "ahmedml-surface-four-normal-regions-v1"
+].fields.surface_pressure.regions[0].physical.pooled.fraction_of_support_squared_error += 0.2;
 assert.equal(api.validAhmedRegionalReport(tamperedAhmedReport, ahmedRegionalRow, ahmedRegionalBinding, ahmedDefinition), false);
 
 api.state.metrics = new Map([["score", { id: "score", unit: "" }]]);
@@ -676,7 +673,10 @@ function nativeV3CpSeries(overrides = {}) {
   assert.equal(api.nativeProfileIndexSplitId("geometry", "geometry"), "geometry");
   assert.equal(api.profileStations(velocityPanel, families[0])[0].id, "autocfd5_v1");
   assert.equal(api.profileStations(velocityPanel, families[1])[0].id, "V1");
-  assert.deepEqual(Array.from(api.profileCoordinateViews(velocityPanel), (view) => view.id), ["support"]);
+  assert.deepEqual(
+    Array.from(api.profileCoordinateViews(velocityPanel), (view) => view.id),
+    ["support"]
+  );
   assert.equal(api.defaultProfileCoordinateView(velocityPanel), "support", "velocity profiles must retain their one existing coordinate");
   assert.deepEqual(
     Array.from(
@@ -832,9 +832,7 @@ async function verifyNativeV3CpDisplayCoordinates() {
   const drivaerml = manifest.datasets.find((dataset) => dataset.slug === "drivaerml");
   const cpPanel = drivaerml.diagnostic_panels.find((panel) => panel.id === "pressure_profiles");
   const cpFamily = api.profileFamilies(cpPanel).find((family) => family.id === "drivaerml_cp_relative_v1");
-  const cpStation = api.profileStations(cpPanel, cpFamily).find(
-    (station) => station.id === "sidewall_front_wheelhouse_relative"
-  );
+  const cpStation = api.profileStations(cpPanel, cpFamily).find((station) => station.id === "sidewall_front_wheelhouse_relative");
   const quantity = cpPanel.quantities[0];
   const materialized = nativeV3CpSeries();
   const truthSource = {
@@ -885,7 +883,10 @@ async function verifyNativeV3CpDisplayCoordinates() {
 
   const physicalView = api.resolvedProfileCoordinateView(cpPanel, "physical_x", truth, cpStation);
   const physical = api.projectProfileSeries(truth, physicalView);
-  assert.deepEqual(Array.from(physical.points, (point) => point.x), materialized.display_coordinate);
+  assert.deepEqual(
+    Array.from(physical.points, (point) => point.x),
+    materialized.display_coordinate
+  );
   assert.equal(physical.chartPoints[3].x, null, "physical-x projection must retain the native segment gap");
   assert.deepEqual(
     Array.from(physical.points, (point) => point.sourcePointIndex),
@@ -929,17 +930,17 @@ async function verifyNativeV3CpDisplayCoordinates() {
 
   const arcView = api.resolvedProfileCoordinateView(cpPanel, "arc_length", truth, cpStation);
   const arc = api.projectProfileSeries(truth, arcView);
-  assert.deepEqual(Array.from(arc.points, (point) => point.x), materialized.coordinate);
-  assert.equal(arc.chartPoints[3].x, null, "arc projection must retain the same native segment gap");
   assert.deepEqual(
-    Array.from(api.profileTooltipLines({ label: "Native CFD" }, physical.points[0], cpPanel, quantity, physicalView)),
-    [
-      "Native CFD",
-      `Physical streamwise x coordinate, m: ${materialized.display_coordinate[0]}`,
-      `Surface arc length (scoring coordinate), m: ${materialized.coordinate[0]}`,
-      `${quantity.y_label}: ${materialized.value[0]}`,
-    ]
+    Array.from(arc.points, (point) => point.x),
+    materialized.coordinate
   );
+  assert.equal(arc.chartPoints[3].x, null, "arc projection must retain the same native segment gap");
+  assert.deepEqual(Array.from(api.profileTooltipLines({ label: "Native CFD" }, physical.points[0], cpPanel, quantity, physicalView)), [
+    "Native CFD",
+    `Physical streamwise x coordinate, m: ${materialized.display_coordinate[0]}`,
+    `Surface arc length (scoring coordinate), m: ${materialized.coordinate[0]}`,
+    `${quantity.y_label}: ${materialized.value[0]}`,
+  ]);
 
   const predictionSeries = currentProfileSeries({
     panel_id: "pressure_profiles",
@@ -1218,14 +1219,23 @@ async function verifyNativeRun419AgainstCurrentFixture(nativeRecord) {
       const arcPrediction = api.projectProfileSeries(prediction, arcView);
       assert.equal(physicalView.id, "physical_x");
       assert.equal(arcView.id, "arc_length");
-      assert.deepEqual(Array.from(physical.points, (point) => point.x), Array.from(series.display_coordinate));
-      assert.deepEqual(Array.from(arc.points, (point) => point.x), Array.from(series.coordinate));
+      assert.deepEqual(
+        Array.from(physical.points, (point) => point.x),
+        Array.from(series.display_coordinate)
+      );
+      assert.deepEqual(
+        Array.from(arc.points, (point) => point.x),
+        Array.from(series.coordinate)
+      );
       assert.deepEqual(
         Array.from(physicalPrediction.points, (point) => point.x),
         Array.from(series.display_coordinate),
         `${series.family_id}/${series.station_id} prediction must inherit physical x only after compatibility passes`
       );
-      assert.deepEqual(Array.from(arcPrediction.points, (point) => point.x), Array.from(series.coordinate));
+      assert.deepEqual(
+        Array.from(arcPrediction.points, (point) => point.x),
+        Array.from(series.coordinate)
+      );
       assert.deepEqual(
         Array.from(physical.points, (point) => point.sourcePointIndex),
         Array.from(arc.points, (point) => point.sourcePointIndex),
@@ -1398,8 +1408,8 @@ manifest.datasets.forEach((dataset) => {
         .filter((column) => column.definition)
         .map((column) => column.definition.id)
     ),
-    configuredIds,
-    `${dataset.name} summary table must contain only its headline metrics`
+    configuredIds.slice(0, 3),
+    `${dataset.name} summary table must contain the score and two primary metrics`
   );
   api.state.metricView = "full";
   api.state.visibleGroups = new Set(["absolute", "relative", "integral", "diagnostics", "scores", "model-details"]);
@@ -1418,9 +1428,9 @@ assert.equal(api.radarNormalizedValue(0.82, { transform: "bounded_quality" }), 8
 assert.equal(api.radarNormalizedValue(-0.3, { transform: "bounded_quality" }), 0);
 assert.equal(api.radarNormalizedValue(null, { transform: "bounded_quality" }), null);
 assert.ok(
-  leaderboardPageSource.indexOf('id="leaderboard-metric-view-toggle"') < leaderboardPageSource.indexOf('id="leaderboard-radar-panel"') &&
-    leaderboardPageSource.indexOf('id="leaderboard-radar-panel"') < leaderboardPageSource.indexOf('class="leaderboard-table-wrap"'),
-  "radar comparison must sit between the metric-view controls and leaderboard table"
+  leaderboardPageSource.indexOf('id="leaderboard-metric-view-toggle"') < leaderboardPageSource.indexOf('class="leaderboard-table-wrap"') &&
+    leaderboardPageSource.indexOf('class="leaderboard-table-wrap"') < leaderboardPageSource.indexOf('id="leaderboard-radar-panel"'),
+  "rankings must precede the comparison charts"
 );
 assert.match(leaderboardPageSource, /id="leaderboard-release-details"/);
 assert.match(leaderboardPageSource, /id="leaderboard-advanced-analysis"/);
@@ -2395,11 +2405,7 @@ async function verifyHiLiftCompactProfileOverlay() {
     "all 23 retained Transolver and GeoTransolver HiLiftAeroML previews must be present"
   );
   for (const [splitId, expectedCount] of expectedRowsPerSplit) {
-    assert.equal(
-      previewRows.filter((row) => row.split_id === splitId).length,
-      expectedCount,
-      `unexpected HiLiftAeroML preview count for ${splitId}`
-    );
+    assert.equal(previewRows.filter((row) => row.split_id === splitId).length, expectedCount, `unexpected HiLiftAeroML preview count for ${splitId}`);
   }
   for (const row of previewRows) {
     const expected = expectedPreviewSplits.get(row.split_id);
@@ -2427,10 +2433,7 @@ async function verifyHiLiftCompactProfileOverlay() {
       api.state.groundTruthChunks,
       `HiLiftAeroML ${splitLabel} ground truth`
     );
-    const splitTruth = await api.materializeHiLiftCompactTruth(
-      splitTruthMetadata,
-      `HiLiftAeroML ${splitLabel} ground truth`
-    );
+    const splitTruth = await api.materializeHiLiftCompactTruth(splitTruthMetadata, `HiLiftAeroML ${splitLabel} ground truth`);
     const splitPredictionContext = {
       index: predictionIndexForSplit,
       indexUrl: `https://example.test/assets/${predictionIndexRelativeForSplit}`,
@@ -2444,18 +2447,20 @@ async function verifyHiLiftCompactProfileOverlay() {
       api.state.profileChunks,
       `HiLiftAeroML ${row.submission_id}`
     );
-    const splitPrediction = await api.materializeHiLiftCompactPrediction(
-      splitPredictionMetadata,
-      splitTruth,
-      `HiLiftAeroML ${row.submission_id}`
-    );
+    const splitPrediction = await api.materializeHiLiftCompactPrediction(splitPredictionMetadata, splitTruth, `HiLiftAeroML ${row.submission_id}`);
     assert.equal(splitTruth.series.length, 15);
     assert.equal(splitPrediction.series.length, 15);
     const splitFamily = { id: "", placementMode: "" };
     const splitTruthCp = api.profileSeries(splitTruth, { id: "pressure_profiles" }, "pressure_belt_a", { id: "cp" }, splitFamily);
     const splitPredictionCp = api.profileSeries(splitPrediction, { id: "pressure_profiles" }, "pressure_belt_a", { id: "cp" }, splitFamily);
     const splitTruthVelocity = api.profileSeries(splitTruth, { id: "velocity_profiles" }, "hlpw5_b_2", { id: "velocity_ratio" }, splitFamily);
-    const splitPredictionVelocity = api.profileSeries(splitPrediction, { id: "velocity_profiles" }, "hlpw5_b_2", { id: "velocity_ratio" }, splitFamily);
+    const splitPredictionVelocity = api.profileSeries(
+      splitPrediction,
+      { id: "velocity_profiles" },
+      "hlpw5_b_2",
+      { id: "velocity_ratio" },
+      splitFamily
+    );
     assert.equal(api.profileSeriesCompatibility(splitTruthCp, splitPredictionCp), true);
     assert.equal(api.profileSeriesCompatibility(splitTruthVelocity, splitPredictionVelocity), true);
   }

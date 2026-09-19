@@ -3,18 +3,19 @@ layout: page
 permalink: /datasets/
 title: datasets
 page_title: Datasets
-description:
+description: Explore FluidsBench datasets, download guides and evaluation requirements.
 nav: true
 nav_order: 6
 hide_header_background: true
 compact_masthead: true
+wide: true
 ---
 
 <div class="datasets-page">
-  <p class="datasets-intro">
-    Each page separates the current public source release from the immutable FluidsBench scoring contract. Start with a representative image and
-    download example, then use the complete-support definition, split notes, and metric equations when preparing an evaluation.
-  </p>
+  <div class="ux-catalogue-intro">
+    <p class="datasets-intro">Choose a physical problem. Explore the data, evaluation requirements and model results.</p>
+    <a href="{{ '/run/' | relative_url }}">How to run a benchmark <span aria-hidden="true">→</span></a>
+  </div>
 
 {% assign dataset_order = "ahmedml,drivaerml,drivaernetplusplus,windsorml,hiliftaeroml,airfrans,blendednet,vki-ls59,rotor37" | split: "," %}
 
@@ -30,7 +31,7 @@ compact_masthead: true
         <h3>{{ dataset.name }}</h3>
         <p>{{ dataset.summary }}</p>
       </div>
-      <a class="dataset-card-link" href="{{ '/datasets/' | append: slug | append: '/' | relative_url }}">View dataset page</a>
+      <div class="ux-dataset-actions"><a class="ux-dataset-results" href="{{ '/' | relative_url }}?dataset={{ dataset.name | slugify }}">View leaderboard <span aria-hidden="true">↗</span></a><a class="dataset-card-link" href="{{ '/datasets/' | append: slug | append: '/' | relative_url }}">Dataset guide →</a></div>
     </article>
     {% endunless %}
     {% endfor %}

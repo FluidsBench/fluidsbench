@@ -43,11 +43,11 @@ compact_masthead: true
     </dl>
   </section>
 
-  <section class="dataset-panel dataset-getting-started">
+  <section id="dataset-start" class="dataset-panel dataset-getting-started">
     {% include dataset_getting_started.html slug="drivaerml" %}
   </section>
 
-  {% include dataset_design_space.html slug="drivaerml" %}
+{% include dataset_design_space.html slug="drivaerml" %}
 
   <section class="dataset-panel">
     <h3>Official source and candidate benchmark splits</h3>
@@ -136,7 +136,7 @@ compact_masthead: true
 
   </section>
 
-  <section class="dataset-panel">
+  <section id="dataset-evaluation" class="dataset-panel">
     {% include dataset_scoring_contract.html slug="drivaerml" dataset="DrivAerML" %}
   </section>
 
@@ -360,7 +360,7 @@ S_overall  = sum(weight_q * S_q)</code></pre>
     <ul>
       <li><a href="https://caemldatasets.org/drivaerml/">DrivAerML dataset page</a></li>
       <li><a href="https://arxiv.org/abs/2408.11969">DrivAerML paper</a></li>
-      <li><a href="{{ '/' | relative_url }}">Automotive CFD leaderboard prototype</a></li>
+      <li><a href="{{ '/' | relative_url }}?dataset=drivaerml">Automotive CFD leaderboard prototype</a></li>
     </ul>
   </section>
 </div>

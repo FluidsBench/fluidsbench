@@ -12,11 +12,11 @@ compact_masthead: true
 <div class="dataset-page">
   {% include dataset_intro.html slug="rotor37" %}
 
-  <section class="dataset-panel dataset-getting-started">
+  <section id="dataset-start" class="dataset-panel dataset-getting-started">
     {% include dataset_getting_started.html heading=2 slug="rotor37" %}
   </section>
 
-  {% include dataset_design_space.html slug="rotor37" %}
+{% include dataset_design_space.html slug="rotor37" %}
 
   <section class="dataset-section">
     <h2>Published source splits</h2>
@@ -46,7 +46,7 @@ compact_masthead: true
     {% include dataset_submission.html heading=2 slug="rotor37" dataset="Rotor37" %}
   </section>
 
-  <section class="dataset-section">
+  <section id="dataset-evaluation" class="dataset-section">
     {% include dataset_scoring_contract.html heading=2 slug="rotor37" dataset="Rotor37" %}
   </section>
 

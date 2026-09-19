@@ -46,18 +46,18 @@ compact_masthead: true
     </dl>
   </section>
 
-  <section class="dataset-panel dataset-getting-started">
+  <section id="dataset-start" class="dataset-panel dataset-getting-started">
     {% include dataset_getting_started.html slug="airfrans" %}
   </section>
 
-  {% include dataset_design_space.html slug="airfrans" %}
+{% include dataset_design_space.html slug="airfrans" %}
 
   <section class="dataset-panel">
     {% include dataset_submission.html slug="airfrans" dataset="AirfRANS" %}
 
   </section>
 
-  <section class="dataset-panel">
+  <section id="dataset-evaluation" class="dataset-panel">
     {% include dataset_scoring_contract.html slug="airfrans" dataset="AirfRANS" %}
   </section>
 
