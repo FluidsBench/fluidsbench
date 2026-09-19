@@ -637,7 +637,7 @@
   }
 
   function leaderboardAssetBaseUrl() {
-    if (isLocalUrl(baseUrl)) return baseUrl;
+    if (isLocalUrl(baseUrl) || window.FluidsBenchLeaderboardPreviewMode === true) return baseUrl;
     return safeHttpUrl(dataRelease().asset_base_url) || baseUrl;
   }
 
@@ -1799,9 +1799,12 @@
     return promise;
   }
 
+  function allDatasetEntries() {
+    return Array.isArray(state.manifest?.datasets) ? state.manifest.datasets : [];
+  }
+
   function datasetEntries() {
-    const datasets = Array.isArray(state.manifest?.datasets) ? state.manifest.datasets : [];
-    return datasets.filter((dataset) => leaderboardDisplay[dataset.slug || slug(dataset.name)]?.hidden !== true);
+    return allDatasetEntries().filter((dataset) => leaderboardDisplay[dataset.slug || slug(dataset.name)]?.hidden !== true);
   }
 
   function activeDataset() {
@@ -2370,7 +2373,7 @@
   }
 
   function indexRevisionRows(records) {
-    datasetEntries().forEach((entry) => state.revisionRows.set(entry.name, []));
+    allDatasetEntries().forEach((entry) => state.revisionRows.set(entry.name, []));
     records
       .map((entry, index) => normalizeRow(entry, index))
       .forEach((row) => {
@@ -2470,7 +2473,7 @@
       if (!expectedSha256 || loaded.sha256 !== expectedSha256) {
         throw new Error("complete leaderboard feed checksum does not match the selected data release");
       }
-      datasetEntries().forEach((entry) => state.rows.set(entry.name, []));
+      allDatasetEntries().forEach((entry) => state.rows.set(entry.name, []));
       loaded.data
         .map((entry, index) => normalizeRow(entry, index))
         .forEach((row) => {
