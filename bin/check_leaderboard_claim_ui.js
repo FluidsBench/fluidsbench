@@ -52,10 +52,12 @@ window.__FluidsBenchClaimTest = {
   canonicalResultPermalink,
   citationValues,
   claimEligibility,
+  datasetEntries,
   decimalHalfUp,
   defaultProfileCoordinateView,
   decodeHiLiftVelocityStorage,
   ensureRegionalReport,
+  ensureRows,
   ensureClaimRecord,
   ensureClaimsIndex,
   exactNativeTruthSource,
@@ -70,6 +72,7 @@ window.__FluidsBenchClaimTest = {
   materializeHiLiftCompactPrediction,
   materializeHiLiftCompactTruth,
   leaderboardManifestProvenance,
+  leaderboardAssetBaseUrl,
   claimRecordCheck,
   nativeProfileIndexSplitId,
   nativeProfileTruthVersion,
@@ -128,6 +131,7 @@ window.__FluidsBenchClaimTest = {
 ${source.slice(markerIndex)}`;
 
 const elements = new Map();
+const fetchedUrls = [];
 const context = {
   ArrayBuffer,
   Blob,
@@ -162,6 +166,7 @@ const context = {
   },
   async fetch(value) {
     const url = new URL(value);
+    fetchedUrls.push(url.href);
     const groundTruthMarker = "/profile-ground-truth/";
     const groundTruthOffset = decodeURIComponent(url.pathname).lastIndexOf(groundTruthMarker);
     if (groundTruthOffset >= 0) {
@@ -2627,7 +2632,58 @@ async function verifyWindsorNativeGroundTruth() {
   }
 }
 
-verifyDrivaerLegacyTruthFailsClosed()
+async function verifyInitialFeedLoading() {
+  const previous = { ...api.state };
+  const previousPreviewMode = context.window.FluidsBenchLeaderboardPreviewMode;
+  const manifest = JSON.parse(fs.readFileSync(path.join(submissionRoot, "leaderboard/manifest.json"), "utf8"));
+  const feed = JSON.parse(fs.readFileSync(path.join(submissionRoot, manifest.all_file), "utf8"));
+  try {
+    Object.assign(api.state, {
+      manifest,
+      metrics: new Map(manifest.metric_definitions.map((definition) => [definition.id, definition])),
+      rows: new Map(),
+      revisionRows: new Map(),
+      feedRowsLoaded: false,
+      feedVerified: false,
+      revisionHistoryLoaded: false,
+      revisionHistoryVerified: false,
+      claimsIndex: null,
+      claimsIndexPromise: null,
+      claimsIndexProvenance: { status: "not_requested" },
+    });
+    context.window.FluidsBenchLeaderboardPreviewMode = false;
+    assert.equal(api.leaderboardAssetBaseUrl(), manifest.data_release.asset_base_url);
+    context.window.FluidsBenchLeaderboardPreviewMode = true;
+    const visible = api.datasetEntries();
+    assert.ok(visible.length > 0);
+    assert.ok(visible.every((dataset) => !displayConfig[dataset.slug]?.hidden));
+    const requestStart = fetchedUrls.length;
+    await api.ensureRows(visible[0]);
+    assert.equal(api.state.feedVerified, true);
+    assert.equal(api.state.revisionHistoryVerified, true);
+    assert.equal(api.state.claimsIndexProvenance.status, "verified");
+    assert.equal(api.state.rows.size, manifest.datasets.length);
+    assert.equal(api.state.revisionRows.size, manifest.datasets.length);
+    assert.equal([...api.state.rows.values()].flat().length, feed.length);
+    for (const dataset of manifest.datasets.filter((entry) => displayConfig[entry.slug]?.hidden)) {
+      const expected = feed.filter((row) => row.dataset_id === dataset.slug || row.dataset === dataset.name);
+      assert.ok(expected.length > 0, "the hidden-dataset fixture must exercise full-feed validation");
+      assert.equal(api.state.rows.get(dataset.name).length, expected.length);
+    }
+    const requests = fetchedUrls.slice(requestStart);
+    assert.ok(requests.length >= 3, "initial loading must verify the feed, revision history and claims index");
+    assert.ok(
+      requests.every((url) => url.startsWith(context.window.FluidsBenchLeaderboardBaseUrl)),
+      "preview assets must use the configured pinned root, even when the manifest declares a moving branch"
+    );
+  } finally {
+    context.window.FluidsBenchLeaderboardPreviewMode = previousPreviewMode;
+    Object.assign(api.state, previous);
+  }
+}
+
+verifyInitialFeedLoading()
+  .then(() => verifyDrivaerLegacyTruthFailsClosed())
   .then(() => verifyWindsorNativeGroundTruth())
   .then(() => verifyNativeV3CpDisplayCoordinates())
   .then(() => verifyCurrentRun419ProfileFixture())

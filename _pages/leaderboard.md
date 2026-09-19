@@ -426,6 +426,7 @@ chart:
     : selectedLeaderboardBaseUrl + "/";
   window.FluidsBenchLeaderboardManifestUrl =
     window.FluidsBenchLeaderboardBaseUrl + "leaderboard/manifest.json";
+  window.FluidsBenchLeaderboardPreviewMode = {{ site.preview_mode | default: false | jsonify }};
   window.FluidsBenchLeaderboardManifestSha256 =
     {{ site.leaderboard_manifest_sha256 | default: "" | jsonify }};
   window.FluidsBenchSubmissionSourceRef =
