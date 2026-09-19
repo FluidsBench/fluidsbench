@@ -45,6 +45,7 @@
     "radar_metric_ids": ["rotor_pressure_rrmse", "rotor_temperature_rrmse", "rotor_massflow_rrmse", "rotor_efficiency_rrmse"]
   },
   "blendednet": {
+    "hidden": true,
     "headline_metric_ids": ["overall_score", "blended_cp_area_rel_l2", "blended_cfx_area_rel_l2", "blended_cfz_area_rel_l2", "c_drag_mae"],
     "radar_metric_ids": ["blended_cp_area_rel_l2", "blended_cfx_area_rel_l2", "blended_cfy_area_rel_l2", "blended_cfz_area_rel_l2"]
   }

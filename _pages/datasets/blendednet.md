@@ -1,5 +1,6 @@
 ---
 layout: page
+published: false
 permalink: /datasets/blendednet/
 title: BlendedNet dataset
 page_title: BlendedNet dataset

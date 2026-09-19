@@ -1800,7 +1800,8 @@
   }
 
   function datasetEntries() {
-    return Array.isArray(state.manifest?.datasets) ? state.manifest.datasets : [];
+    const datasets = Array.isArray(state.manifest?.datasets) ? state.manifest.datasets : [];
+    return datasets.filter((dataset) => leaderboardDisplay[dataset.slug || slug(dataset.name)]?.hidden !== true);
   }
 
   function activeDataset() {

@@ -20,6 +20,7 @@ compact_masthead: true
 
   <section class="dataset-list" aria-label="Available datasets">
     {% for slug in dataset_order %} {% assign dataset = site.data.dataset_catalog[slug] %}
+    {% unless site.data.leaderboard_display[slug].hidden %}
     <article class="dataset-card">
       <a class="dataset-card-image" href="{{ '/datasets/' | append: slug | append: '/' | relative_url }}" tabindex="-1" aria-hidden="true">
         <img src="{{ dataset.source.image.path | relative_url }}" alt="" loading="lazy" decoding="async">
@@ -31,6 +32,7 @@ compact_masthead: true
       </div>
       <a class="dataset-card-link" href="{{ '/datasets/' | append: slug | append: '/' | relative_url }}">View dataset page</a>
     </article>
+    {% endunless %}
     {% endfor %}
   </section>
 </div>
