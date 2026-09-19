@@ -305,7 +305,6 @@
     { id: "scores", label: "Scores", className: "metric-group-scores" },
     { id: "model-details", label: "Model details", className: "metric-group-neutral" },
   ];
-  const summaryColumnKeys = new Set(["rank", "model", "submitter", "modelTypes", "parameters", "details"]);
 
   const state = {
     manifest: null,
@@ -344,6 +343,9 @@
     sortKey: "rank",
     sortDirection: "asc",
     metricView: "summary",
+    workspaceView: "leaderboard",
+    analysisView: "comparison",
+    profilePanelIndex: 0,
     visibleGroups: new Set(),
     exportScope: "current",
     radarModelIds: new Set(),
@@ -581,9 +583,7 @@
         coordinateUnit: series?.coordinateUnit || null,
       };
     }
-    const requested = profileCoordinateViews(panel).some((view) => view.id === requestedView)
-      ? requestedView
-      : defaultProfileCoordinateView(panel);
+    const requested = profileCoordinateViews(panel).some((view) => view.id === requestedView) ? requestedView : defaultProfileCoordinateView(panel);
     if (requested === "physical_x" && Array.isArray(series?.displayCoordinates)) {
       return {
         id: "physical_x",
@@ -730,6 +730,9 @@
     params.set("sort", state.sortKey);
     params.set("direction", state.sortDirection);
     params.set("metric_view", state.metricView);
+    params.set("view", state.workspaceView);
+    params.set("analysis", state.analysisView);
+    params.set("profile_view", String(state.profilePanelIndex));
     if (state.metricView === "full") {
       params.set(
         "columns",
@@ -740,7 +743,12 @@
       );
     }
     params.set("models", Array.from(state.comparedModelIds).join(","));
-    params.set("radar_models", Array.from(state.radarModelIds).join(","));
+    params.set(
+      "radar_models",
+      selectedRadarRows()
+        .map((row) => row.id)
+        .join(",")
+    );
     if (state.comparisonMetric) params.set("comparison", state.comparisonMetric);
     if (state.scatterX) params.set("scatter_x", state.scatterX);
     if (state.scatterY) params.set("scatter_y", state.scatterY);
@@ -1204,8 +1212,7 @@
           !fractionsReconstruct(regions, "squared_error_fraction") ||
           globalRelativeL2 === null ||
           !Number.isFinite(reconstructedRelativeL2) ||
-          Math.abs(reconstructedRelativeL2 - globalRelativeL2) >
-            1e-10 * Math.max(1, Math.abs(globalRelativeL2))
+          Math.abs(reconstructedRelativeL2 - globalRelativeL2) > 1e-10 * Math.max(1, Math.abs(globalRelativeL2))
         ) {
           return false;
         }
@@ -1245,9 +1252,7 @@
     for (const [supportId, expectedSupport] of Object.entries(expectedSupports)) {
       const support = record(supports[supportId]);
       const supportDefinition = record(support.definition);
-      const rules = Array.isArray(supportDefinition.regions_in_code_order)
-        ? supportDefinition.regions_in_code_order
-        : [];
+      const rules = Array.isArray(supportDefinition.regions_in_code_order) ? supportDefinition.regions_in_code_order : [];
       if (
         support.definition_sha256 !== expectedSupport.definitionSha256 ||
         supportDefinition.scoring_role !== "report_only_zero_weight" ||
@@ -1256,10 +1261,7 @@
         rules.length !== expectedSupport.regions.length ||
         rules.some(
           (rule, index) =>
-            rule?.region_id !== expectedSupport.regions[index] ||
-            rule?.code !== index ||
-            typeof rule?.predicate !== "string" ||
-            !rule.predicate
+            rule?.region_id !== expectedSupport.regions[index] || rule?.code !== index || typeof rule?.predicate !== "string" || !rule.predicate
         )
       ) {
         return false;
@@ -1268,10 +1270,7 @@
       const expectedFields = Object.values(definition.fields)
         .filter((field) => field.supportId === supportId)
         .map((field) => field.reportFieldId);
-      if (
-        Object.keys(fields).length !== expectedFields.length ||
-        expectedFields.some((fieldId) => !Object.hasOwn(fields, fieldId))
-      ) {
+      if (Object.keys(fields).length !== expectedFields.length || expectedFields.some((fieldId) => !Object.hasOwn(fields, fieldId))) {
         return false;
       }
       for (const fieldId of expectedFields) {
@@ -1328,16 +1327,13 @@
             }
             for (const metricId of ["relative_l2_percent", "mae", "rmse"]) {
               const macroValue = finiteNumber(record(macro)[metricId]);
-              const values = ["minimum", "median", "p90", "maximum"].map((key) =>
-                finiteNumber(record(record(distribution)[metricId])[key])
-              );
+              const values = ["minimum", "median", "p90", "maximum"].map((key) => finiteNumber(record(record(distribution)[metricId])[key]));
               if (
                 macroValue === null ||
                 macroValue < 0 ||
                 values.some((value) => value === null || value < 0) ||
                 values.some((value, index) => index > 0 && values[index - 1] > value) ||
-                record(record(distribution)[metricId]).method !==
-                  "linear_order_statistics_over_complete_cases"
+                record(record(distribution)[metricId]).method !== "linear_order_statistics_over_complete_cases"
               ) {
                 return false;
               }
@@ -1345,9 +1341,7 @@
             errorFractionTotal += errorFraction;
             squaredErrorTotal += squaredError;
           }
-          if (
-            !closeRegionalValue(errorFractionTotal, squaredErrorTotal === 0 ? 0 : 1)
-          ) {
+          if (!closeRegionalValue(errorFractionTotal, squaredErrorTotal === 0 ? 0 : 1)) {
             return false;
           }
         }
@@ -2660,8 +2654,7 @@
     }
     const hiLiftCompactTruth =
       cached.data?.schema === hiLiftCompactTruthSchemas.index && cached.data?.schema_version === hiLiftCompactTruthSchemas.version;
-    const ahmedNativeTruth =
-      cached.data?.schema === ahmedNativeTruthSchemas.index && cached.data?.schema_version === ahmedNativeTruthSchemas.version;
+    const ahmedNativeTruth = cached.data?.schema === ahmedNativeTruthSchemas.index && cached.data?.schema_version === ahmedNativeTruthSchemas.version;
     if (drivaermlDataset && !nativeProfileTruth) {
       throw new Error(
         `${datasetName} profile ground truth must use a checksum-bound native CFD v2 or v3 release; legacy or analytical indexes are unavailable`
@@ -2936,10 +2929,7 @@
       ) {
         throw new Error(`${datasetName} native CFD truth index has incomplete coverage or a stale contract binding`);
       }
-      const masterIndexUrl = fileUrl(
-        declaration.master_index_file,
-        state.groundTruthManifestProvenance?.base_url || groundTruthBaseUrl
-      );
+      const masterIndexUrl = fileUrl(declaration.master_index_file, state.groundTruthManifestProvenance?.base_url || groundTruthBaseUrl);
       if (!state.groundTruthIndexes.has(masterIndexUrl)) {
         state.groundTruthIndexes.set(
           masterIndexUrl,
@@ -3136,33 +3126,29 @@
             !exactAhmedNativeTruthSource(candidate?.truth_source) ||
             !Array.isArray(candidate?.series) ||
             candidate.series.length !== ahmedNativeSeriesContract.length ||
-            candidate.series.some(
-              (series, seriesIndex) => {
-                const [panelId, stationId, quantityId, coordinateId, start, end] =
-                  ahmedNativeSeriesContract[seriesIndex] || [];
-                const coordinate = series?.coordinate;
-                const values = series?.value;
-                return (
-                  series?.panel_id !== panelId ||
-                  series?.station_id !== stationId ||
-                  series?.quantity_id !== quantityId ||
-                  series?.coordinate_id !== coordinateId ||
-                  series?.coordinate_unit !== "1" ||
-                  series?.source !== "evaluator_owned_frozen_native_cell_mapping" ||
-                  series?.sample_count !== 128 ||
-                  !Array.isArray(coordinate) ||
-                  !Array.isArray(values) ||
-                  coordinate.length !== 128 ||
-                  values.length !== 128 ||
-                  coordinate.some(
-                    (value, sampleIndex) =>
-                      !Number.isFinite(Number(value)) ||
-                      Math.abs(Number(value) - (start + ((end - start) * sampleIndex) / 127)) > 1e-12
-                  ) ||
-                  values.some((value) => !Number.isFinite(Number(value)))
-                );
-              }
-            )
+            candidate.series.some((series, seriesIndex) => {
+              const [panelId, stationId, quantityId, coordinateId, start, end] = ahmedNativeSeriesContract[seriesIndex] || [];
+              const coordinate = series?.coordinate;
+              const values = series?.value;
+              return (
+                series?.panel_id !== panelId ||
+                series?.station_id !== stationId ||
+                series?.quantity_id !== quantityId ||
+                series?.coordinate_id !== coordinateId ||
+                series?.coordinate_unit !== "1" ||
+                series?.source !== "evaluator_owned_frozen_native_cell_mapping" ||
+                series?.sample_count !== 128 ||
+                !Array.isArray(coordinate) ||
+                !Array.isArray(values) ||
+                coordinate.length !== 128 ||
+                values.length !== 128 ||
+                coordinate.some(
+                  (value, sampleIndex) =>
+                    !Number.isFinite(Number(value)) || Math.abs(Number(value) - (start + ((end - start) * sampleIndex) / 127)) > 1e-12
+                ) ||
+                values.some((value) => !Number.isFinite(Number(value)))
+              );
+            })
         )
       ) {
         throw new Error(`${label} AhmedML native profile chunk has an unsupported or stale contract binding`);
@@ -3227,8 +3213,7 @@
       _fluidsbenchAhmedNativeProfileTruth: Boolean(context.ahmedNativeTruth),
       _fluidsbenchWindsorNativeProfileTruth: Boolean(context.windsorNativeTruth),
       _fluidsbenchHiLiftIndex: context.hiLiftCompactTruth ? context.index : null,
-      _fluidsbenchArtifactBaseUrl:
-        context.hiLiftCompactTruth || context.hiLiftCompactPrediction ? new URL(".", context.indexUrl).href : baseUrl,
+      _fluidsbenchArtifactBaseUrl: context.hiLiftCompactTruth || context.hiLiftCompactPrediction ? new URL(".", context.indexUrl).href : baseUrl,
       _fluidsbenchProfileSchema: cached.data?.schema || cached.data?.schema_version || null,
       _fluidsbenchProvenance: {
         index_url: context.indexUrl,
@@ -3460,12 +3445,10 @@
       });
     }
     const rankedResultCount = fallback[0]?.ranking?.ranked_result_count || 0;
-    const developmentFixtures = allRows
-      .filter(isNonRankedDevelopmentFixture)
-      .map((row) => {
-        const fixtureRanking = nonRankedDevelopmentFixtureRanking(row, policy, rankedResultCount);
-        return { ...row, rank: null, _ranking: fixtureRanking };
-      });
+    const developmentFixtures = allRows.filter(isNonRankedDevelopmentFixture).map((row) => {
+      const fixtureRanking = nonRankedDevelopmentFixtureRanking(row, policy, rankedResultCount);
+      return { ...row, rank: null, _ranking: fixtureRanking };
+    });
     return [...rankedRows, ...developmentFixtures];
   }
 
@@ -4491,6 +4474,7 @@
 
   function allColumns() {
     const columns = [
+      { key: "compare", label: "Compare" },
       { key: "rank", label: "Rank", sortKey: "rank" },
       { key: "model", label: "Model", sortKey: "model" },
       { key: "submitter", label: "Submitted by", sortKey: "submitter" },
@@ -4518,11 +4502,41 @@
     return columns;
   }
 
+  function compactMetricDefinitions() {
+    const score = metricDefinition(ranking().metric_id);
+    return [
+      score,
+      ...headlineMetricDefinitions()
+        .filter((definition) => definition.id !== score?.id)
+        .slice(0, 2),
+    ].filter(Boolean);
+  }
+
+  function compactMetricLabel(definition) {
+    const labels = {
+      overall_score: "Score / 100",
+      surface_pressure_rel_l2: "Pressure error (%)",
+      surface_pressure_equal_entity_rel_l2: "Pressure error · equal (%)",
+      surface_wall_shear_rel_l2: "Wall shear error (%)",
+      volume_velocity_rel_l2: "Velocity error (%)",
+      vki_mach_rrmse: "Mach RRMSE",
+      vki_nut_rrmse: "Turb. viscosity RRMSE",
+      rotor_pressure_rrmse: "Pressure RRMSE",
+      rotor_temperature_rrmse: "Temperature RRMSE",
+    };
+    return labels[definition.id] || plainMetricLabel(definition);
+  }
+
   function activeColumns() {
     const columns = allColumns();
     if (state.metricView === "summary") {
-      const headlineIds = headlineMetricIds();
-      return columns.filter((column) => (column.definition ? headlineIds.has(column.definition.id) : summaryColumnKeys.has(column.key)));
+      const keys = ["compare", "rank", "model", ...compactMetricDefinitions().map((definition) => definition.id), "details"];
+      return keys
+        .map((key) => columns.find((column) => column.key === key))
+        .filter(Boolean)
+        .map((column) =>
+          column.definition ? { ...column, label: compactMetricLabel(column.definition), plainLabel: compactMetricLabel(column.definition) } : column
+        );
     }
     return columns.filter((column) => !column.group || state.visibleGroups.has(column.group));
   }
@@ -4537,13 +4551,12 @@
     const status = element("leaderboard-metric-view-status");
     const fullViewControls = element("leaderboard-column-controls");
     const table = element("leaderboard-table");
-    const headlineCount = headlineMetricDefinitions().length;
+    const headlineCount = compactMetricDefinitions().length;
     const totalCount = activeMetricDefinitions().length;
-    const hiddenMetricCount = Math.max(0, totalCount - headlineCount);
     const fullView = state.metricView === "full";
     const visibleFullMetricCount = activeMetricDefinitions().filter((definition) => state.visibleGroups.has(metricColumnGroup(definition))).length;
     if (button) {
-      button.textContent = fullView ? "Show headline metrics" : `Show all metrics${hiddenMetricCount ? ` (${hiddenMetricCount} more)` : ""}`;
+      button.textContent = fullView ? "Compact view" : "All metrics";
       button.setAttribute("aria-expanded", String(fullView));
     }
     if (status) {
@@ -4654,7 +4667,7 @@
         appendFormattedMetricLabel(label, column.label);
         wrapper.appendChild(label);
       }
-      wrapper.appendChild(headerHelpButton(column));
+      if (column.definition) wrapper.appendChild(headerHelpButton(column));
       th.appendChild(wrapper);
       row.appendChild(th);
     });
@@ -4741,6 +4754,18 @@
   }
 
   function appendCellContent(cell, submission, column) {
+    if (column.key === "compare") {
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.value = submission.id;
+      input.dataset.comparisonModel = "";
+      input.checked = state.comparedModelIds.has(submission.id);
+      input.disabled = !isLatestRevision(submission) || (!input.checked && state.comparedModelIds.size >= maxFigureModels);
+      input.setAttribute("aria-label", `Compare ${submission.model}`);
+      if (!isLatestRevision(submission)) input.title = "Comparison uses the latest result versions.";
+      cell.appendChild(input);
+      return;
+    }
     if (column.key === "details") {
       const link = document.createElement("a");
       link.className = "leaderboard-detail-button";
@@ -4780,12 +4805,18 @@
         openDetails(submission);
       });
       cell.appendChild(link);
+      if (state.metricView === "summary") {
+        const byline = document.createElement("span");
+        byline.className = "ux-model-byline";
+        byline.textContent = submission.submitter || "Submitter not supplied";
+        cell.appendChild(byline);
+      }
       const revision = resultRevision(submission);
       const revisionBadge = chip(`leaderboard-revision-badge${revision.is_latest ? "" : " is-superseded"}`, revisionLabel(submission));
       revisionBadge.title = revision.is_latest
         ? `Latest version in this result series (${revision.version_count} version${revision.version_count === 1 ? "" : "s"})`
         : `Superseded by ${revision.latest_submission_id}`;
-      cell.appendChild(revisionBadge);
+      if (!revision.is_latest || revision.version_count > 1) cell.appendChild(revisionBadge);
       return;
     } else if (column.key === "submitter") {
       cell.classList.add("leaderboard-submitter");
@@ -4813,10 +4844,12 @@
   }
 
   function renderTable() {
+    const focusedModel = document.activeElement?.closest?.("#leaderboard-body [data-comparison-model]")?.value;
     renderHeader();
     const body = element("leaderboard-body");
     body.replaceChildren();
     const rows = filteredRows();
+    renderUxControls();
     if (!rows.length) {
       const row = document.createElement("tr");
       const cell = document.createElement("td");
@@ -4851,6 +4884,10 @@
       });
       body.appendChild(row);
     });
+    if (focusedModel)
+      Array.from(body.querySelectorAll("[data-comparison-model]"))
+        .find((input) => input.value === focusedModel)
+        ?.focus();
   }
 
   function renderTypeFilter() {
@@ -4885,7 +4922,7 @@
   }
 
   function selectedRadarRows() {
-    return radarCandidateRows().filter((row) => state.radarModelIds.has(row.id));
+    return figureRows().slice(0, maxRadarModels);
   }
 
   function setDefaultRadarModels() {
@@ -4960,46 +4997,27 @@
   function setDefaultComparedModels() {
     state.comparedModelIds = new Set(
       rowsForCurrentModelType()
-        .slice(0, 5)
+        .slice()
+        .sort((a, b) => compareNumbers(a.rank, b.rank, "lower"))
+        .slice(0, 3)
         .map((row) => row.id)
     );
     state.staleComparedModelIds = new Set();
   }
 
   function renderComparisonModelPicker() {
-    const container = element("comparison-model-options");
-    if (!container) return;
-    container.replaceChildren();
-    const rows = rowsForCurrentModelType();
-    const selectedCount = rows.filter((row) => state.comparedModelIds.has(row.id)).length;
-    rows.forEach((row) => {
-      const label = document.createElement("label");
-      label.className = "leaderboard-model-option";
-      const input = document.createElement("input");
-      input.type = "checkbox";
-      input.value = row.id;
-      input.checked = state.comparedModelIds.has(row.id);
-      input.disabled = !input.checked && selectedCount >= maxFigureModels;
-      input.dataset.comparisonModel = "";
-      const text = document.createElement("span");
-      const context = rowRanking(row);
-      text.textContent = `${rowLabel(row)} — ${context?.tied ? "joint " : ""}rank ${row.rank ?? "unranked"}`;
-      label.append(input, text);
-      container.appendChild(label);
-    });
-    const staleCount = state.staleComparedModelIds.size;
     const count = element("comparison-model-count");
-    if (count) {
-      count.textContent = `${selectedCount} of ${rows.length} models selected${
-        staleCount
-          ? `; ${staleCount} requested model ID${staleCount === 1 ? " could" : "s could"} not be used (unavailable or above the figure limit)`
-          : ""
-      }. Maximum ${maxFigureModels}.`;
-    }
+    if (!count) return;
+    const staleCount = state.staleComparedModelIds.size;
+    count.textContent = `${figureRows().length} selected · up to ${maxFigureModels}${
+      staleCount ? ` · ${staleCount} requested result${staleCount === 1 ? " is" : "s are"} unavailable or above the limit` : ""
+    }`;
   }
 
   function updateFigureSelection() {
     renderComparisonModelPicker();
+    renderRadarChart();
+    renderTable();
     renderComparisonChart();
     renderScatterChart();
     void prepareRegionalExplorer();
@@ -5424,6 +5442,11 @@
     destroyChart("radar");
     const axes = radarMetricAxes();
     const rows = selectedRadarRows();
+    element("leaderboard-radar-panel")?.classList.toggle("ux-radar-unavailable", axes.length < 3 || !rows.length);
+    const radarNote = element("ux-radar-selection-note");
+    if (radarNote)
+      radarNote.textContent =
+        figureRows().length > maxRadarModels ? "The radar shows the first four selected models. All selected models appear in the other charts." : "";
     const overallDefinition = metricDefinition(ranking().metric_id);
     const tableColumns = [
       { label: "Model", value: (row) => rowLabel(row) },
@@ -6116,7 +6139,9 @@
         <path d="M145 184 L625 184" stroke="${color("downward_facing")}" stroke-width="16" opacity="0.82"/>
         <path d="M211 88 L474 88" stroke="${color("upward_facing")}" stroke-width="16" opacity="0.82"/>
         <path d="M583 130 L624 181" stroke="${color("streamwise_facing")}" stroke-width="16" opacity="0.82"/>
-        <ellipse cx="350" cy="136" rx="235" ry="86" fill="none" stroke="${color("lateral_facing")}" stroke-width="8" stroke-dasharray="12 8" opacity="0.82"/>
+        <ellipse cx="350" cy="136" rx="235" ry="86" fill="none" stroke="${color(
+          "lateral_facing"
+        )}" stroke-width="8" stroke-dasharray="12 8" opacity="0.82"/>
         <g class="leaderboard-volume-region-labels">
           <text x="343" y="66" text-anchor="middle">upward-facing dominant normal</text>
           <text x="343" y="219" text-anchor="middle">downward-facing dominant normal</text>
@@ -6237,15 +6262,11 @@
     const rules = regionalRules(documents[0].report, field);
     const labels = rules.map((rule) => regionalLabel(rule.region_id));
     const wholeSupportPrimary = regionalUsesWholeSupportMetric(field);
-    const primaryLabel = wholeSupportPrimary
-      ? "Equal-case whole-volume-normalized regional RMSE (%)"
-      : "Regional relative L² error (%)";
+    const primaryLabel = wholeSupportPrimary ? "Equal-case whole-volume-normalized regional RMSE (%)" : "Regional relative L² error (%)";
     const primaryCaption = wholeSupportPrimary
       ? "equal-case mean regional RMSE normalized by each case's whole-volume truth RMS"
       : "regional relative L² error";
-    const caseDistributionMetric = wholeSupportPrimary
-      ? "whole_support_normalized_rmse_percent"
-      : "relative_l2_percent";
+    const caseDistributionMetric = wholeSupportPrimary ? "whole_support_normalized_rmse_percent" : "relative_l2_percent";
     const values = documents.flatMap(({ row, report }) => {
       const fieldReport = regionalFieldReport(report, field);
       return (fieldReport?.regions || []).map((region) => ({
@@ -6307,7 +6328,9 @@
                 const lines = [`${context.dataset.label}: ${regionalNumber(context.raw)}`];
                 if (wholeSupportPrimary) {
                   lines.push(
-                    `Pooled whole-volume-normalized RMSE: ${regionalNumber(regionalPooled(region, weighting)?.whole_support_normalized_rmse_percent)}`,
+                    `Pooled whole-volume-normalized RMSE: ${regionalNumber(
+                      regionalPooled(region, weighting)?.whole_support_normalized_rmse_percent
+                    )}`,
                     `Pooled local relative L²: ${regionalNumber(regionalPooled(region, weighting)?.relative_l2_percent)}`,
                     `Pooled regional R²: ${regionalScalarNumber(regionalPooled(region, weighting)?.r2)}`
                   );
@@ -6329,9 +6352,9 @@
       : "";
     const caption = `${state.dataset}, ${state.split}: ${field.label} ${primaryCaption} for ${
       documents.length
-    } explicitly selected compatible result${
-      documents.length === 1 ? "" : "s"
-    }, using ${weightingLabel}. The ${rules.length} released geometric regions are mutually exclusive and exhaustive.${normalizationNote} Regional diagnostics have zero official scoring weight and do not change the official field or overall score. ${releaseStamp()}.`;
+    } explicitly selected compatible result${documents.length === 1 ? "" : "s"}, using ${weightingLabel}. The ${
+      rules.length
+    } released geometric regions are mutually exclusive and exhaustive.${normalizationNote} Regional diagnostics have zero official scoring weight and do not change the official field or overall score. ${releaseStamp()}.`;
     setChartSummary(
       "regional-chart-summary",
       `${field.label} ${primaryCaption} bar chart for ${state.dataset}, ${state.split}; ${documents.length} selected compatible submissions across ${rules.length} exhaustive regions. ${weightingLabel}; lower is better. Regional diagnostics have zero official scoring weight.`
@@ -6373,13 +6396,9 @@
         { label: "Pooled regional R2", value: (value) => regionalScalarNumber(value.regional_r2) }
       );
     } else {
-      columns.push(
-        { label: "Regional rel. L2 (%)", value: (value) => regionalNumber(value.relative_l2_percent) }
-      );
+      columns.push({ label: "Regional rel. L2 (%)", value: (value) => regionalNumber(value.relative_l2_percent) });
       if (values.some((value) => value.regional_r2 !== null)) {
-        columns.push(
-          { label: "Regional R2", value: (value) => regionalScalarNumber(value.regional_r2) }
-        );
+        columns.push({ label: "Regional R2", value: (value) => regionalScalarNumber(value.regional_r2) });
       }
     }
     columns.push(
@@ -6591,11 +6610,11 @@
       <div class="leaderboard-panel-heading">
         <div>
           <h3 id="profile-${index}-title"></h3>
-          <p id="profile-${index}-description"></p>
+          <details class="ux-chart-notes"><summary>About these profiles</summary><p id="profile-${index}-description"></p></details>
         </div>
         <div class="chart-control-row">
           <div class="chart-control profile-case-control">
-            <label class="chart-control-title" for="profile-${index}-case">Public evaluation geometry</label>
+            <label class="chart-control-title" for="profile-${index}-case">Test case</label>
             <select id="profile-${index}-case" data-profile-case-select disabled></select>
           </div>
           <div class="chart-control">
@@ -6702,12 +6721,7 @@
   }
 
   function decodeHiLiftVelocityStorage(stored, expectedCount, label) {
-    if (
-      !Array.isArray(stored) ||
-      !Number.isSafeInteger(expectedCount) ||
-      expectedCount < 1 ||
-      stored.length !== expectedCount * 4
-    ) {
+    if (!Array.isArray(stored) || !Number.isSafeInteger(expectedCount) || expectedCount < 1 || stored.length !== expectedCount * 4) {
       throw new Error(`${label} compact velocity storage length differs from its contract`);
     }
     const buffer = new ArrayBuffer(expectedCount * 4);
@@ -7035,11 +7049,7 @@
     ) {
       throw new Error(`${label} compact velocity storage metadata differs from its contract`);
     }
-    const velocity = decodeHiLiftVelocityStorage(
-      storedVelocity,
-      profileCase.volume_velocity.valid_row_count,
-      label
-    );
+    const velocity = decodeHiLiftVelocityStorage(storedVelocity, profileCase.volume_velocity.valid_row_count, label);
     const support = truthCase._fluidsbenchHiLiftPlotSupport;
     if (deltas.length !== support.cpX.length || velocity.length !== support.velocityTruth.length) {
       throw new Error(`${label} compact prediction lengths differ from public plot support`);
@@ -7359,9 +7369,7 @@
       coordinateIdentity: requiredSeriesIdentity(series, "coordinate_identity_sha256", label),
       valueIdentity: requiredSeriesIdentity(series, "value_identity_sha256", label),
       seriesIdentity: requiredSeriesIdentity(series, "series_identity_sha256", label),
-      displayCoordinateIdentity: hasDisplayCoordinates
-        ? requiredSeriesIdentity(series, "display_coordinate_identity_sha256", label)
-        : null,
+      displayCoordinateIdentity: hasDisplayCoordinates ? requiredSeriesIdentity(series, "display_coordinate_identity_sha256", label) : null,
     };
     if (!validSha256(computedCoordinateIdentity) || computedCoordinateIdentity !== identity.coordinateIdentity) {
       throw new Error(`${label} coordinate identity does not bind the submitted ordered coordinate bytes`);
@@ -8409,9 +8417,7 @@
     return figureFilename(
       `profile-data-${panel?.id || index}-${selection.family || "legacy"}-${state.profileCase}-${selection.station || "station"}-${
         selection.quantity || "quantity"
-      }-${
-        selection.coordinateView || "support"
-      }`,
+      }-${selection.coordinateView || "support"}`,
       extension
     );
   }
@@ -9637,7 +9643,10 @@
         ${detailsRow("Change summary", revision.change_summary || (revision.version === 1 ? "Initial published result." : null))}
         ${detailsRow("Dataset version", row.dataset_version)}
         ${detailsRow("Split ID", row.split_id)}
-        ${detailsRow("Prediction scope", regionalScope(row) === "surface_only" ? "Surface only (volume components fixed to zero)" : "Surface and volume")}
+        ${detailsRow(
+          "Prediction scope",
+          regionalScope(row) === "surface_only" ? "Surface only (volume components fixed to zero)" : "Surface and volume"
+        )}
         ${detailsRow("Submitted by", row.submitter)}
         ${detailsRow("Institution", row.institution)}
         ${detailsRow("Model types", row.modelTypes.join(", "))}
@@ -9860,6 +9869,11 @@
     if (sortKeys.has(restored.sortKey)) state.sortKey = restored.sortKey;
     if (["asc", "desc"].includes(restored.sortDirection)) state.sortDirection = restored.sortDirection;
 
+    state.workspaceView = ["leaderboard", "compare", "methodology"].includes(restored.params.get("view"))
+      ? restored.params.get("view")
+      : "leaderboard";
+    state.analysisView = restored.params.get("analysis") || "comparison";
+    state.profilePanelIndex = Number(restored.params.get("profile_view")) || 0;
     state.metricView = restored.metricView;
     if (restored.hasVisibleGroups && !restored.hasMetricView) state.metricView = "full";
 
@@ -9938,8 +9952,14 @@
     element("comparison-model-description").closest("fieldset").hidden = truthOnly;
     if (truthOnly) {
       element("leaderboard-advanced-analysis").open = true;
-      activateAnalysisTab("profiles");
+      state.workspaceView = "compare";
+      state.analysisView = "profiles";
     }
+    renderProfileExplorer();
+    compactFigureActions();
+    activateAnalysisTab(state.analysisView);
+    activateWorkspace(state.workspaceView, false);
+    renderUxControls();
   }
 
   function resizeVisibleCharts() {
@@ -9948,6 +9968,7 @@
 
   function activateAnalysisTab(name) {
     const activeName = ["comparison", "scatter", "profiles", "regional"].includes(name) ? name : "comparison";
+    state.analysisView = activeName;
     document.querySelectorAll("[data-analysis-tab]").forEach((tab) => {
       const selected = tab.dataset.analysisTab === activeName;
       tab.setAttribute("aria-selected", String(selected));
@@ -9963,7 +9984,26 @@
   function showError(error, message = "Could not load leaderboard data") {
     const box = element("leaderboard-error");
     box.hidden = false;
-    box.textContent = `${message}: ${error.message}`;
+    box.replaceChildren();
+    const title = document.createElement("strong");
+    title.textContent = message;
+    const retry = document.createElement("button");
+    retry.type = "button";
+    retry.className = "leaderboard-action-button";
+    retry.textContent = "Retry";
+    retry.addEventListener("click", () => window.location.reload());
+    const detail = document.createElement("details");
+    const summary = document.createElement("summary");
+    summary.textContent = "Technical details";
+    const text = document.createElement("p");
+    text.textContent = error.message;
+    detail.append(summary, text);
+    box.append(title, retry, detail);
+    if (!state.dataset) {
+      element("leaderboard-data-warning").hidden = true;
+      element("leaderboard-release-compact").textContent = "Release unavailable";
+      element("ux-results-summary").textContent = "Results could not be loaded. Please retry.";
+    }
   }
 
   function setLoading(datasetName = "") {
@@ -10080,7 +10120,165 @@
     updateUrl();
   }
 
+  function renderUxControls() {
+    const summary = element("ux-results-summary");
+    if (!summary) return;
+    const rows = filteredRows();
+    summary.textContent = `${rows.length} result${rows.length === 1 ? "" : "s"} · ${state.dataset} · ${state.split}`;
+    const link = element("ux-dataset-link");
+    link.href = new URL(`datasets/${activeDatasetSlug()}/`, window.location.href.split("?")[0]).href;
+    const sort = element("ux-sort");
+    const sortColumns = activeColumns().filter((column) => column.sortKey);
+    if (!sortColumns.some((column) => column.sortKey === state.sortKey)) {
+      const current = allColumns().find((column) => column.sortKey === state.sortKey);
+      if (current) sortColumns.push(current);
+    }
+    populateSelect(
+      sort,
+      sortColumns.map((column) => ({ value: column.sortKey, label: column.plainLabel || column.label })),
+      state.sortKey
+    );
+    const direction = element("ux-sort-direction");
+    direction.textContent = state.sortDirection === "asc" ? "↑" : "↓";
+    direction.setAttribute("aria-label", `Sort ${state.sortDirection === "asc" ? "descending" : "ascending"}`);
+    const selected = figureRows();
+    element("ux-compare-count").textContent = selected.length;
+    const chips = element("ux-selected-models");
+    chips.replaceChildren();
+    selected.forEach((row, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "ux-model-chip";
+      button.style.setProperty("--model-color", palette[index]);
+      button.textContent = `${row.model} ×`;
+      button.setAttribute("aria-label", `Remove ${row.model} from comparison`);
+      button.addEventListener("click", () => {
+        state.comparedModelIds.delete(row.id);
+        updateFigureSelection();
+      });
+      chips.appendChild(button);
+    });
+    if (!selected.length) chips.textContent = "No models selected. Choose results in the leaderboard, or use Select top 3.";
+  }
+
+  function activateWorkspace(name, persist = true) {
+    state.workspaceView = ["leaderboard", "compare", "methodology"].includes(name) ? name : "leaderboard";
+    document.querySelectorAll("[data-workspace-tab]").forEach((tab) => {
+      const active = tab.dataset.workspaceTab === state.workspaceView;
+      tab.setAttribute("aria-selected", String(active));
+      tab.tabIndex = active ? 0 : -1;
+    });
+    document.querySelectorAll("[data-workspace-panel]").forEach((panel) => {
+      panel.hidden = panel.dataset.workspacePanel !== state.workspaceView;
+    });
+    window.requestAnimationFrame(resizeVisibleCharts);
+    if (persist) updateUrl();
+  }
+
+  function renderProfileExplorer() {
+    const select = element("ux-profile-view");
+    if (!select) return;
+    const panels = activeDataset()?.diagnostic_panels || [];
+    const selected = populateSelect(
+      select,
+      panels.map((panel, index) => ({ value: String(index), label: panel.title })),
+      String(state.profilePanelIndex)
+    );
+    state.profilePanelIndex = Number(selected) || 0;
+    select.closest("label").hidden = panels.length <= 1;
+    document.querySelectorAll("[data-profile-panel]").forEach((panel) => {
+      panel.hidden = Number(panel.dataset.profilePanel) !== state.profilePanelIndex;
+    });
+    window.requestAnimationFrame(resizeVisibleCharts);
+  }
+
+  function compactFigureActions() {
+    document.querySelectorAll(".leaderboard-figure-toolbar").forEach((toolbar) => {
+      if (toolbar.dataset.compact) return;
+      toolbar.dataset.compact = "true";
+      const menu = document.createElement("details");
+      menu.className = "ux-menu";
+      const summary = document.createElement("summary");
+      summary.textContent = "Download ↓";
+      const items = document.createElement("div");
+      items.className = "ux-menu-content";
+      Array.from(toolbar.children)
+        .filter((button) => !button.hasAttribute("data-copy-caption"))
+        .forEach((button) => items.appendChild(button));
+      menu.append(summary, items);
+      toolbar.prepend(menu);
+    });
+    document.querySelectorAll(".leaderboard-figure-caption").forEach((caption) => {
+      if (caption.parentElement.classList.contains("ux-chart-notes")) return;
+      const notes = document.createElement("details");
+      notes.className = "ux-chart-notes";
+      const summary = document.createElement("summary");
+      summary.textContent = "Figure notes and provenance";
+      caption.before(notes);
+      notes.append(summary, caption);
+    });
+  }
+
+  function configureUxEvents() {
+    document.querySelectorAll("[data-workspace-tab]").forEach((tab) => {
+      tab.addEventListener("click", () => activateWorkspace(tab.dataset.workspaceTab));
+      tab.addEventListener("keydown", (event) => {
+        if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+        const tabs = Array.from(document.querySelectorAll("[data-workspace-tab]"));
+        const index = tabs.indexOf(tab);
+        const next =
+          event.key === "Home"
+            ? 0
+            : event.key === "End"
+              ? tabs.length - 1
+              : (index + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+        event.preventDefault();
+        tabs[next].focus();
+        activateWorkspace(tabs[next].dataset.workspaceTab);
+      });
+    });
+    document.querySelectorAll("[data-open-workspace]").forEach((button) => {
+      button.addEventListener("click", () => {
+        activateWorkspace(button.dataset.openWorkspace);
+        element(`ux-tab-${button.dataset.openWorkspace}`)?.focus();
+      });
+    });
+    element("ux-sort")?.addEventListener("change", (event) => {
+      const column = allColumns().find((item) => item.sortKey === event.target.value);
+      if (!column) return;
+      state.sortKey = column.sortKey;
+      state.sortDirection = defaultSortDirection(column);
+      renderTable();
+      updateUrl();
+    });
+    element("ux-sort-direction")?.addEventListener("click", () => {
+      state.sortDirection = state.sortDirection === "asc" ? "desc" : "asc";
+      renderTable();
+      updateUrl();
+    });
+    element("ux-profile-view")?.addEventListener("change", (event) => {
+      state.profilePanelIndex = Number(event.target.value);
+      renderProfileExplorer();
+      updateUrl();
+    });
+    document.addEventListener("click", (event) => {
+      if (event.target.closest("a[href='#metric-definitions'], a[href='#split-definitions'], a[href='#training-definitions']"))
+        activateWorkspace("methodology");
+      document.querySelectorAll(".ux-menu[open]").forEach((menu) => {
+        if (!menu.contains(event.target) || event.target.closest("button")) menu.open = false;
+      });
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape")
+        document.querySelectorAll(".ux-menu[open]").forEach((menu) => {
+          menu.open = false;
+          menu.querySelector("summary").focus();
+        });
+    });
+  }
+
   function configureEvents() {
+    configureUxEvents();
     element("open-submission-repo")?.addEventListener("click", (event) => {
       if (event.currentTarget.disabled || !activeDataset()) return;
       const sourceRef = String(window.FluidsBenchSubmissionSourceRef || "main");
@@ -10175,12 +10373,7 @@
       updateRadarSelection();
     });
     element("select-all-comparison-models")?.addEventListener("click", () => {
-      state.comparedModelIds = new Set(
-        rowsForCurrentModelType()
-          .slice(0, maxFigureModels)
-          .map((row) => row.id)
-      );
-      state.staleComparedModelIds = new Set();
+      setDefaultComparedModels();
       updateFigureSelection();
     });
     element("clear-comparison-models")?.addEventListener("click", () => {
@@ -10189,7 +10382,10 @@
       updateFigureSelection();
     });
     document.querySelectorAll("[data-analysis-tab]").forEach((tab) => {
-      tab.addEventListener("click", () => activateAnalysisTab(tab.dataset.analysisTab));
+      tab.addEventListener("click", () => {
+        activateAnalysisTab(tab.dataset.analysisTab);
+        updateUrl();
+      });
       tab.addEventListener("keydown", (event) => {
         if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
         const tabs = Array.from(document.querySelectorAll("[data-analysis-tab]"));
