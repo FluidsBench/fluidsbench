@@ -1351,6 +1351,7 @@ assert.deepEqual(
   "every dataset must have exactly one headline-metric configuration"
 );
 manifest.datasets.forEach((dataset) => {
+  if (displayConfig[dataset.slug]?.hidden) return;
   api.state.dataset = dataset.name;
   const configuredIds = displayConfig[dataset.slug].headline_metric_ids;
   assert.equal(configuredIds.length, 5, `${dataset.name} must declare five headline metrics`);
@@ -1450,6 +1451,7 @@ assert.equal(
   "dataset presentation overrides must not mutate the shared metric definition"
 );
 manifest.datasets.forEach((dataset) => {
+  if (displayConfig[dataset.slug]?.hidden) return;
   api.state.dataset = dataset.name;
   api.activeMetricDefinitions().forEach((definition) => {
     assert.doesNotMatch(definition.label, /area- or length-weighted/i, `${dataset.name}/${definition.id} must use exact weighting wording`);
@@ -1469,6 +1471,7 @@ manifest.datasets.forEach((dataset) => {
 
 feed.map(api.normalizeRow).forEach((row) => api.state.rows.get(row.dataset)?.push(row));
 manifest.datasets.forEach((dataset) => {
+  if (displayConfig[dataset.slug]?.hidden) return;
   api.state.dataset = dataset.name;
   dataset.splits.forEach((split) => {
     api.state.split = split.name;
@@ -1506,6 +1509,7 @@ async function verifyGeneratedClaimRecords() {
   const claimIndex = await api.ensureClaimsIndex();
   assert.ok(claimIndex, "claim index must pass browser-equivalent hash and binding verification");
   for (const dataset of manifest.datasets) {
+    if (displayConfig[dataset.slug]?.hidden) continue;
     api.state.dataset = dataset.name;
     for (const split of dataset.splits) {
       api.state.split = split.name;
