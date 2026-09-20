@@ -4515,14 +4515,15 @@
   function compactMetricLabel(definition) {
     const labels = {
       overall_score: "Score / 100",
-      surface_pressure_rel_l2: "Pressure error (%)",
-      surface_pressure_equal_entity_rel_l2: "Pressure error · equal (%)",
-      surface_wall_shear_rel_l2: "Wall shear error (%)",
-      volume_velocity_rel_l2: "Velocity error (%)",
-      vki_mach_rrmse: "Mach RRMSE",
-      vki_nut_rrmse: "Turb. viscosity RRMSE",
-      rotor_pressure_rrmse: "Pressure RRMSE",
-      rotor_temperature_rrmse: "Temperature RRMSE",
+      surface_pressure_rel_l2: "Surface pressure error (%)",
+      surface_pressure_equal_entity_rel_l2: "Surface pressure error · equal (%)",
+      surface_wall_shear_rel_l2: "Surface wall shear error (%)",
+      volume_velocity_rel_l2: "Volume velocity error (%)",
+      flow_domain_velocity_rel_l2: "Flow-domain velocity error (%)",
+      vki_mach_rrmse: "Flow-domain Mach RRMSE",
+      vki_nut_rrmse: "Flow-domain turb. viscosity RRMSE",
+      rotor_pressure_rrmse: "Surface pressure RRMSE",
+      rotor_temperature_rrmse: "Surface temperature RRMSE",
     };
     return labels[definition.id] || plainMetricLabel(definition);
   }
