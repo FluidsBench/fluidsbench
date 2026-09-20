@@ -2,6 +2,8 @@
 url: https://fluidsbench.org
 baseurl: /review-x4n7q9m2vk6p
 preview_mode: true
+# Generate an unlinked, noindex committee page without changing the launch homepage.
+committee_review: true
 # Paired HiLift compact-v2 selection: fluidsbench-submission PR #25. Keep CI on this same revision.
 leaderboard_base_url: https://raw.githubusercontent.com/neilashton/fluidsbench-submission/36b6708d3a88705437e6128bf1a84ff8f597f67c/
 submission_source_ref: 36b6708d3a88705437e6128bf1a84ff8f597f67c

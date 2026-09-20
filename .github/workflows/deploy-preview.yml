@@ -52,7 +52,7 @@ jobs:
           rm -rf _site/assets/html _site/assets/jupyter _site/assets/plotly _site/leaderboards
           python3 bin/check_preview_build.py _site "$PREVIEW_BASEURL"
           LAUNCH_PHASE=$(ruby -ryaml -e 'puts YAML.load_file("_data/launch.yml")["phase"]')
-          python3 bin/check_launch_build.py _site --phase "$LAUNCH_PHASE"
+          python3 bin/check_launch_build.py _site --phase "$LAUNCH_PHASE" --committee-review
 
       - name: Deploy preview
         uses: JamesIves/github-pages-deploy-action@v4

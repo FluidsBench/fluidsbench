@@ -9,6 +9,14 @@ module Jekyll
     def self.safe(*) = nil
     def self.priority(*) = nil
   end
+  class PageWithoutAFile
+    attr_accessor :content, :data
+    def initialize(_site, _base, dir, name)
+      @relative_path = File.join(dir, name)
+    end
+    def relative_path = @relative_path
+    def url = data["permalink"]
+  end
   module Errors
     class FatalException < StandardError; end
   end
@@ -27,8 +35,8 @@ def site_for(phase = "announced")
     "submission_source_ref" => data["submission_status"]["source_commit"],
     "preview_mode" => true
   }
-  page = OpenStruct.new(data: { "permalink" => "/", "chart" => { "chartjs" => true } }, relative_path: "_pages/leaderboard.md")
-  OpenStruct.new(data: data, config: config, pages: [page], static_files: [], time: Time.utc(2026, 9, 20))
+  page = OpenStruct.new(data: { "permalink" => "/", "chart" => { "chartjs" => true } }, relative_path: "_pages/leaderboard.md", content: "leaderboard template")
+  OpenStruct.new(data: data, config: config, pages: [page], static_files: [], time: Time.utc(2026, 9, 20), source: ROOT)
 end
 
 def check(condition, message)
@@ -53,6 +61,7 @@ end
   check(!site.config["launch"]["leaderboard_visible"], "clock expiry published the board")
   check(!site.config["launch"]["can_submit"], "closed datasets became submittable")
   check(site.pages[0].data["chart"] == {}, "prelaunch loaded chart dependencies")
+  check(site.pages.length == 1, "normal build generated a committee review page")
 end
 
 # Ready datasets can accept entries without exposing a leaderboard, including after cutoff.
@@ -87,6 +96,27 @@ site.config["url"] = "http://127.0.0.1:8088"
 FluidsBench::Launch.new.generate(site)
 check(site.config["launch"]["leaderboard_visible"], "local leaderboard review failed")
 
+# The unlisted committee page cannot turn the launch homepage live or open submissions.
+site = site_for
+site.config.merge!({ "committee_review" => true, "baseurl" => "/review-x4n7q9m2vk6p" })
+FluidsBench::Launch.new.generate(site)
+review = site.pages.find { |page| page.data["permalink"] == "/committee-leaderboard/" }
+check(review && review.data["committee_review"], "hosted dev committee page is missing")
+check(review.data["nav"] == false && review.data["sitemap"] == false, "committee page is discoverable")
+check(review.content == site.pages[0].content && review.data["chart"]["chartjs"], "committee page lost the leaderboard template or charts")
+check(site.pages[0].data["chart"] == {}, "committee review enabled homepage chart dependencies")
+check(!site.config["launch"]["leaderboard_visible"] && !site.config["launch"]["can_submit"], "committee review changed publication or intake")
+[
+  { "preview_mode" => false },
+  { "baseurl" => "" },
+  { "baseurl" => "/different-preview" },
+  { "url" => "https://example.test" }
+].each do |override|
+  site = site_for
+  site.config.merge!({ "committee_review" => true, "baseurl" => "/review-x4n7q9m2vk6p" }).merge!(override)
+  rejected(site, "committee review escaped the hosted dev deployment")
+end
+
 # A selected official immutable release is required for public live mode.
 site = site_for("live")
 status = site.data["submission_status"]
@@ -99,4 +129,4 @@ check(site.config["launch"]["leaderboard_visible"], "official pinned release can
 site.config["leaderboard_manifest_sha256"] = "0" * 64
 rejected(site, "wrong release digest was accepted")
 
-puts "Launch phases, publication gates, dataset independence and local review checks passed."
+puts "Launch phases, publication gates, dataset independence, local and committee review checks passed."

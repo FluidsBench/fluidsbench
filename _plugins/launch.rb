@@ -11,6 +11,30 @@ module FluidsBench
       raise Jekyll::Errors::FatalException, "FluidsBench launch: #{message}"
     end
 
+    def add_committee_review(site)
+      return unless site.config["committee_review"] == true
+
+      hosted_preview = site.config["preview_mode"] == true &&
+        site.config["url"] == "https://fluidsbench.org" &&
+        site.config["baseurl"] == "/review-x4n7q9m2vk6p"
+      reject!("committee review is allowed only in the hosted dev preview") unless hosted_preview
+      home = site.pages.find { |page| page.data["permalink"] == "/" }
+      reject!("committee review requires the leaderboard page") unless home
+
+      # Reuse the same template and chart configuration before prelaunch hides them on home.
+      review = Jekyll::PageWithoutAFile.new(site, site.source, "committee-leaderboard", "index.html")
+      review.content = home.content
+      review.data = home.data.merge(
+        "permalink" => "/committee-leaderboard/",
+        "committee_review" => true,
+        "title" => "Leaderboard review",
+        "description" => "Unlisted committee preview of the FluidsBench leaderboard. Prototype results for review.",
+        "nav" => false,
+        "sitemap" => false
+      )
+      site.pages << review
+    end
+
     def generate(site)
       launch = site.data.fetch("launch", {}).merge(site.config.fetch("launch", {}))
       phase = launch["phase"]
@@ -53,6 +77,7 @@ module FluidsBench
       launch["reveal_passed"] = site.time >= dates[2]
       site.config["launch"] = launch
 
+      add_committee_review(site)
       site.pages.each do |page|
         if page.data["permalink"] == "/"
           page.data["chart"] = {} unless live

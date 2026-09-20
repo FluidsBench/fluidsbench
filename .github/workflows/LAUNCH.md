@@ -76,6 +76,20 @@ The builder rejects changes under an existing official release ID; every later p
 The live build fails if the selected release is a prototype, the ID differs, the feed is not the pinned immutable asset base, or the
 manifest digest differs. Approval, metadata checks and optional additional prediction checks retain their existing meanings.
 
+## Committee review
+
+The hosted dev build includes an unlisted full leaderboard at
+`https://fluidsbench.org/review-x4n7q9m2vk6p/committee-leaderboard/`.
+Only `_config_preview.yml` enables `committee_review`; the generator rejects this option outside the hosted dev prefix.
+The page reuses the leaderboard template, labels its results as a prototype, and declares noindex. It has no incoming site
+navigation links and is excluded from the sitemap. Anyone with the URL can access it; it is not an authenticated private page.
+Share the direct URL with reviewers separately from the launch homepage. Production builds do not generate this page.
+
+The dev deployment validates both the announcement homepage and the single allowed review page with
+`python3 bin/check_launch_build.py _site --phase announced --committee-review`. It rejects incoming links, missing review
+labels or noindex metadata, and any other page exposing a prelaunch leaderboard. Dataset submission gates and official-release
+requirements remain in force.
+
 ## Local review and checks
 
 For a normal announcement build, use `_config.yml` (plus `_config_preview.yml` for the hosted dev prefix). For the preserved full

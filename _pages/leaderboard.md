@@ -13,11 +13,15 @@ chart:
   vega_lite: true
 ---
 
-{% if site.launch.leaderboard_visible %}
+{% if site.launch.leaderboard_visible or page.committee_review %}
 <div class="leaderboard-page ux-leaderboard">
   <header class="leaderboard-masthead">
     <div class="leaderboard-masthead-copy">
+      {% if page.committee_review %}
+      <p class="ux-eyebrow" id="committee-review-notice" role="note">Committee preview · Prototype results</p>
+      {% else %}
       <p class="ux-eyebrow">Open benchmarks for scientific machine learning</p>
+      {% endif %}
       <h1>Fluidsbench leaderboard</h1>
       <p>Assess physics AI surrogate models across realistic fluid dynamics datasets</p>
     </div>
@@ -64,7 +68,7 @@ chart:
     </div>
       </div>
     </details>
-    <a id="ux-dataset-link" class="ux-dataset-link" href="{{ '/datasets/' | relative_url }}">About this dataset <span aria-hidden="true">↗</span></a>
+    <a id="ux-dataset-link" class="ux-dataset-link" data-dataset-base-url="{{ '/datasets/' | relative_url }}" href="{{ '/datasets/' | relative_url }}">About this dataset <span aria-hidden="true">↗</span></a>
   </section>
 
   <div id="leaderboard-error" class="leaderboard-load-error" role="alert" hidden></div>
