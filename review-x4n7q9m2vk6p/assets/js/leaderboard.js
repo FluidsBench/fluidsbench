@@ -10127,7 +10127,7 @@
     const rows = filteredRows();
     summary.textContent = `${rows.length} result${rows.length === 1 ? "" : "s"} · ${state.dataset} · ${state.split}`;
     const link = element("ux-dataset-link");
-    link.href = new URL(`datasets/${activeDatasetSlug()}/`, window.location.href.split("?")[0]).href;
+    link.href = new URL(`${activeDatasetSlug()}/`, new URL(link.dataset.datasetBaseUrl, window.location.href)).href;
     const sort = element("ux-sort");
     const sortColumns = activeColumns().filter((column) => column.sortKey);
     if (!sortColumns.some((column) => column.sortKey === state.sortKey)) {
