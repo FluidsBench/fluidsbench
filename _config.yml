@@ -16,8 +16,8 @@ url: https://fluidsbench.org # the base hostname & protocol for your site
 baseurl: # the subpath of your site, e.g. /blog/. Leave blank for root
 leaderboard_base_url: https://raw.githubusercontent.com/neilashton/fluidsbench-submission/36b6708d3a88705437e6128bf1a84ff8f597f67c/
 submission_source_ref: 36b6708d3a88705437e6128bf1a84ff8f597f67c
-# Leave blank until the public Discord invite is ready.
-community_discord_url: ""
+# Public community invite: no expiry or use limit; opens the start-here channel.
+community_discord_url: "https://discord.gg/zVZsXAeVKp"
 last_updated: true # set to true if you want to display last updated in the footer
 impressum_path: # set to path to include impressum link in the footer, use the same path as permalink in a page, helps to conform with EU GDPR
 
