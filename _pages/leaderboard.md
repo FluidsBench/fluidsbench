@@ -1,8 +1,9 @@
 ---
 layout: page
 permalink: /
-title: leaderboard
-description:
+title: Fluidsbench leaderboard
+description: Assess physics AI surrogate models across realistic fluid dynamics datasets.
+og_image: /assets/img/datasets/drivaerml-flow.png
 nav: false
 hide_header: true
 hide_header_background: true
@@ -12,6 +13,7 @@ chart:
   vega_lite: true
 ---
 
+{% if site.launch.leaderboard_visible %}
 <div class="leaderboard-page ux-leaderboard">
   <header class="leaderboard-masthead">
     <div class="leaderboard-masthead-copy">
@@ -447,3 +449,6 @@ chart:
     new URL("{{ '/assets/data/profile-ground-truth/' | relative_url }}", window.location.origin).href;
 </script>
 <script defer src="{{ '/assets/js/leaderboard.js' | relative_url | bust_file_cache }}"></script>
+{% else %}
+{% include launch.liquid %}
+{% endif %}

@@ -26,5 +26,8 @@ jobs:
           python-version: "3.12"
       - run: python fluidsbench/bin/check_dataset_pages.py --submission-root fluidsbench-submission
       - run: python fluidsbench/bin/check_profile_contract.py --submission-root fluidsbench-submission
+      - run: python fluidsbench/bin/prepare_submission_status.py --submission-root fluidsbench-submission --check
+      - run: ruby fluidsbench/bin/check_launch_contract.rb
+      - run: node --test fluidsbench/tests/test_launch.js
       - run: node fluidsbench/bin/check_leaderboard_claim_ui.js
       - run: python -m unittest discover -s fluidsbench/tests -p "test_*.py"

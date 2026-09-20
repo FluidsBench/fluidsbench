@@ -88,6 +88,10 @@ jobs:
         run: |
           npm install -g purgecss
           purgecss -c purgecss.config.js
+      - name: Validate launch publication state
+        run: |
+          LAUNCH_PHASE=$(ruby -ryaml -e 'puts YAML.load_file("_data/launch.yml")["phase"]')
+          python3 bin/check_launch_build.py _site --phase "$LAUNCH_PHASE"
       - name: Deploy 🚀
         if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@v4

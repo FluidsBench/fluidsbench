@@ -1,0 +1,8 @@
+# Announced -> collecting -> reviewing -> live. Publication is always an explicit build.
+phase: announced
+dates_confirmed: false
+opens_at: "2026-10-06T15:00:00Z"
+cutoff_at: "2026-11-17T23:59:00Z"
+reveal_at: "2026-11-24T15:00:00Z"
+# Set only after an official immutable release has passed the release checks.
+release_id: ""

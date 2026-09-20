@@ -3,13 +3,17 @@
     <a
       class="ux-brand"
       href="{{ '/' | relative_url }}"
-      aria-label="FluidsBench leaderboard"
+      aria-label="{% if site.launch.leaderboard_visible %}FluidsBench leaderboard{% else %}FluidsBench home{% endif %}"
       {% if page.permalink == '/' %}
         aria-current="page"
       {% endif %}
     >
       <span class="ux-brand-mark" aria-hidden="true">≈</span>
-      <span class="ux-brand-label">FluidsBench<span class="ux-brand-caption">Leaderboard</span></span>
+      <span class="ux-brand-label"
+        >FluidsBench<span class="ux-brand-caption">
+          {%- if site.launch.leaderboard_visible %}Leaderboard{% else %}First release coming soon{% endif -%}
+        </span></span
+      >
     </a>
     <nav class="ux-nav-links" aria-label="Main navigation">{% include ux_navigation.liquid %}</nav>
     <div class="ux-nav-tools">
@@ -31,8 +35,9 @@
             {% if page.permalink == '/' %}
               aria-current="page"
             {% endif %}
-            >Leaderboard</a
           >
+            {%- if site.launch.leaderboard_visible %}Leaderboard{% else %}Launch overview{% endif -%}
+          </a>
           {% include ux_navigation.liquid %}
         </nav>
       </details>

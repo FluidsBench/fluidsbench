@@ -259,6 +259,8 @@ def release_config(
         "baseurl": f"/releases/{release_id}",
         "leaderboard_base_url": asset_base_url,
         "leaderboard_manifest_sha256": manifest_sha256,
+        "submission_source_ref": artifact_commit,
+        "launch": {"phase": "live", "dates_confirmed": True, "release_id": release_id},
         "preview_mode": False,
         "release_snapshot": True,
         "release_snapshot_id": release_id,

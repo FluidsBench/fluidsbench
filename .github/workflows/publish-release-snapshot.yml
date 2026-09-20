@@ -122,6 +122,9 @@ jobs:
           python -m pip install -r requirements.txt
           python scripts/manage_leaderboard.py check
 
+      - name: Prepare submission availability for this exact release
+        run: python3 bin/prepare_submission_status.py --submission-root _submission_release
+
       - name: Verify website and release contract schemas match
         run: |
           for SCHEMA in \

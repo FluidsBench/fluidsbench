@@ -12,10 +12,10 @@ keywords: fluidsbench,CFD,automotive,fluidsbench1,fluidsbench2,fluidsbench3,flui
 lang: en # the language of your site (for example: en, fr, cn, ru, etc.)
 icon: ⚛️ # the emoji used as the favicon (alternatively, provide image name in /assets/img/)
 
-url: https://neilashton.github.io/fluidsbench # the base hostname & protocol for your site
+url: https://fluidsbench.org # the base hostname & protocol for your site
 baseurl: # the subpath of your site, e.g. /blog/. Leave blank for root
-leaderboard_base_url: https://raw.githubusercontent.com/neilashton/fluidsbench-submission/main/
-submission_source_ref: main
+leaderboard_base_url: https://raw.githubusercontent.com/neilashton/fluidsbench-submission/36b6708d3a88705437e6128bf1a84ff8f597f67c/
+submission_source_ref: 36b6708d3a88705437e6128bf1a84ff8f597f67c
 # Leave blank until the public Discord invite is ready.
 community_discord_url: ""
 last_updated: true # set to true if you want to display last updated in the footer
@@ -58,7 +58,7 @@ max_width: 1100px
 # -----------------------------------------------------------------------------
 # Display links to the page with a preview object on social media.
 # see https://schema.org/docs/faq.html for more information
-serve_og_meta: false # Include Open Graph meta tags in the HTML head
+serve_og_meta: true # Include Open Graph meta tags in the HTML head
 serve_schema_org: false # Include Schema.org in the HTML head
 og_image: # The site-wide (default for all links) Open Graph preview image
 
@@ -261,6 +261,7 @@ jekyll-minifier:
     - "schemas/v2/*.json"
     - "schemas/releases/*.json"
     - "assets/js/leaderboard.js"
+    - "assets/js/launch.js"
   uglifier_args:
     harmony: true
 

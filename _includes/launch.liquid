@@ -1,0 +1,216 @@
+<div class="launch-page" data-launch-phase="{{ site.launch.phase }}">
+  <section class="launch-hero" aria-labelledby="launch-title">
+    <div class="launch-intro">
+      <p class="ux-eyebrow">Open benchmarks for scientific machine learning</p>
+      <h1 id="launch-title">
+        Fluidsbench<br>
+        leaderboard
+      </h1>
+      <p class="launch-description">Assess physics AI surrogate models across realistic fluid dynamics datasets</p>
+      <p class="launch-invitation">Be part of the first release.</p>
+      <div class="launch-actions">
+        <a class="ux-primary-link" href="{{ '/run/' | relative_url }}">
+          {%- if site.launch.can_submit %}Submit your model{% else %}Prepare your model{% endif %}
+          <span aria-hidden="true">→</span></a
+        >
+        <a class="launch-secondary-link" href="{{ '/datasets/' | relative_url }}">Explore datasets <span aria-hidden="true">↗</span></a>
+      </div>
+      <p class="launch-availability">
+        {% if site.launch.can_submit %}
+          <span class="launch-status-dot" aria-hidden="true"></span> Submissions open for {{ site.launch.open_count }}
+          {% if site.launch.open_count == 1 %}dataset{% else %}datasets{% endif %}.
+        {% elsif site.launch.phase == 'announced' %}
+          Submissions planned to open {{ site.launch.opens_at | date: '%-d %B %Y' }}.
+        {% else %}
+          Dataset submissions are being prepared. Explore the guides to get started.
+        {% endif %}
+      </p>
+    </div>
+    <aside
+      class="launch-countdown-card"
+      aria-label="First leaderboard release"
+      data-countdown
+      data-reveal-at="{{ site.launch.reveal_at }}"
+      data-cutoff-at="{{ site.launch.cutoff_at }}"
+      data-confirmed="{{ site.launch.dates_confirmed }}"
+    >
+      <div class="launch-countdown-top">
+        <span class="launch-countdown-label">First leaderboard release</span><span class="launch-orbit" aria-hidden="true">↗</span>
+      </div>
+      <p class="launch-date">
+        <time datetime="{{ site.launch.reveal_at }}">{{ site.launch.reveal_at | date: '%-d %B %Y' }}</time>
+      </p>
+      <p class="launch-time">{{ site.launch.reveal_at | date: '%H:%M' }} UTC <span data-local-time></span></p>
+      <div class="launch-clock" data-clock hidden aria-hidden="true">
+        <div><span data-unit="days">—</span><small>Days</small></div>
+        <span class="launch-clock-separator">:</span>
+        <div><span data-unit="hours">—</span><small>Hours</small></div>
+        <span class="launch-clock-separator">:</span>
+        <div><span data-unit="minutes">—</span><small>Minutes</small></div>
+      </div>
+      <p class="launch-countdown-message" data-countdown-message>
+        {% if site.launch.reveal_passed -%}
+          {%- if site.launch.dates_confirmed -%}
+            Preparing the first results. The leaderboard will appear after publication.
+          {%- else -%}
+            The planned release date has passed. A new date will be confirmed here.
+          {%- endif -%}
+        {%- else -%}
+          A shared starting point for physics AI.
+        {%- endif %}
+      </p>
+      <div class="launch-cutoff">
+        <span data-cutoff-label>
+          {%- if site.launch.deadline_passed %}First-release cutoff{% else %}Submit for the first release by{% endif -%}
+        </span>
+        <strong
+          ><time datetime="{{ site.launch.cutoff_at }}">{{ site.launch.cutoff_at | date: '%-d %B %Y' }}</time>
+          <span>· {{ site.launch.cutoff_at | date: '%H:%M' }} UTC</span></strong
+        >
+      </div>
+      {% unless site.launch.dates_confirmed %}
+        <p class="launch-provisional">Proposed dates · to be confirmed</p>
+      {% endunless %}
+      <a
+        class="launch-refresh"
+        data-launch-refresh
+        href="{{ '/' | relative_url }}"
+        {% unless site.launch.reveal_passed %}
+          hidden
+        {% endunless %}
+        >Check for the latest release <span aria-hidden="true">↻</span></a
+      >
+    </aside>
+  </section>
+
+  <section class="launch-value" aria-label="What FluidsBench measures">
+    <div>
+      <span aria-hidden="true">01</span>
+      <p><strong>Realistic fluid dynamics</strong><small>From airfoils and vehicles to aircraft and turbomachinery.</small></p>
+    </div>
+    <div>
+      <span aria-hidden="true">02</span>
+      <p><strong>Physics you can inspect</strong><small>Compare field errors, forces and flow profiles.</small></p>
+    </div>
+    <div>
+      <span aria-hidden="true">03</span>
+      <p><strong>Evidence behind each result</strong><small>Trace the model, evaluation rules and submitted data.</small></p>
+    </div>
+  </section>
+
+  <section class="launch-datasets" aria-labelledby="launch-datasets-title">
+    <div class="launch-section-heading">
+      <div>
+        <p class="ux-page-eyebrow">Find your benchmark</p>
+        <h2 id="launch-datasets-title">Start with a physical problem.</h2>
+      </div>
+      <a href="{{ '/datasets/' | relative_url }}">All datasets <span aria-hidden="true">→</span></a>
+    </div>
+    {% if site.launch.open_count > 0 %}
+      <div class="launch-open-datasets" aria-label="Datasets with official open scoring releases">
+        {% for entry in site.data.submission_status.datasets -%}
+          {%- assign slug = entry[0] -%}
+          {%- if entry[1].open -%}
+            <a href="{{ '/run/' | relative_url }}#{{ slug }}">
+              {{- site.data.dataset_catalog[slug].name }}
+              <span>
+                {%- if site.launch.accepting_submissions %}Open for submissions{% else %}Ready for opening{% endif -%}
+              </span>
+              →</a
+            >
+          {%- endif -%}
+        {%- endfor %}
+      </div>
+    {% endif %}
+    <div class="launch-dataset-grid">
+      {% assign featured = 'airfrans,drivaerml,hiliftaeroml' | split: ',' %}
+      {% for slug in featured -%}
+        {%- assign dataset = site.data.dataset_catalog[slug] %}
+        {% unless site.data.leaderboard_display[slug].hidden %}
+          <a class="launch-dataset-card" href="{{ '/datasets/' | append: slug | append: '/' | relative_url }}">
+            <div class="launch-dataset-image">
+              <img src="{{ dataset.source.image.path | relative_url }}" alt="" loading="lazy" width="480" height="240">
+            </div>
+            <div class="launch-dataset-copy">
+              <span>{{ dataset.category }}</span>
+              <h3>
+                {{ dataset.name }}
+                <span aria-hidden="true">↗</span>
+              </h3>
+              <p>Explore the dataset and evaluation guide</p>
+            </div>
+          </a>
+        {% endunless %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="launch-participate" aria-labelledby="launch-participate-title">
+    <div class="launch-section-heading">
+      <div>
+        <p class="ux-page-eyebrow">Bring your model</p>
+        <h2 id="launch-participate-title">A clear route to the first release.</h2>
+      </div>
+      <a href="{{ '/run/' | relative_url }}">Submission guide <span aria-hidden="true">→</span></a>
+    </div>
+    <ol class="launch-steps">
+      <li>
+        <span>1</span>
+        <div>
+          <h3>Choose a dataset</h3>
+          <p>Check its submission status, data and evaluation requirements.</p>
+        </div>
+      </li>
+      <li>
+        <span>2</span>
+        <div>
+          <h3>Evaluate your model</h3>
+          <p>Generate predictions, calculate the metrics and validate your package.</p>
+        </div>
+      </li>
+      <li>
+        <span>3</span>
+        <div>
+          <h3>Submit on GitHub</h3>
+          <p>Open a pull request for an open dataset. Maintainers review it for publication.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="launch-faq" aria-labelledby="launch-faq-title">
+    <div>
+      <p class="ux-page-eyebrow">Before you begin</p>
+      <h2 id="launch-faq-title">A few useful details.</h2>
+      <p>
+        Questions about your submission?<br>
+        <a href="{{ '/community/' | relative_url }}">Talk to the community →</a>
+      </p>
+    </div>
+    <div>
+      <details>
+        <summary>When will I be able to see the results?</summary>
+        <p>
+          The first official leaderboard is planned for {{ site.launch.reveal_at | date: '%-d %B %Y' }}. It will bring together reviewed submissions
+          received by the first-release cutoff. Submissions continue afterwards, with later results appearing in subsequent releases.
+        </p>
+      </details>
+      <details>
+        <summary>Are submissions confidential before launch?</summary>
+        <p>No. Submissions and their review are public on GitHub. The official website rankings will be published together on the release date.</p>
+      </details>
+      <details>
+        <summary>Do I need to run every dataset?</summary>
+        <p>No. Start with one open dataset and one supported split. Follow that dataset's guide for the complete set of required evaluation cases.</p>
+      </details>
+      <details>
+        <summary>Do I have to publish my model or source code?</summary>
+        <p>
+          Code and model artifacts are optional. Every submission needs the required result package and evaluation evidence.
+          <a href="{{ '/run/' | relative_url }}#validation">See what FluidsBench validates.</a>
+        </p>
+      </details>
+    </div>
+  </section>
+</div>
+<script defer src="{{ '/assets/js/launch.js' | relative_url | bust_file_cache }}"></script>

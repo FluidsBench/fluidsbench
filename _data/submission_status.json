@@ -1,0 +1,52 @@
+{
+  "source_commit": "36b6708d3a88705437e6128bf1a84ff8f597f67c",
+  "manifest_sha256": "8d244230f75fbe630a34f470bab9160b70f3920a5205651d6662520b9ddd0821",
+  "release": {
+    "id": "prototype-dev-2026-09-16-7702b02f0140",
+    "status": "prototype_dummy_data",
+    "asset_base_url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/dev/",
+    "archive_url": null
+  },
+  "datasets": {
+    "ahmedml": {
+      "open": false,
+      "specification_sha256": "e87462f702c1bf0e7133902acdf46263b2dc9ee0cc5434d972e110c1005d18b4",
+      "scoring_release_id": null
+    },
+    "drivaerml": {
+      "open": false,
+      "specification_sha256": "791b38e009442f5975d2dcdec0ec30a3d3cfa2f8c05be13841aaf2318f93cf1f",
+      "scoring_release_id": null
+    },
+    "drivaernetplusplus": {
+      "open": false,
+      "specification_sha256": "e25ff6aa601912fa928804c5b1a084b37ae0110e858ac33ee5b396fc2f55673e",
+      "scoring_release_id": null
+    },
+    "windsorml": {
+      "open": false,
+      "specification_sha256": "ff79e2a7375a903d4c98ff1aa8ce9e4ce9a27596ce709e67109a721554f33b08",
+      "scoring_release_id": null
+    },
+    "hiliftaeroml": {
+      "open": false,
+      "specification_sha256": "62f31f029c776e0a18bfe1e2d5485f76e68eb410bccae42591a4e69a4fca050e",
+      "scoring_release_id": null
+    },
+    "airfrans": {
+      "open": false,
+      "specification_sha256": "fa6b9b77a81c4a12d89642b17a64f7007f6f997599028f76ba4f742cb7d8d098",
+      "scoring_release_id": null
+    },
+    "rotor37": {
+      "open": false,
+      "specification_sha256": "edb83b0bfd53a227ed0af73704dd5ec48f4b74f89750d069fa8adb30d4f606c6",
+      "scoring_release_id": null
+    },
+    "vki-ls59": {
+      "open": false,
+      "specification_sha256": "7b60689a619a094152b063fb4cdf2a716a0790f288ca140737f3355bbc53ef7e",
+      "scoring_release_id": null
+    }
+  }
+}

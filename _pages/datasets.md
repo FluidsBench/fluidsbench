@@ -13,7 +13,7 @@ wide: true
 
 <div class="datasets-page">
   <div class="ux-catalogue-intro">
-    <p class="datasets-intro">Choose a physical problem. Explore the data, evaluation requirements and model results.</p>
+    <p class="datasets-intro">Choose a physical problem. Explore the data and evaluation requirements.</p>
     <a href="{{ '/run/' | relative_url }}">How to run a benchmark <span aria-hidden="true">→</span></a>
   </div>
 
@@ -31,7 +31,10 @@ wide: true
         <h3>{{ dataset.name }}</h3>
         <p>{{ dataset.summary }}</p>
       </div>
-      <div class="ux-dataset-actions"><a class="ux-dataset-results" href="{{ '/' | relative_url }}?dataset={{ dataset.name | slugify }}">View leaderboard <span aria-hidden="true">↗</span></a><a class="dataset-card-link" href="{{ '/datasets/' | append: slug | append: '/' | relative_url }}">Dataset guide →</a></div>
+      <div class="ux-dataset-actions">
+        {% if site.launch.leaderboard_visible %}<a class="ux-dataset-results" href="{{ '/' | relative_url }}?dataset={{ dataset.name | slugify }}">View leaderboard <span aria-hidden="true">↗</span></a>{% else %}<a class="ux-dataset-results" href="{{ '/run/' | relative_url }}#{{ slug }}">Submission status <span aria-hidden="true">↗</span></a>{% endif %}
+        <a class="dataset-card-link" href="{{ '/datasets/' | append: slug | append: '/' | relative_url }}">Dataset guide →</a>
+      </div>
     </article>
     {% endunless %}
     {% endfor %}
