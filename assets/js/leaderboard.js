@@ -9968,7 +9968,7 @@
   }
 
   function activateAnalysisTab(name) {
-    const activeName = ["comparison", "scatter", "profiles", "regional"].includes(name) ? name : "comparison";
+    const activeName = ["comparison", "radar", "scatter", "profiles", "regional"].includes(name) ? name : "comparison";
     state.analysisView = activeName;
     document.querySelectorAll("[data-analysis-tab]").forEach((tab) => {
       const selected = tab.dataset.analysisTab === activeName;

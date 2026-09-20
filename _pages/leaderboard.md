@@ -184,16 +184,17 @@ chart:
 
   <div class="leaderboard-analysis-tabs" role="tablist" aria-label="Detailed figure type">
     <button id="analysis-tab-comparison" type="button" role="tab" aria-selected="true" aria-controls="analysis-panel-comparison" data-analysis-tab="comparison">Metrics</button>
+    <button id="analysis-tab-radar" type="button" role="tab" aria-selected="false" aria-controls="leaderboard-radar-panel" data-analysis-tab="radar">Radar</button>
     <button id="analysis-tab-scatter" type="button" role="tab" aria-selected="false" aria-controls="analysis-panel-scatter" data-analysis-tab="scatter">Trade-offs</button>
     <button id="analysis-tab-profiles" type="button" role="tab" aria-selected="false" aria-controls="analysis-panel-profiles" data-analysis-tab="profiles">Profiles</button>
     <button id="analysis-tab-regional" type="button" role="tab" aria-selected="false" aria-controls="analysis-panel-regional" data-analysis-tab="regional">Regions</button>
   </div>
 
-    <details class="leaderboard-radar-panel" id="leaderboard-radar-panel" data-analysis-panel="comparison">
-      <summary>
-        <span class="leaderboard-radar-title">Compare model strengths</span>
-        <span class="leaderboard-radar-subtitle">Normalised scores · 100 is better</span>
-      </summary>
+    <section class="leaderboard-radar-panel" id="leaderboard-radar-panel" role="tabpanel" aria-labelledby="analysis-tab-radar" data-analysis-panel="radar" hidden>
+      <header class="leaderboard-radar-heading">
+        <h3 class="leaderboard-radar-title">Radar comparison</h3>
+        <p class="leaderboard-radar-subtitle">Normalised scores · 100 is better</p>
+      </header>
       <p id="ux-radar-selection-note" class="ux-chart-notes"></p>
       <div class="leaderboard-radar-content">
         <div class="leaderboard-radar-visual">
@@ -221,7 +222,7 @@ chart:
         <summary>View normalized comparison data</summary>
         <div id="radar-data-table" class="leaderboard-data-table-wrap"></div>
       </details>
-    </details>
+    </section>
 
   <section class="leaderboard-panel leaderboard-comparison-panel" id="analysis-panel-comparison" role="tabpanel" aria-labelledby="analysis-tab-comparison" data-analysis-panel="comparison">
     <div class="leaderboard-panel-heading">

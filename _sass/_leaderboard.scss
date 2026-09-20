@@ -814,6 +814,17 @@ html[data-theme="dark"] .leaderboard-data-warning.is-official {
   font-weight: 750;
 }
 
+.leaderboard-radar-heading {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.8rem 1rem;
+
+  .leaderboard-radar-title,
+  .leaderboard-radar-subtitle {
+    margin: 0;
+  }
+}
+
 .leaderboard-radar-subtitle {
   color: var(--leaderboard-muted);
   font-size: 0.78rem;

@@ -501,7 +501,8 @@ a {
     border: 1px solid var(--ux-border);
     border-radius: 10px;
   }
-  .leaderboard-radar-panel > summary {
+  .leaderboard-radar-panel > summary,
+  .leaderboard-radar-heading {
     padding: 14px 20px;
   }
   .leaderboard-radar-title {
@@ -516,6 +517,7 @@ a {
   }
   .leaderboard-radar-chart-frame {
     max-width: 700px;
+    width: 100%;
     margin: auto;
   }
   .ux-radar-unavailable .leaderboard-radar-chart-frame {
