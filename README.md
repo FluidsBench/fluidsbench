@@ -1,97 +1,55 @@
 # FluidsBench
 
-**An open benchmark for the next generation of Computational Fluid Dynamics AI models.**
+Assess physics AI surrogate models across realistic fluid dynamics datasets.
 
-FluidsBench brings together dataset-specific benchmark definitions, public scored ground truth, structured result validation, and versioned leaderboards for academic comparison.
-
-- [FluidsBench website](https://fluidsbench.org/)
+- [Website](https://fluidsbench.org/)
 - [Development review site](https://fluidsbench.org/review-x4n7q9m2vk6p/) — work in progress
-- [Result specifications and submission repository](https://github.com/neilashton/fluidsbench-submission)
+- **[Submit results: specifications, evaluators, and instructions](https://github.com/neilashton/fluidsbench-submission)**
 
 ## Current status
 
-**Submissions are currently closed.**
+**Submissions are closed; there are no official or citable leaderboard rows.** Most rows are illustrative prototypes. The 23
+HiLiftAeroML previews (11 Transolver, 12 GeoTransolver) retain real surrogate inference and CFD profile truth across represented
+Table 5 splits, but remain unapproved owner-review candidates.
 
-The current leaderboard is a prototype and has no official or citable rows. Most displayed rows remain illustrative fixtures. The 23 retained HiLiftAeroML previews (11 Transolver and 12 GeoTransolver) use real surrogate-inference results paired with real CFD profile truth across the represented Table 5 splits, but they remain owner-review candidates and are not official leaderboard claims.
+## Evaluation and results
 
-## Evaluation approach
+Evaluation partitions, case lists, ground truth, scoring locations, and metric definitions are public. Submitters run their
+models, map predictions to official support, and calculate metrics and profiles using the published definitions. FluidsBench
+validates the result package and publishes approved submitted values; it does not execute models or recompute base metrics
+from full prediction fields.
 
-FluidsBench follows an open reproducibility track: evaluation partitions, scored case lists, ground truth, scoring locations, and metric definitions are public.
+Public code, models, environments, documentation, and predictions are optional. When supplied, their links, revisions, digests,
+licences, and check status accompany the result. Their absence does not affect accuracy ranking, citation, or promotion eligibility.
 
-Submitters run their own models, map predictions to each dataset's official scoring support, calculate the required metrics and profiles using the published definitions, and provide a structured result package. FluidsBench validates that package and publishes approved values, tables, figures, and comparisons. It does not execute submitted models or recompute the base metrics from full prediction fields.
+Only the latest published version in a result series is ranked. Earlier versions can appear as unranked historical rows;
+result details link the immutable v1/v2/v3 history with dates and change summaries. Current scalar feeds and claims remain
+latest-only; the submission repository publishes the complete hash-bound history in `leaderboard/revisions.json`.
 
-Public code, model, environment, documentation, and prediction artifacts are optional. When supplied, their stable links, revisions, digests, licences, and validation status can be reported alongside the result. Their absence does not affect accuracy ranking, citation eligibility, or promotion eligibility.
+## Contributing to the website
 
-## Repository responsibilities
+This repository contains the website, leaderboard interface, public profile-truth data, release tooling, and copies of shared
+data-contract schemas. The [submission repository](https://github.com/neilashton/fluidsbench-submission) owns benchmark
+specifications, scoring-support releases, submission schemas, validators, and result packages. Shared contract changes need
+coordinated PRs in both repositories.
 
-This repository contains the FluidsBench website, leaderboard interface, public profile-ground-truth data, release tooling, and website copies of shared data-contract schemas.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for Docker/native setup, validation commands, preview builds, and the protected-branch workflow.
 
-The companion [fluidsbench-submission repository](https://github.com/neilashton/fluidsbench-submission) contains dataset benchmark specifications, public scoring-support releases, schemas, validation tooling, and structured result packages.
+<a id="evaluation-approach"></a>
+<a id="repository-responsibilities"></a>
+<a id="result-versions"></a>
+<a id="local-development"></a>
+<a id="docker"></a>
+<a id="native-jekyll"></a>
+<a id="validation"></a>
 
-Changes that alter a shared schema or dataset contract normally require coordinated pull requests in both repositories.
-
-## Result versions
-
-The current table and figures use only the latest published version in each result series. The leaderboard can optionally show
-earlier versions as unranked historical rows, and every result-details panel links the immutable v1/v2/v3 history with dates and
-change summaries. Current scalar feeds and claim records remain latest-only; the companion submission repository publishes the
-complete hash-bound history in `leaderboard/revisions.json`.
-
-## Local development
-
-### Docker
-
-Docker is the simplest way to run the website locally:
-
-```bash
-git clone https://github.com/neilashton/fluidsbench.git
-cd fluidsbench
-git switch dev
-docker compose pull
-docker compose up
-```
-
-Open <http://localhost:8080>. Changes are rebuilt automatically.
-
-### Native Jekyll
-
-With Ruby 3.2, Bundler, Python, and Jupyter available:
-
-```bash
-bundle install
-python3 -m pip install --upgrade jupyter
-bundle exec jekyll serve --lsi
-```
-
-Open <http://localhost:4000>.
-
-## Validation
-
-With `fluidsbench-submission` cloned alongside this repository:
-
-```bash
-python3 bin/check_profile_contract.py \
-  --submission-root ../fluidsbench-submission
-python3 bin/check_dataset_pages.py \
-  --submission-root ../fluidsbench-submission
-node bin/check_leaderboard_claim_ui.js
-python3 -m unittest discover -s tests -p "test_*.py"
-bundle exec jekyll build --lsi
-```
-
-The dataset-page check verifies every page's structured source snapshot, visual asset, getting-started guide, split status, and scientific-contract
-digest. Maintainers can also compare the recorded source revisions with Hugging Face, GitHub, and Dataverse:
-
-```bash
-python3 bin/check_dataset_pages.py --check-live-sources
-```
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the protected-branch workflow and review-deployment checks.
+The former setup and validation sections are now in the [contributor guide](CONTRIBUTING.md#local-development).
 
 ## Theme and licence
 
-The website is built with [Jekyll](https://jekyllrb.com/) and uses [al-folio](https://github.com/alshedivat/al-folio) as its theme foundation. The retained theme and website code are distributed under the repository's [MIT License](LICENSE).
+Built with [Jekyll](https://jekyllrb.com/) and the [al-folio](https://github.com/alshedivat/al-folio) theme foundation.
+The retained theme and website code use the [MIT License](LICENSE).
 
 ## Contact
 
-Questions can be sent to [admin@fluidsbench.org](mailto:admin@fluidsbench.org).
+[admin@fluidsbench.org](mailto:admin@fluidsbench.org)
