@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import sys
+import shutil
+import tempfile
 import unittest
 from copy import deepcopy
 from pathlib import Path
@@ -10,6 +12,23 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "bin"))
 
 import check_profile_contract  # noqa: E402
+
+
+class PublicSchemaContractTests(unittest.TestCase):
+    def test_separate_schema_source_still_requires_exact_published_bytes(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary)
+            shutil.copytree(ROOT / "schemas", source / "schemas")
+            self.assertEqual(check_profile_contract.check_schemas(source), [])
+            schema = source / "schemas/v3/submission.schema.json"
+            schema.write_text(schema.read_text() + "\n")
+            self.assertIn(
+                "public schema schemas/v3/submission.schema.json differs from the submission contract",
+                check_profile_contract.check_schemas(source),
+            )
+            schema.unlink()
+            self.assertIn("submission repository is missing schemas/v3/submission.schema.json",
+                          check_profile_contract.check_schemas(source))
 
 
 class ProfileCaseCoverageTests(unittest.TestCase):

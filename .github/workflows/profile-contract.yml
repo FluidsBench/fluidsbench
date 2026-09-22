@@ -21,13 +21,21 @@ jobs:
           # Match the immutable feed in _config_preview.yml (submission PR #25).
           ref: 36b6708d3a88705437e6128bf1a84ff8f597f67c
           path: fluidsbench-submission
+      - uses: actions/checkout@v4
+        with:
+          repository: neilashton/fluidsbench-submission
+          # Additive compute contract; publish the paired submission branch first.
+          # Result feeds and availability remain pinned to the revision above.
+          ref: 7c23156401d0a4d131024597171f892a58f68c49
+          sparse-checkout: schemas
+          path: fluidsbench-submission-schemas
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: python fluidsbench/bin/check_dataset_pages.py --submission-root fluidsbench-submission
-      - run: python fluidsbench/bin/check_profile_contract.py --submission-root fluidsbench-submission
+      - run: python fluidsbench/bin/check_profile_contract.py --submission-root fluidsbench-submission --schema-root fluidsbench-submission-schemas
       - run: python fluidsbench/bin/prepare_submission_status.py --submission-root fluidsbench-submission --check
       - run: ruby fluidsbench/bin/check_launch_contract.rb
-      - run: node --test fluidsbench/tests/test_launch.js
+      - run: node --test fluidsbench/tests/test_launch.js fluidsbench/tests/test_leaderboard_compute.js
       - run: node fluidsbench/bin/check_leaderboard_claim_ui.js
       - run: python -m unittest discover -s fluidsbench/tests -p "test_*.py"

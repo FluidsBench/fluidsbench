@@ -53,7 +53,7 @@ npm ci
 bundle check
 ```
 
-With `fluidsbench-submission` cloned alongside this repository, run the website and leaderboard checks. Match the submission revision pinned in `.github/workflows/profile-contract.yml` when reproducing CI:
+With `fluidsbench-submission` cloned alongside this repository, run the website and leaderboard checks. Match the data revision pinned in `.github/workflows/profile-contract.yml` when reproducing CI. Create a second checkout named `fluidsbench-submission-schemas` at that workflow's schema revision: optional contract additions can advance independently of the immutable results feed. Both schema equality and result integrity are checked.
 
 ```bash
 npx prettier . --check
@@ -62,11 +62,12 @@ python3 -m unittest discover -s tests -p "test_*.py"
 python3 bin/check_dataset_pages.py \
   --submission-root ../fluidsbench-submission
 python3 bin/check_profile_contract.py \
-  --submission-root ../fluidsbench-submission
+  --submission-root ../fluidsbench-submission \
+  --schema-root ../fluidsbench-submission-schemas
 python3 bin/prepare_submission_status.py \
   --submission-root ../fluidsbench-submission --check
 ruby bin/check_launch_contract.rb
-node --test tests/test_launch.js
+node --test tests/test_launch.js tests/test_leaderboard_compute.js
 JEKYLL_ENV=production bundle exec jekyll build --lsi
 ```
 

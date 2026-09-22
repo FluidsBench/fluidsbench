@@ -202,6 +202,7 @@ const context = {
   },
 };
 vm.createContext(context);
+vm.runInContext(fs.readFileSync(path.join(root, "assets/js/leaderboard-compute.js"), "utf8"), context);
 vm.runInContext(instrumented, context, { filename: scriptPath });
 
 const api = context.window.__FluidsBenchClaimTest;

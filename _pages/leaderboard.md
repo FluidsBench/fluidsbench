@@ -14,6 +14,7 @@ chart:
 ---
 
 {% if site.launch.leaderboard_visible or page.committee_review %}
+
 <div class="leaderboard-page ux-leaderboard">
   <header class="leaderboard-masthead">
     <div class="leaderboard-masthead-copy">
@@ -78,6 +79,7 @@ chart:
   <div class="ux-workspace-tabs" role="tablist" aria-label="Benchmark workspace">
     <button id="ux-tab-leaderboard" type="button" role="tab" aria-selected="true" aria-controls="ux-panel-leaderboard" data-workspace-tab="leaderboard">Leaderboard</button>
     <button id="ux-tab-compare" type="button" role="tab" aria-selected="false" aria-controls="leaderboard-advanced-analysis" data-workspace-tab="compare">Compare <span id="ux-compare-count">0</span></button>
+    <button id="ux-tab-compute" type="button" role="tab" aria-selected="false" aria-controls="ux-panel-compute" data-workspace-tab="compute">Compute</button>
     <button id="ux-tab-methodology" type="button" role="tab" aria-selected="false" aria-controls="leaderboard-methodology" data-workspace-tab="methodology">Methodology</button>
   </div>
   <div class="leaderboard-table-area" id="ux-panel-leaderboard" role="tabpanel" aria-labelledby="ux-tab-leaderboard" data-workspace-panel="leaderboard">
@@ -341,6 +343,39 @@ chart:
     </div>
   </details>
 
+  <section id="ux-panel-compute" class="ux-compute" data-workspace-panel="compute" role="tabpanel" aria-labelledby="ux-tab-compute" hidden>
+    <div class="ux-compute-heading">
+      <div><p class="ux-eyebrow">Resources behind the results</p><h2>Explore the compute trade-off</h2><p>Compare physics scores with the time and hardware each model uses.</p></div>
+      <div class="ux-compute-modes" role="group" aria-label="Compute view">
+        <button type="button" data-compute-mode="inference" aria-pressed="true">Inference</button>
+        <button type="button" data-compute-mode="training" aria-pressed="false">Training</button>
+      </div>
+    </div>
+    <div class="ux-compute-controls">
+      <label><span id="compute-hardware-label">GPU model</span> <select id="compute-hardware" aria-label="Filter compute by GPU or device model"><option value="">All GPU models</option></select></label>
+      <label id="compute-axis-control">Compare by <select id="compute-axis"><option value="wall">Elapsed time / case</option><option value="device">Device time / case</option></select></label>
+      <span id="compute-coverage" role="status"></span>
+    </div>
+    <section class="ux-compute-chart-card" aria-labelledby="compute-chart-title">
+      <div class="ux-compute-chart-heading"><h3 id="compute-chart-title">Score vs inference time</h3><span id="compute-chart-direction">Less time ← · Higher score ↑</span></div>
+      <p id="compute-chart-context" class="ux-compute-caption"></p>
+      <div class="ux-compute-chart-frame" id="compute-chart-frame"><canvas id="compute-chart" role="img" aria-label="Physics score versus compute" aria-describedby="compute-chart-summary"></canvas></div>
+      <div id="compute-empty" class="ux-compute-empty" hidden><strong>No timings reported yet</strong><p>Models will appear here as compute measurements become available.</p></div>
+      <p id="compute-chart-summary" class="ux-compute-caption"></p>
+    </section>
+    <div class="ux-compute-table-heading"><h3>Model resources</h3><label>Sort by <select id="compute-sort"></select></label></div>
+    <div class="ux-compute-table-wrap" tabindex="0" role="region" aria-label="Model compute measurements, scroll horizontally on small screens">
+      <table class="ux-compute-table"><caption class="leaderboard-sr-only" id="compute-table-caption">Reported compute measurements for the current dataset and split.</caption><thead id="compute-table-head"></thead><tbody id="compute-table-body"></tbody></table>
+    </div>
+    <p class="ux-compute-footnote">Submitter-reported compute; hardware and timing scope may differ. Compute does not affect the physics score or leaderboard rank.</p>
+    <details class="ux-compute-guide"><summary>How to read these numbers</summary><div>
+      <p><strong>Elapsed time / case</strong> is campaign wall time divided by the number of cases. Parallel work makes this a campaign average, not the latency of one prediction. <strong>Device time / case</strong> is total reported device-seconds divided by cases.</p>
+      <p><strong>Training device-hours</strong> sum the reported allocation across submitter training stages, including the runs covered by each stage. Upstream pretraining is excluded and flagged separately. Elapsed stage times are kept separate because stages can overlap.</p>
+      <p><strong>GPU count</strong> shows maximum concurrent devices across the inference campaign, or the largest reported maximum for a training stage. It does not describe how many GPUs one prediction needs. Unconfirmed GPU models stay unconfirmed; the original hardware descriptions and any per-job counts are in measurement notes.</p>
+      <p>Compare within the same dataset and split, and check hardware, device counts and preprocessing/mapping scope. Device-hours on different hardware are not equivalent. Missing or incomplete measurements are never treated as zero. Open a model for its full measurement notes.</p>
+    </div></details>
+  </section>
+
   <details class="leaderboard-progressive-panel leaderboard-methodology" id="leaderboard-methodology" data-workspace-panel="methodology" role="tabpanel" aria-labelledby="ux-tab-methodology" open hidden>
     <summary>
       <span>Methodology and definitions</span>
@@ -453,7 +488,9 @@ chart:
   window.FluidsBenchProfileGroundTruthBaseUrl =
     new URL("{{ '/assets/data/profile-ground-truth/' | relative_url }}", window.location.origin).href;
 </script>
+<script defer src="{{ '/assets/js/leaderboard-compute.js' | relative_url | bust_file_cache }}"></script>
 <script defer src="{{ '/assets/js/leaderboard.js' | relative_url | bust_file_cache }}"></script>
+
 {% else %}
 {% include launch.liquid %}
 {% endif %}

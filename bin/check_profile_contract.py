@@ -4066,7 +4066,8 @@ def hiliftaeroml_compact_truth_errors(
             f"{label}: loaded prediction cases differ from public truth order"
         )
     return errors
-def check(submission_root: Path) -> list[str]:
+def check_schemas(submission_root: Path) -> list[str]:
+    """Compare every public schema byte-for-byte with its pinned source."""
     errors: list[str] = []
     for schema_name in TOP_LEVEL_SCHEMA_NAMES:
         source_schema = submission_root / "schemas" / schema_name
@@ -4138,6 +4139,13 @@ def check(submission_root: Path) -> list[str]:
                 f"public schema schemas/releases/{schema_name} differs from the submission contract"
             )
 
+    return errors
+
+
+def check(submission_root: Path, *, schema_root: Path | None = None) -> list[str]:
+    # Schema additions may advance independently of the immutable result feed.
+    # With no separate checkout, preserve the original single-source contract.
+    errors = check_schemas(schema_root if schema_root is not None else submission_root)
     submission_manifest = load_json(submission_root / "leaderboard" / "manifest.json")
     ground_truth_manifest_path = GROUND_TRUTH_ROOT / "manifest.json"
     ground_truth_manifest = load_json(ground_truth_manifest_path)
@@ -4524,8 +4532,13 @@ def main() -> int:
         default=ROOT.parent / "fluidsbench-submission",
         help="path to a fluidsbench-submission checkout",
     )
+    parser.add_argument(
+        "--schema-root",
+        type=Path,
+        help="optional separately pinned submission checkout for published schemas; data checks still use --submission-root",
+    )
     args = parser.parse_args()
-    errors = check(args.submission_root.resolve())
+    errors = check(args.submission_root.resolve(), schema_root=args.schema_root)
     if errors:
         for error in errors:
             print(f"ERROR: {error}", file=sys.stderr)
