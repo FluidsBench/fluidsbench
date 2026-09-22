@@ -344,6 +344,10 @@
     sortDirection: "asc",
     metricView: "summary",
     workspaceView: "leaderboard",
+    computeMode: "inference",
+    computeAxis: "wall",
+    computeHardware: "",
+    computeSort: "score",
     analysisView: "comparison",
     profilePanelIndex: 0,
     visibleGroups: new Set(),
@@ -731,6 +735,10 @@
     params.set("direction", state.sortDirection);
     params.set("metric_view", state.metricView);
     params.set("view", state.workspaceView);
+    if (state.computeMode !== "inference") params.set("compute", state.computeMode);
+    if (state.computeAxis !== "wall") params.set("compute_axis", state.computeAxis);
+    if (state.computeHardware) params.set("compute_hardware", state.computeHardware);
+    if (state.computeSort !== "score") params.set("compute_sort", state.computeSort);
     params.set("analysis", state.analysisView);
     params.set("profile_view", String(state.profilePanelIndex));
     if (state.metricView === "full") {
@@ -4604,6 +4612,15 @@
     help.type = "button";
     help.className = "leaderboard-column-help";
     help.textContent = "i";
+    if (column.key === (activeDataset()?.overall_score_composite?.metric_id || "overall_score")) {
+      help.setAttribute("aria-label", "How the overall score is calculated");
+      help.setAttribute("aria-controls", "score-calculation");
+      help.addEventListener("click", (event) => {
+        event.stopPropagation();
+        openScoreMethodology();
+      });
+      return help;
+    }
     help.setAttribute("aria-label", `About ${column.plainLabel || column.label}`);
     help.setAttribute("aria-controls", "column-help-popover");
     help.setAttribute("aria-expanded", "false");
@@ -5021,6 +5038,7 @@
     renderTable();
     renderComparisonChart();
     renderScatterChart();
+    renderCompute();
     void prepareRegionalExplorer();
     void refreshProfileContext();
     updateUrl();
@@ -8609,6 +8627,179 @@
     }
   }
 
+  function scoreNumberHtml(value, digits = 2, suffix = "") {
+    if (typeof value !== "number" || !Number.isFinite(value)) return "—";
+    const rounded = `${suffix === "%" ? value.toLocaleString("en-US", { maximumFractionDigits: digits }) : formatNumber(value, digits)}${suffix}`;
+    const precise = `${value}${suffix}`;
+    return `<span data-score-number data-rounded="${escapeHtml(rounded)}" data-precise="${escapeHtml(precise)}">${escapeHtml(rounded)}</span>`;
+  }
+
+  function applyScorePrecision(container, precise) {
+    container.querySelectorAll("[data-score-number]").forEach((number) => {
+      number.textContent = precise ? number.dataset.precise : number.dataset.rounded;
+    });
+  }
+
+  function scoreMetricLabel(id) {
+    let label = plainMetricLabel(metricDefinition(id)) || id;
+    if (id.startsWith("volume_") && !/^volume\b/i.test(label)) label = `Volume ${label.charAt(0).toLowerCase()}${label.slice(1)}`;
+    return escapeHtml(label);
+  }
+
+  function scoreWeightText(weight) {
+    return `${(weight * 100).toLocaleString("en-US", { maximumFractionDigits: 2 })}%`;
+  }
+
+  function scoreContractLink() {
+    const dataset = activeDataset();
+    if (!dataset?.slug) return "";
+    const url = new URL(`benchmark-specs/${dataset.slug}/submission-spec.json`, window.FluidsBenchLeaderboardBaseUrl).href;
+    return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">Dataset scoring specification</a>`;
+  }
+
+  function scoreScopeNote(policy) {
+    if (!policy || policy.unavailable_component_score !== 0 || policy.component_weight_renormalization !== false) return "";
+    const ceiling = Number.isFinite(policy.maximum_overall_score) ? ` The maximum overall score is ${policy.maximum_overall_score}.` : "";
+    return `<p class="ux-score-note"><strong>Surface-only submissions:</strong> unavailable components contribute zero points. Their weights stay fixed; the remaining weights are not renormalized.${escapeHtml(
+      ceiling
+    )}</p>`;
+  }
+
+  function renderScoreMethodology() {
+    const target = element("score-calculation-body");
+    if (!target) return;
+    const rules = window.FluidsBenchScores.contract(activeDataset());
+    if (!rules.available) {
+      target.innerHTML = `<p>${escapeHtml(rules.reason)}</p>${scoreContractLink()}`;
+      return;
+    }
+    const transforms = new Set(rules.components.map((component) => component.transform));
+    const groups = rules.groups
+      .map((group) => `<span>${scoreMetricLabel(group.metricId)} <strong>${escapeHtml(scoreWeightText(group.weight))}</strong></span>`)
+      .join("");
+    const rows = rules.components
+      .map((component) => {
+        const definition = metricDefinition(component.metric_id);
+        const unit = definition?.unit === "%" ? "%" : definition?.unit ? ` ${definition.unit}` : "";
+        const transform =
+          component.transform === "bounded_error"
+            ? "Error → score"
+            : component.transform === "bounded_quality"
+              ? "Quality → score"
+              : "Physics-null skill";
+        const reference =
+          component.transform === "bounded_error"
+            ? `Cap: ${component.cap}${unit}`
+            : component.transform === "physics_null_skill"
+              ? `Baseline: ${component.baseline_error}${unit}`
+              : "—";
+        return `<tr><th scope="row">${scoreMetricLabel(component.metric_id)}</th><td>${escapeHtml(
+          scoreWeightText(component.weight)
+        )}</td><td>${transform}</td><td>${escapeHtml(reference)}</td></tr>`;
+      })
+      .join("");
+    target.innerHTML = `<p>For ${escapeHtml(
+      state.dataset
+    )}, convert each reported metric to a component score, multiply by its weight, then add the points.</p>
+      <p class="ux-score-formula">Overall score = ∑ (weight × component score)</p>
+      ${groups ? `<div class="ux-score-groups" aria-label="Component group weights">${groups}</div>` : ""}
+      <div class="ux-score-table-wrap" tabindex="0" role="region" aria-label="Overall score components, scroll horizontally on small screens">
+        <table class="ux-score-table"><caption class="leaderboard-sr-only">${escapeHtml(
+          state.dataset
+        )} component weights and transforms from the loaded release.</caption>
+        <thead><tr><th scope="col">Component</th><th scope="col">Weight</th><th scope="col">Conversion</th><th scope="col">Error cap / baseline</th></tr></thead><tbody>${rows}</tbody></table>
+      </div>
+      <dl class="ux-score-rules">
+        ${
+          transforms.has("bounded_error")
+            ? "<div><dt>Error → score</dt><dd>100 × (1 − error / cap), clipped to 0–100. Zero error gives 100; at or above the cap gives 0; values in between are linear. The error and cap use the same units.</dd></div>"
+            : ""
+        }
+        ${
+          transforms.has("bounded_quality")
+            ? "<div><dt>Quality → score</dt><dd>100 × R², with R² clipped to 0–1. Negative R² contributes zero points.</dd></div>"
+            : ""
+        }
+        ${
+          transforms.has("physics_null_skill")
+            ? "<div><dt>Physics-null skill</dt><dd>100 × (1 − error / baseline error). This is not clipped: a result worse than the frozen baseline has negative skill.</dd></div>"
+            : ""
+        }
+      </dl>
+      ${scoreScopeNote(rules.surfaceOnlyPolicy)}
+      ${rules.groupReason ? `<p class="ux-score-note">${escapeHtml(rules.groupReason)}</p>` : ""}
+      <p class="ux-score-note">The overall score is not a percentage accuracy. Calculations use the reported values before display rounding.${
+        groups ? " Group summaries use these same component weights and are not added a second time." : ""
+      } Open a model’s Score breakdown to see its contributions.</p>
+      <p class="ux-score-source">${scoreContractLink()}</p>`;
+  }
+
+  function scoreBreakdownHtml(row) {
+    const result = window.FluidsBenchScores.breakdown(activeDataset(), row);
+    const rows = result.components
+      .map((component) => {
+        const definition = metricDefinition(component.metric_id);
+        const unit = definition?.unit ? ` ${definition.unit}` : "";
+        const raw =
+          component.status === "scope_unavailable"
+            ? '<span class="ux-score-missing">Unavailable for this scope</span>'
+            : component.status === "missing"
+              ? '<span class="ux-score-missing">Not reported</span>'
+              : component.status === "invalid"
+                ? '<span class="ux-score-missing">Invalid value</span>'
+                : scoreNumberHtml(component.raw, definition?.digits ?? 3, unit);
+        return `<tr><th scope="row">${scoreMetricLabel(component.metric_id)}</th><td>${raw}</td><td>${scoreNumberHtml(component.score)}${
+          component.status === "scope_unavailable" ? " <small>(fixed)</small>" : ""
+        }</td><td>${scoreNumberHtml(component.weight * 100, 2, "%")}</td><td>${scoreNumberHtml(component.contribution)}</td></tr>`;
+      })
+      .join("");
+    const warning = result.status !== "match";
+    return `<details class="leaderboard-details-disclosure ux-score-breakdown">
+      <summary>Score breakdown</summary>
+      <div class="leaderboard-details-disclosure-body">
+        <div class="ux-score-toolbar"><button class="leaderboard-action-button" type="button" data-open-score-methodology>Weights and formula →</button>${
+          rows ? '<label><input type="checkbox" data-score-precision> Show full precision</label>' : ""
+        }</div>
+        ${
+          rows
+            ? `<div class="ux-score-table-wrap" tabindex="0" role="region" aria-label="Model score contributions, scroll horizontally on small screens"><table class="ux-score-table">
+          <caption class="leaderboard-sr-only">${escapeHtml(row.model)} score breakdown</caption>
+          <thead><tr><th scope="col">Component</th><th scope="col">Reported metric</th><th scope="col">Component score</th><th scope="col">Weight</th><th scope="col">Points contributed</th></tr></thead>
+          <tbody>${rows}</tbody>
+          <tfoot><tr><th colspan="4" scope="row">Calculated total</th><td>${scoreNumberHtml(
+            result.total
+          )}</td></tr><tr><th colspan="4" scope="row">Recorded overall score</th><td>${scoreNumberHtml(result.recorded)}</td></tr></tfoot>
+        </table></div>`
+            : `<p>Recorded overall score: ${scoreNumberHtml(result.recorded)}</p>`
+        }
+        <p class="ux-score-status${warning ? " is-unavailable" : ""}" role="status">${escapeHtml(result.reason)}</p>
+        ${
+          row.prediction_scope === "surface_only" && result.components.some((component) => component.status === "scope_unavailable")
+            ? scoreScopeNote(result.rules.surfaceOnlyPolicy)
+            : ""
+        }
+        ${
+          rows
+            ? '<p class="ux-score-note">Points contributed = component score × weight. Calculated from the reported metrics at full precision; rounded rows may not add up exactly.</p>'
+            : ""
+        }
+      </div>
+    </details>`;
+  }
+
+  function openScoreMethodology() {
+    element("details-dialog")?.close();
+    hideHelp();
+    activateWorkspace("methodology");
+    const panel = element("leaderboard-methodology");
+    if (panel) panel.open = true;
+    const calculation = element("score-calculation");
+    if (!calculation) return;
+    calculation.open = true;
+    calculation.querySelector("summary")?.focus();
+    calculation.scrollIntoView({ block: "start", behavior: "smooth" });
+  }
+
   function renderMetricDefinitions() {
     const list = element("metric-definitions-list");
     if (window.MathJax?.typesetClear) window.MathJax.typesetClear([list]);
@@ -8727,6 +8918,7 @@
   }
 
   function renderDefinitions() {
+    renderScoreMethodology();
     renderMetricDefinitions();
     renderSplitDefinitions();
     renderTrainingDefinitions();
@@ -9376,9 +9568,21 @@
     const focusWasInside = Boolean(focused && dialog.contains?.(focused));
     const focusedHref = focusWasInside && focused.tagName === "A" ? focused.href : "";
     const focusedCopyAction = focusWasInside ? focused.dataset?.copyResultCitation || "" : "";
+    const computeNotesFocused = focusWasInside && focused.matches?.(".ux-compute-measurements > summary");
+    const scoreFocused = focusWasInside && focused.matches?.(".ux-score-breakdown > summary");
+    const precisionFocused = focusWasInside && focused.matches?.("[data-score-precision]");
     const row = resultRowById(state.resultId);
     if (!row) return;
+    const computeNotesOpen = dialog.querySelector?.(".ux-compute-measurements")?.open;
+    const scoreOpen = dialog.querySelector?.(".ux-score-breakdown")?.open;
+    const scorePrecision = dialog.querySelector?.("[data-score-precision]")?.checked;
     openDetails(row, false);
+    if (computeNotesOpen) dialog.querySelector(".ux-compute-measurements").open = true;
+    if (scoreOpen) dialog.querySelector(".ux-score-breakdown").open = true;
+    if (scorePrecision) {
+      dialog.querySelector("[data-score-precision]").checked = true;
+      applyScorePrecision(dialog, true);
+    }
     const body = element("details-dialog-body");
     const replacement = focusedCopyAction
       ? body?.querySelector?.(`[data-copy-result-citation="${focusedCopyAction}"]`)
@@ -9386,6 +9590,9 @@
         ? Array.from(body?.querySelectorAll?.("a") || []).find((link) => link.href === focusedHref)
         : null;
     replacement?.focus();
+    if (computeNotesFocused) body.querySelector(".ux-compute-measurements > summary").focus({ preventScroll: true });
+    if (scoreFocused) body.querySelector(".ux-score-breakdown > summary").focus({ preventScroll: true });
+    if (precisionFocused) body.querySelector("[data-score-precision]").focus({ preventScroll: true });
   }
 
   function revisionHistoryHtml(row) {
@@ -9630,6 +9837,8 @@
           ${summaryStatus("Environment", optionalArtifactAvailabilityLabel(reproducibilityArtifacts.environment))}
         </div>
       </section>
+      ${scoreBreakdownHtml(row)}
+      ${computeDetailsHtml(row)}
       <details class="leaderboard-details-disclosure">
         <summary>Ranking and submission record</summary>
         <div class="leaderboard-details-disclosure-body">
@@ -9870,9 +10079,15 @@
     if (sortKeys.has(restored.sortKey)) state.sortKey = restored.sortKey;
     if (["asc", "desc"].includes(restored.sortDirection)) state.sortDirection = restored.sortDirection;
 
-    state.workspaceView = ["leaderboard", "compare", "methodology"].includes(restored.params.get("view"))
+    state.workspaceView = ["leaderboard", "compare", "compute", "methodology"].includes(restored.params.get("view"))
       ? restored.params.get("view")
       : "leaderboard";
+    state.computeMode = restored.params.get("compute") === "training" ? "training" : "inference";
+    state.computeAxis = restored.params.get("compute_axis") === "device" ? "device" : "wall";
+    state.computeHardware = restored.params.get("compute_hardware") || "";
+    state.computeSort = ["score", "wall", "device", "parameters", "model"].includes(restored.params.get("compute_sort"))
+      ? restored.params.get("compute_sort")
+      : "score";
     state.analysisView = restored.params.get("analysis") || "comparison";
     state.profilePanelIndex = Number(restored.params.get("profile_view")) || 0;
     state.metricView = restored.metricView;
@@ -9951,7 +10166,7 @@
     const truthOnly = activeDatasetSlug() === "windsorml" && activeDataset()?.submission_count === 0;
     element("leaderboard-radar-panel").hidden = truthOnly;
     element("comparison-model-description").closest("fieldset").hidden = truthOnly;
-    if (truthOnly) {
+    if (truthOnly && state.workspaceView !== "compute") {
       element("leaderboard-advanced-analysis").open = true;
       state.workspaceView = "compare";
       state.analysisView = "profiles";
@@ -10162,8 +10377,317 @@
     if (!selected.length) chips.textContent = "No models selected. Choose results in the leaderboard, or use Select top 3.";
   }
 
+  function computeQuantity(value, unit = "") {
+    if (value === null || value === undefined) return "Not reported";
+    const formatted = new Intl.NumberFormat("en-GB", { maximumSignificantDigits: 4 }).format(value);
+    return `${formatted}${unit ? ` ${unit}` : ""}`;
+  }
+
+  function computeRecords() {
+    const selected = figureRows().map((row) => row.id);
+    let otherIndex = selected.length;
+    return tableRowsForCurrentModelType().map((row) => {
+      const selectedIndex = selected.indexOf(row.id);
+      return {
+        row,
+        ...window.FluidsBenchCompute.summarize(row),
+        score: finiteNumber(row.metricValues[ranking().metric_id]),
+        selected: selectedIndex >= 0,
+        color: palette[(selectedIndex >= 0 ? selectedIndex : otherIndex++) % palette.length],
+      };
+    });
+  }
+
+  function computeAxisValue(item) {
+    if (state.computeMode === "training") return item.training.deviceHours;
+    return state.computeAxis === "device" ? item.inference.deviceSecondsPerCase : item.inference.wallSecondsPerCase;
+  }
+
+  function renderCompute() {
+    if (!element("compute-table-body") || state.workspaceView !== "compute") return;
+    const training = state.computeMode === "training";
+    const all = computeRecords();
+    const hasNonGpu = all.some((item) => ["cpu", "tpu", "other", "mixed"].includes(item[state.computeMode].accelerator.type));
+    const deviceLabel = hasNonGpu ? "GPU / device" : "GPU";
+    element("compute-hardware-label").textContent = `${deviceLabel} model`;
+    const hardwareOptions = [
+      ...new Map(
+        all.map((item) => {
+          const gpu = item[state.computeMode].accelerator;
+          return [gpu.filterKey, { value: gpu.filterKey, label: gpu.filterLabel }];
+        })
+      ).values(),
+    ].sort((left, right) => left.label.localeCompare(right.label));
+    state.computeHardware = populateSelect(
+      element("compute-hardware"),
+      [{ value: "", label: `All ${deviceLabel} models` }, ...hardwareOptions],
+      state.computeHardware
+    );
+    const items = all.filter((item) => !state.computeHardware || item[state.computeMode].accelerator.filterKey === state.computeHardware);
+    document
+      .querySelectorAll("[data-compute-mode]")
+      .forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.computeMode === state.computeMode)));
+    element("compute-axis-control").hidden = training;
+    element("compute-axis").value = state.computeAxis;
+    const definition = metricDefinition(ranking().metric_id);
+    const scoreLabel = plainMetricLabel(definition) || "Physics score";
+    const higher = rankingPolicy().direction !== "lower";
+    state.computeSort = populateSelect(
+      element("compute-sort"),
+      [
+        { value: "score", label: `${scoreLabel} (${higher ? "high" : "low"} first)` },
+        ...(!training ? [{ value: "wall", label: "Elapsed time (low first)" }] : []),
+        { value: "device", label: "Device time (low first)" },
+        { value: "parameters", label: "Parameters (low first)" },
+        { value: "model", label: "Model (A–Z)" },
+      ],
+      state.computeSort
+    );
+    const sortValue = (item) =>
+      ({
+        score: item.score,
+        wall: item.inference.wallSecondsPerCase,
+        device: training ? item.training.deviceHours : item.inference.deviceSecondsPerCase,
+        parameters: item.row.parameterCount,
+      })[state.computeSort];
+    items.sort(
+      (left, right) =>
+        (state.computeSort === "model"
+          ? 0
+          : window.FluidsBenchCompute.compareNumbers(sortValue(left), sortValue(right), state.computeSort === "score" && higher)) ||
+        rowLabel(left.row).localeCompare(rowLabel(right.row))
+    );
+    const timed = items.filter((item) => computeAxisValue(item) !== null);
+    element("compute-coverage").textContent = `${timed.length} of ${items.length} results with timings`;
+    const headers = training
+      ? ["Model", scoreLabel, "Parameters", "Training device-hours", "Reported stages", deviceLabel, "Count", "Training scope"]
+      : ["Model", scoreLabel, "Parameters", "Elapsed time / case", "Device time / case", deviceLabel, "Count", "Timing scope"];
+    element("compute-table-head").innerHTML = `<tr>${headers.map((label) => `<th scope="col">${escapeHtml(label)}</th>`).join("")}</tr>`;
+    element("compute-table-caption").textContent = `${state.dataset} / ${state.split}: ${
+      training ? "training" : "inference"
+    } compute. Selected comparison models are marked. Open a model for measurement details.`;
+    element("compute-table-body").innerHTML =
+      items
+        .map((item) => {
+          const { row, inference: inf, training: train } = item;
+          const gpu = item[state.computeMode].accelerator;
+          const gpuCount = gpu.mixed ? "See stages" : computeQuantity(gpu.devices, gpu.type === "gpu" ? "GPUs" : "devices");
+          const countScope = gpu.devices === null ? "" : training ? "max. per stage" : "max. concurrent";
+          const stages = train.submittedStages.length ? `${train.reportedStageCount} / ${train.submittedStages.length}` : "Not reported";
+          const partial =
+            train.knownDeviceHours !== null && !train.complete
+              ? `<small>${escapeHtml(computeQuantity(train.knownDeviceHours, "device-h"))} known · incomplete</small>`
+              : "";
+          const values = training
+            ? [
+                `${escapeHtml(computeQuantity(train.deviceHours, "device-h"))}${partial}`,
+                `${stages}${train.upstreamCount ? `<small>+ ${train.upstreamCount} upstream</small>` : ""}`,
+              ]
+            : [escapeHtml(computeQuantity(inf.wallSecondsPerCase, "s")), escapeHtml(computeQuantity(inf.deviceSecondsPerCase, "device-s"))];
+          return `<tr class="${item.selected ? "is-selected" : ""}">
+        <th scope="row"><button class="ux-compute-model" type="button" data-compute-details="${escapeHtml(
+          row.id
+        )}"><span class="ux-compute-dot" style="--model-color:${item.color}" aria-hidden="true"></span>${escapeHtml(rowLabel(row))}</button><small>${
+          item.selected ? "Selected for comparison · " : ""
+        }${
+          isLatestRevision(row) ? "" : "Previous version · "
+        }<button class="ux-compute-notes-link" type="button" data-compute-notes data-compute-details="${escapeHtml(
+          row.id
+        )}" aria-label="Measurement notes for ${escapeHtml(rowLabel(row))}">Measurement notes ↗</button></small></th>
+        <td>${escapeHtml(formatMetric(item.score, definition))}</td><td>${escapeHtml(computeQuantity(row.parameterCount, "M"))}</td>
+        <td>${values[0]}</td><td>${values[1]}</td>
+        <td class="ux-compute-hardware"><span>${escapeHtml(gpu.label)}</span>${
+          gpu.model && gpu.vendor ? `<small>${escapeHtml(gpu.vendor)}</small>` : ""
+        }</td>
+        <td class="ux-compute-device-count">${escapeHtml(gpuCount)}<small>${escapeHtml(countScope)}</small></td>
+        <td>${escapeHtml(training ? train.scope : inf.scope)}<small>${escapeHtml(
+          training ? trainingLabel(row) : inf.cases !== null ? `${inf.cases} cases` : "Case count not reported"
+        )}</small></td>
+      </tr>`;
+        })
+        .join("") || `<tr><td colspan="8" class="ux-compute-no-rows">No results match these filters.</td></tr>`;
+    renderComputeChart(items, scoreLabel, higher);
+  }
+
+  function renderComputeChart(items, scoreLabel, higher) {
+    destroyChart("compute");
+    const training = state.computeMode === "training";
+    const axisLabel = training
+      ? "Training device-hours · submitter stages"
+      : state.computeAxis === "device"
+        ? "Device time / case (device-s)"
+        : "Elapsed time / case (s)";
+    const points = items
+      .filter((item) => computeAxisValue(item) !== null && item.score !== null)
+      .map((item) => ({ x: computeAxisValue(item), y: item.score, item }));
+    element("compute-chart-title").textContent = training ? "Score vs training compute" : "Score vs inference time";
+    element("compute-chart-direction").textContent = `Less ${training ? "compute" : "time"} ← · ${higher ? "Higher" : "Lower"} score ${
+      higher ? "↑" : "↓"
+    }`;
+    element("compute-chart-context").textContent = `${state.dataset} · ${state.split}${
+      dataRelease().status !== "official" ? " · Preview timings may be provisional; see measurement notes." : ""
+    }`;
+    const available = points.length > 0 && typeof Chart !== "undefined";
+    element("compute-chart-frame").hidden = !available;
+    element("compute-empty").hidden = available;
+    element("compute-empty").innerHTML = points.length
+      ? "<strong>Chart unavailable</strong><p>All measurements are available in the table below.</p>"
+      : `<strong>${items.length ? "No comparable timings reported yet" : "No results for this selection"}</strong><p>${
+          training
+            ? "Complete submitter-stage compute and a physics score are needed for this chart."
+            : "Reported time, case count and a physics score are needed for this chart."
+        }</p>`;
+    const omitted = items.length - points.length;
+    element("compute-chart-summary").textContent = `${points.length} result${points.length === 1 ? "" : "s"} plotted${
+      omitted ? ` · ${omitted} missing a complete timing or score` : ""
+    }. ${
+      training ? "Submitter training only; upstream compute is excluded." : "Campaign average per case, not single-prediction latency."
+    } Larger points mark your comparison selection. Values and measurement notes are in the table.`;
+    if (!available) return;
+    const canvas = element("compute-chart");
+    canvas.setAttribute(
+      "aria-label",
+      `${scoreLabel} versus ${axisLabel}, ${state.dataset}, ${state.split}. ${points.length} results; values in the model resources table.`
+    );
+    state.charts.compute = new Chart(canvas, {
+      type: "scatter",
+      data: {
+        datasets: [
+          {
+            data: points,
+            pointRadius: points.map((point) => (point.item.selected ? 8 : 5)),
+            pointHoverRadius: 10,
+            backgroundColor: points.map((point) => point.item.color),
+            borderColor: chartTextColor(),
+            borderWidth: points.map((point) => (point.item.selected ? 2 : 0)),
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        parsing: false,
+        layout: { padding: { top: 22, right: 24 } },
+        scales: {
+          x: {
+            beginAtZero: true,
+            grace: "10%",
+            title: { display: true, text: axisLabel, color: chartTextColor() },
+            ticks: { color: chartTextColor() },
+            grid: { color: chartGridColor() },
+          },
+          y: {
+            grace: "20%",
+            title: { display: true, text: scoreLabel, color: chartTextColor() },
+            ticks: { color: chartTextColor() },
+            grid: { color: chartGridColor() },
+          },
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: (contexts) => rowLabel(contexts[0].raw.item.row),
+              label: (context) => [
+                `${scoreLabel}: ${formatMetric(context.raw.y, metricDefinition(ranking().metric_id))}`,
+                `${axisLabel}: ${computeQuantity(context.raw.x)}`,
+                context.raw.item[state.computeMode].accelerator.filterLabel,
+                `${computeQuantity(context.raw.item[state.computeMode].accelerator.devices)} maximum concurrent devices${
+                  training ? " per stage" : ""
+                }`,
+                context.raw.item[state.computeMode].scope,
+              ],
+            },
+          },
+        },
+      },
+      plugins: [
+        {
+          id: "computeModelLabels",
+          afterDatasetsDraw(chart) {
+            if (points.length > 8) return;
+            const ctx = chart.ctx;
+            ctx.save();
+            ctx.font = "500 12px Inter, sans-serif";
+            ctx.fillStyle = chartTextColor();
+            const occupied = [];
+            chart.getDatasetMeta(0).data.forEach((point, index) => {
+              const full = rowLabel(points[index].item.row);
+              const label = full.length > 30 ? `${full.slice(0, 29)}…` : full;
+              const width = ctx.measureText(label).width;
+              const x = Math.max(chart.chartArea.left, Math.min(point.x + 12, chart.chartArea.right - width));
+              const y = Math.max(chart.chartArea.top + 12, point.y - 14);
+              if (occupied.some((box) => Math.abs(box.y - y) < 16 && x < box.x + box.width + 6 && x + width + 6 > box.x)) return;
+              ctx.fillText(label, x, y);
+              occupied.push({ x, y, width });
+            });
+            ctx.restore();
+          },
+        },
+      ],
+    });
+  }
+
+  function computeDetailsHtml(row) {
+    const { inference: inf, training: train } = window.FluidsBenchCompute.summarize(row);
+    const stageDetails = train.stages
+      .map((stage) => {
+        const compute = record(stage.compute);
+        const submitted = train.submittedStages.includes(stage);
+        return `<article class="ux-compute-stage"><h5>${escapeHtml(humanize(stage.id))}</h5><p>${escapeHtml(stage.description || "")}</p>${
+          submitted
+            ? `<dl>
+        ${detailsRow("GPU / accelerator model", window.FluidsBenchCompute.accelerator(compute).filterLabel)}
+        ${detailsRow("Hardware description", compute.hardware || "Not reported")}
+        ${detailsRow("Devices per job", computeQuantity(window.FluidsBenchCompute.accelerator(compute).devicesPerJob))}
+        ${detailsRow("Maximum concurrent devices", computeQuantity(finiteNumber(compute.max_concurrent_device_count)))}
+        ${detailsRow("Stage elapsed time", computeQuantity(finiteNumber(compute.campaign_wall_time_hours), "hours"))}
+        ${detailsRow("Stage device time", computeQuantity(finiteNumber(compute.aggregate_device_hours), "device-hours"))}
+        ${detailsRow("Runs covered by this stage", computeQuantity(finiteNumber(stage.run_count)))}
+      </dl><p class="ux-compute-measurement-note">${escapeHtml(compute.measurement_notes || "Measurement notes not reported.")}</p>`
+            : `<p>${escapeHtml(
+                stage.status === "performed_upstream"
+                  ? `Upstream training · excluded from the submitter total. ${stage.upstream_reference || ""}`
+                  : "Compute not reported for this stage."
+              )}</p>`
+        }</article>`;
+      })
+      .join("");
+    return `<section class="ux-compute-details" aria-label="Compute summary">
+      <div class="ux-compute-details-heading"><h4>Compute</h4><button class="leaderboard-action-button" type="button" data-open-compute>Explore compute →</button></div>
+      <dl class="ux-compute-summary">
+        ${detailsRow("Inference · elapsed / case", computeQuantity(inf.wallSecondsPerCase, "s"))}
+        ${detailsRow("Inference · device / case", computeQuantity(inf.deviceSecondsPerCase, "device-s"))}
+        ${detailsRow("Training · submitter stages", computeQuantity(train.deviceHours, "device-hours"))}
+      </dl>
+      <details class="ux-compute-measurements"><summary>Hardware, timing scope and measurement notes</summary><div>
+        <h5>Inference</h5><dl>
+          ${detailsRow("GPU / accelerator model", inf.accelerator.filterLabel)}
+          ${detailsRow("Hardware description", inf.hardware || "Not reported")}
+          ${detailsRow("Devices per inference job", computeQuantity(inf.accelerator.devicesPerJob))}
+          ${detailsRow("Maximum concurrent devices", computeQuantity(inf.devices))}
+          ${detailsRow("Cases in the campaign", computeQuantity(inf.cases))}
+          ${detailsRow("Campaign elapsed time", computeQuantity(inf.wallSeconds, "s"))}
+          ${detailsRow("Campaign device time", computeQuantity(inf.deviceSeconds, "device-s"))}
+          ${detailsRow("Preprocessing included", inf.preprocessing === null ? "Not reported" : inf.preprocessing ? "Yes" : "No")}
+          ${detailsRow("Mapping included", inf.mapping === null ? "Not reported" : inf.mapping ? "Yes" : "No")}
+        </dl><p class="ux-compute-measurement-note">${escapeHtml(inf.notes || "Measurement notes not reported.")}</p>
+        <h5>Training</h5><p>${escapeHtml(train.scope)}. ${
+          train.complete ? "Device-hours sum all reported submitter stages." : "A complete submitter total is not reported."
+        }${
+          train.knownDeviceHours !== null && !train.complete
+            ? ` ${escapeHtml(computeQuantity(train.knownDeviceHours, "device-hours"))} reported across ${train.reportedStageCount} stages.`
+            : ""
+        }</p>
+        <p>Training regime: ${escapeHtml(trainingLabel(row))}. Target data: ${escapeHtml(targetDataLabel(row.target_data_used))}.</p>
+        ${stageDetails || "<p>No training-stage compute reported.</p>"}
+        <p class="details-note">Submitter-reported resources, separate from physics scoring. Per-case inference is a campaign average; upstream training is excluded. Hardware and accounting methods must match for a like-for-like comparison.</p>
+      </div></details>
+    </section>`;
+  }
+
   function activateWorkspace(name, persist = true) {
-    state.workspaceView = ["leaderboard", "compare", "methodology"].includes(name) ? name : "leaderboard";
+    state.workspaceView = ["leaderboard", "compare", "compute", "methodology"].includes(name) ? name : "leaderboard";
     document.querySelectorAll("[data-workspace-tab]").forEach((tab) => {
       const active = tab.dataset.workspaceTab === state.workspaceView;
       tab.setAttribute("aria-selected", String(active));
@@ -10172,6 +10696,7 @@
     document.querySelectorAll("[data-workspace-panel]").forEach((panel) => {
       panel.hidden = panel.dataset.workspacePanel !== state.workspaceView;
     });
+    if (state.workspaceView === "compute") renderCompute();
     window.requestAnimationFrame(resizeVisibleCharts);
     if (persist) updateUrl();
   }
@@ -10221,6 +10746,29 @@
   }
 
   function configureUxEvents() {
+    window.addEventListener("resize", () => {
+      if (state.workspaceView === "compute") state.charts.compute?.resize();
+    });
+    document.querySelectorAll("[data-compute-mode]").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.computeMode = button.dataset.computeMode;
+        state.computeHardware = "";
+        state.computeSort = "score";
+        renderCompute();
+        updateUrl();
+      });
+    });
+    [
+      ["compute-hardware", "computeHardware"],
+      ["compute-axis", "computeAxis"],
+      ["compute-sort", "computeSort"],
+    ].forEach(([id, key]) => {
+      element(id)?.addEventListener("change", (event) => {
+        state[key] = event.target.value;
+        renderCompute();
+        updateUrl();
+      });
+    });
     document.querySelectorAll("[data-workspace-tab]").forEach((tab) => {
       tab.addEventListener("click", () => activateWorkspace(tab.dataset.workspaceTab));
       tab.addEventListener("keydown", (event) => {
@@ -10263,11 +10811,34 @@
       updateUrl();
     });
     document.addEventListener("click", (event) => {
+      if (event.target.closest("[data-open-score-methodology]")) openScoreMethodology();
+      const computeDetails = event.target.closest("[data-compute-details]");
+      if (computeDetails) {
+        const row = resultRowById(computeDetails.dataset.computeDetails);
+        if (row) {
+          openDetails(row);
+          if (computeDetails.hasAttribute("data-compute-notes")) {
+            const notes = element("details-dialog-body").querySelector(".ux-compute-measurements");
+            notes.open = true;
+            notes.querySelector("summary").focus();
+            notes.closest(".ux-compute-details").scrollIntoView({ block: "start" });
+          }
+        }
+      }
+      if (event.target.closest("[data-open-compute]")) {
+        element("details-dialog")?.close();
+        state.computeHardware = "";
+        activateWorkspace("compute");
+        element("ux-tab-compute")?.focus();
+      }
       if (event.target.closest("a[href='#metric-definitions'], a[href='#split-definitions'], a[href='#training-definitions']"))
         activateWorkspace("methodology");
       document.querySelectorAll(".ux-menu[open]").forEach((menu) => {
         if (!menu.contains(event.target) || event.target.closest("button")) menu.open = false;
       });
+    });
+    document.addEventListener("change", (event) => {
+      if (event.target.matches("[data-score-precision]")) applyScorePrecision(event.target.closest(".ux-score-breakdown"), event.target.checked);
     });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape")
