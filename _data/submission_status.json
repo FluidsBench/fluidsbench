@@ -1,6 +1,6 @@
 {
-  "source_commit": "36b6708d3a88705437e6128bf1a84ff8f597f67c",
-  "manifest_sha256": "8d244230f75fbe630a34f470bab9160b70f3920a5205651d6662520b9ddd0821",
+  "source_commit": "a25633112a5f95ae29d62259f25e4c3eb1702480",
+  "manifest_sha256": "1011daf91abe64290ff386336612040907840cfe9eb581d0412423bb392fca90",
   "release": {
     "id": "prototype-dev-2026-09-16-7702b02f0140",
     "status": "prototype_dummy_data",

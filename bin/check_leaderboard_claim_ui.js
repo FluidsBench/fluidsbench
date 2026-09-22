@@ -79,6 +79,8 @@ window.__FluidsBenchClaimTest = {
   normalizeRow,
   nativeSegmentIds,
   openDetails,
+  scoreBreakdownHtml,
+  scoreNumberHtml,
   predictionArtifactStatus,
   predictionAvailability,
   predictionMetricRecomputation,
@@ -202,6 +204,8 @@ const context = {
   },
 };
 vm.createContext(context);
+vm.runInContext(fs.readFileSync(path.join(root, "assets/js/leaderboard-compute.js"), "utf8"), context);
+vm.runInContext(fs.readFileSync(path.join(root, "assets/js/leaderboard-scores.js"), "utf8"), context);
 vm.runInContext(instrumented, context, { filename: scriptPath });
 
 const api = context.window.__FluidsBenchClaimTest;
@@ -213,6 +217,31 @@ assert.equal(api.decimalHalfUp(1.25, 1), 1.3);
 assert.equal(api.decimalHalfUp(-1.25, 1), -1.3);
 assert.equal(api.decimalHalfUp(9926.64999999999, 1), 9926.6);
 assert.equal(api.decimalHalfUp(-91.4564999999999, 3), -91.456);
+
+{
+  const previous = { ...api.state };
+  const manifest = JSON.parse(fs.readFileSync(path.join(submissionRoot, "leaderboard/manifest.json"), "utf8"));
+  api.state.manifest = manifest;
+  api.state.metrics = new Map(manifest.metric_definitions.map((definition) => [definition.id, definition]));
+  api.state.dataset = "HiLiftAeroML";
+  const dataset = manifest.datasets.find((item) => item.name === api.state.dataset);
+  const entry = JSON.parse(fs.readFileSync(path.join(submissionRoot, dataset.file), "utf8"))[0];
+  const html = api.scoreBreakdownHtml(api.normalizeRow(entry, 0));
+  assert.match(html, /<summary>Score breakdown<\/summary>/);
+  assert.doesNotMatch(html, /ux-score-breakdown" open/);
+  assert.match(html, /Volume velocity rel\. L2/);
+  assert.match(html, /data-score-precision/);
+  assert.match(html, /Matches the recorded overall score/);
+  assert.match(api.scoreNumberHtml(0.734567891, 3), /data-precise="0.734567891"/);
+  assert.match(api.scoreNumberHtml(15, 2, "%"), />15%<\/span>/);
+  api.state.dataset = "DrivAerML";
+  const scopeHtml = api.scoreBreakdownHtml({ model: "Scope test", prediction_scope: "surface_only", metric_values: {} });
+  assert.match(scopeHtml, /Unavailable for this scope/);
+  assert.match(scopeHtml, /Not reported/);
+  assert.match(scopeHtml, /maximum overall score is 60/);
+  assert.match(scopeHtml, /complete total cannot be calculated/);
+  Object.assign(api.state, previous);
+}
 
 const regionalBinding = {
   format: "drivaerml-regional-aggregate-v2",
