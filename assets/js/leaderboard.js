@@ -4612,6 +4612,15 @@
     help.type = "button";
     help.className = "leaderboard-column-help";
     help.textContent = "i";
+    if (column.key === (activeDataset()?.overall_score_composite?.metric_id || "overall_score")) {
+      help.setAttribute("aria-label", "How the overall score is calculated");
+      help.setAttribute("aria-controls", "score-calculation");
+      help.addEventListener("click", (event) => {
+        event.stopPropagation();
+        openScoreMethodology();
+      });
+      return help;
+    }
     help.setAttribute("aria-label", `About ${column.plainLabel || column.label}`);
     help.setAttribute("aria-controls", "column-help-popover");
     help.setAttribute("aria-expanded", "false");
@@ -8618,6 +8627,179 @@
     }
   }
 
+  function scoreNumberHtml(value, digits = 2, suffix = "") {
+    if (typeof value !== "number" || !Number.isFinite(value)) return "—";
+    const rounded = `${suffix === "%" ? value.toLocaleString("en-US", { maximumFractionDigits: digits }) : formatNumber(value, digits)}${suffix}`;
+    const precise = `${value}${suffix}`;
+    return `<span data-score-number data-rounded="${escapeHtml(rounded)}" data-precise="${escapeHtml(precise)}">${escapeHtml(rounded)}</span>`;
+  }
+
+  function applyScorePrecision(container, precise) {
+    container.querySelectorAll("[data-score-number]").forEach((number) => {
+      number.textContent = precise ? number.dataset.precise : number.dataset.rounded;
+    });
+  }
+
+  function scoreMetricLabel(id) {
+    let label = plainMetricLabel(metricDefinition(id)) || id;
+    if (id.startsWith("volume_") && !/^volume\b/i.test(label)) label = `Volume ${label.charAt(0).toLowerCase()}${label.slice(1)}`;
+    return escapeHtml(label);
+  }
+
+  function scoreWeightText(weight) {
+    return `${(weight * 100).toLocaleString("en-US", { maximumFractionDigits: 2 })}%`;
+  }
+
+  function scoreContractLink() {
+    const dataset = activeDataset();
+    if (!dataset?.slug) return "";
+    const url = new URL(`benchmark-specs/${dataset.slug}/submission-spec.json`, window.FluidsBenchLeaderboardBaseUrl).href;
+    return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">Dataset scoring specification</a>`;
+  }
+
+  function scoreScopeNote(policy) {
+    if (!policy || policy.unavailable_component_score !== 0 || policy.component_weight_renormalization !== false) return "";
+    const ceiling = Number.isFinite(policy.maximum_overall_score) ? ` The maximum overall score is ${policy.maximum_overall_score}.` : "";
+    return `<p class="ux-score-note"><strong>Surface-only submissions:</strong> unavailable components contribute zero points. Their weights stay fixed; the remaining weights are not renormalized.${escapeHtml(
+      ceiling
+    )}</p>`;
+  }
+
+  function renderScoreMethodology() {
+    const target = element("score-calculation-body");
+    if (!target) return;
+    const rules = window.FluidsBenchScores.contract(activeDataset());
+    if (!rules.available) {
+      target.innerHTML = `<p>${escapeHtml(rules.reason)}</p>${scoreContractLink()}`;
+      return;
+    }
+    const transforms = new Set(rules.components.map((component) => component.transform));
+    const groups = rules.groups
+      .map((group) => `<span>${scoreMetricLabel(group.metricId)} <strong>${escapeHtml(scoreWeightText(group.weight))}</strong></span>`)
+      .join("");
+    const rows = rules.components
+      .map((component) => {
+        const definition = metricDefinition(component.metric_id);
+        const unit = definition?.unit === "%" ? "%" : definition?.unit ? ` ${definition.unit}` : "";
+        const transform =
+          component.transform === "bounded_error"
+            ? "Error → score"
+            : component.transform === "bounded_quality"
+              ? "Quality → score"
+              : "Physics-null skill";
+        const reference =
+          component.transform === "bounded_error"
+            ? `Cap: ${component.cap}${unit}`
+            : component.transform === "physics_null_skill"
+              ? `Baseline: ${component.baseline_error}${unit}`
+              : "—";
+        return `<tr><th scope="row">${scoreMetricLabel(component.metric_id)}</th><td>${escapeHtml(
+          scoreWeightText(component.weight)
+        )}</td><td>${transform}</td><td>${escapeHtml(reference)}</td></tr>`;
+      })
+      .join("");
+    target.innerHTML = `<p>For ${escapeHtml(
+      state.dataset
+    )}, convert each reported metric to a component score, multiply by its weight, then add the points.</p>
+      <p class="ux-score-formula">Overall score = ∑ (weight × component score)</p>
+      ${groups ? `<div class="ux-score-groups" aria-label="Component group weights">${groups}</div>` : ""}
+      <div class="ux-score-table-wrap" tabindex="0" role="region" aria-label="Overall score components, scroll horizontally on small screens">
+        <table class="ux-score-table"><caption class="leaderboard-sr-only">${escapeHtml(
+          state.dataset
+        )} component weights and transforms from the loaded release.</caption>
+        <thead><tr><th scope="col">Component</th><th scope="col">Weight</th><th scope="col">Conversion</th><th scope="col">Error cap / baseline</th></tr></thead><tbody>${rows}</tbody></table>
+      </div>
+      <dl class="ux-score-rules">
+        ${
+          transforms.has("bounded_error")
+            ? "<div><dt>Error → score</dt><dd>100 × (1 − error / cap), clipped to 0–100. Zero error gives 100; at or above the cap gives 0; values in between are linear. The error and cap use the same units.</dd></div>"
+            : ""
+        }
+        ${
+          transforms.has("bounded_quality")
+            ? "<div><dt>Quality → score</dt><dd>100 × R², with R² clipped to 0–1. Negative R² contributes zero points.</dd></div>"
+            : ""
+        }
+        ${
+          transforms.has("physics_null_skill")
+            ? "<div><dt>Physics-null skill</dt><dd>100 × (1 − error / baseline error). This is not clipped: a result worse than the frozen baseline has negative skill.</dd></div>"
+            : ""
+        }
+      </dl>
+      ${scoreScopeNote(rules.surfaceOnlyPolicy)}
+      ${rules.groupReason ? `<p class="ux-score-note">${escapeHtml(rules.groupReason)}</p>` : ""}
+      <p class="ux-score-note">The overall score is not a percentage accuracy. Calculations use the reported values before display rounding.${
+        groups ? " Group summaries use these same component weights and are not added a second time." : ""
+      } Open a model’s Score breakdown to see its contributions.</p>
+      <p class="ux-score-source">${scoreContractLink()}</p>`;
+  }
+
+  function scoreBreakdownHtml(row) {
+    const result = window.FluidsBenchScores.breakdown(activeDataset(), row);
+    const rows = result.components
+      .map((component) => {
+        const definition = metricDefinition(component.metric_id);
+        const unit = definition?.unit ? ` ${definition.unit}` : "";
+        const raw =
+          component.status === "scope_unavailable"
+            ? '<span class="ux-score-missing">Unavailable for this scope</span>'
+            : component.status === "missing"
+              ? '<span class="ux-score-missing">Not reported</span>'
+              : component.status === "invalid"
+                ? '<span class="ux-score-missing">Invalid value</span>'
+                : scoreNumberHtml(component.raw, definition?.digits ?? 3, unit);
+        return `<tr><th scope="row">${scoreMetricLabel(component.metric_id)}</th><td>${raw}</td><td>${scoreNumberHtml(component.score)}${
+          component.status === "scope_unavailable" ? " <small>(fixed)</small>" : ""
+        }</td><td>${scoreNumberHtml(component.weight * 100, 2, "%")}</td><td>${scoreNumberHtml(component.contribution)}</td></tr>`;
+      })
+      .join("");
+    const warning = result.status !== "match";
+    return `<details class="leaderboard-details-disclosure ux-score-breakdown">
+      <summary>Score breakdown</summary>
+      <div class="leaderboard-details-disclosure-body">
+        <div class="ux-score-toolbar"><button class="leaderboard-action-button" type="button" data-open-score-methodology>Weights and formula →</button>${
+          rows ? '<label><input type="checkbox" data-score-precision> Show full precision</label>' : ""
+        }</div>
+        ${
+          rows
+            ? `<div class="ux-score-table-wrap" tabindex="0" role="region" aria-label="Model score contributions, scroll horizontally on small screens"><table class="ux-score-table">
+          <caption class="leaderboard-sr-only">${escapeHtml(row.model)} score breakdown</caption>
+          <thead><tr><th scope="col">Component</th><th scope="col">Reported metric</th><th scope="col">Component score</th><th scope="col">Weight</th><th scope="col">Points contributed</th></tr></thead>
+          <tbody>${rows}</tbody>
+          <tfoot><tr><th colspan="4" scope="row">Calculated total</th><td>${scoreNumberHtml(
+            result.total
+          )}</td></tr><tr><th colspan="4" scope="row">Recorded overall score</th><td>${scoreNumberHtml(result.recorded)}</td></tr></tfoot>
+        </table></div>`
+            : `<p>Recorded overall score: ${scoreNumberHtml(result.recorded)}</p>`
+        }
+        <p class="ux-score-status${warning ? " is-unavailable" : ""}" role="status">${escapeHtml(result.reason)}</p>
+        ${
+          row.prediction_scope === "surface_only" && result.components.some((component) => component.status === "scope_unavailable")
+            ? scoreScopeNote(result.rules.surfaceOnlyPolicy)
+            : ""
+        }
+        ${
+          rows
+            ? '<p class="ux-score-note">Points contributed = component score × weight. Calculated from the reported metrics at full precision; rounded rows may not add up exactly.</p>'
+            : ""
+        }
+      </div>
+    </details>`;
+  }
+
+  function openScoreMethodology() {
+    element("details-dialog")?.close();
+    hideHelp();
+    activateWorkspace("methodology");
+    const panel = element("leaderboard-methodology");
+    if (panel) panel.open = true;
+    const calculation = element("score-calculation");
+    if (!calculation) return;
+    calculation.open = true;
+    calculation.querySelector("summary")?.focus();
+    calculation.scrollIntoView({ block: "start", behavior: "smooth" });
+  }
+
   function renderMetricDefinitions() {
     const list = element("metric-definitions-list");
     if (window.MathJax?.typesetClear) window.MathJax.typesetClear([list]);
@@ -8736,6 +8918,7 @@
   }
 
   function renderDefinitions() {
+    renderScoreMethodology();
     renderMetricDefinitions();
     renderSplitDefinitions();
     renderTrainingDefinitions();
@@ -9386,11 +9569,20 @@
     const focusedHref = focusWasInside && focused.tagName === "A" ? focused.href : "";
     const focusedCopyAction = focusWasInside ? focused.dataset?.copyResultCitation || "" : "";
     const computeNotesFocused = focusWasInside && focused.matches?.(".ux-compute-measurements > summary");
+    const scoreFocused = focusWasInside && focused.matches?.(".ux-score-breakdown > summary");
+    const precisionFocused = focusWasInside && focused.matches?.("[data-score-precision]");
     const row = resultRowById(state.resultId);
     if (!row) return;
     const computeNotesOpen = dialog.querySelector?.(".ux-compute-measurements")?.open;
+    const scoreOpen = dialog.querySelector?.(".ux-score-breakdown")?.open;
+    const scorePrecision = dialog.querySelector?.("[data-score-precision]")?.checked;
     openDetails(row, false);
     if (computeNotesOpen) dialog.querySelector(".ux-compute-measurements").open = true;
+    if (scoreOpen) dialog.querySelector(".ux-score-breakdown").open = true;
+    if (scorePrecision) {
+      dialog.querySelector("[data-score-precision]").checked = true;
+      applyScorePrecision(dialog, true);
+    }
     const body = element("details-dialog-body");
     const replacement = focusedCopyAction
       ? body?.querySelector?.(`[data-copy-result-citation="${focusedCopyAction}"]`)
@@ -9399,6 +9591,8 @@
         : null;
     replacement?.focus();
     if (computeNotesFocused) body.querySelector(".ux-compute-measurements > summary").focus({ preventScroll: true });
+    if (scoreFocused) body.querySelector(".ux-score-breakdown > summary").focus({ preventScroll: true });
+    if (precisionFocused) body.querySelector("[data-score-precision]").focus({ preventScroll: true });
   }
 
   function revisionHistoryHtml(row) {
@@ -9643,6 +9837,7 @@
           ${summaryStatus("Environment", optionalArtifactAvailabilityLabel(reproducibilityArtifacts.environment))}
         </div>
       </section>
+      ${scoreBreakdownHtml(row)}
       ${computeDetailsHtml(row)}
       <details class="leaderboard-details-disclosure">
         <summary>Ranking and submission record</summary>
@@ -10616,6 +10811,7 @@
       updateUrl();
     });
     document.addEventListener("click", (event) => {
+      if (event.target.closest("[data-open-score-methodology]")) openScoreMethodology();
       const computeDetails = event.target.closest("[data-compute-details]");
       if (computeDetails) {
         const row = resultRowById(computeDetails.dataset.computeDetails);
@@ -10640,6 +10836,9 @@
       document.querySelectorAll(".ux-menu[open]").forEach((menu) => {
         if (!menu.contains(event.target) || event.target.closest("button")) menu.open = false;
       });
+    });
+    document.addEventListener("change", (event) => {
+      if (event.target.matches("[data-score-precision]")) applyScorePrecision(event.target.closest(".ux-score-breakdown"), event.target.checked);
     });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape")

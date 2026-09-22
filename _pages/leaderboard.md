@@ -387,6 +387,10 @@ chart:
       <summary>How ranking works</summary>
       <p id="leaderboard-ranking-policy" class="leaderboard-ranking-policy"></p>
     </details>
+    <details class="metric-definitions ux-score-methodology" id="score-calculation">
+      <summary>How the overall score is calculated</summary>
+      <div id="score-calculation-body" class="leaderboard-definition-body"></div>
+    </details>
     <details class="metric-definitions" id="metric-definitions">
       <summary>Metric definitions</summary>
       <div class="leaderboard-definition-body">
@@ -489,6 +493,7 @@ chart:
     new URL("{{ '/assets/data/profile-ground-truth/' | relative_url }}", window.location.origin).href;
 </script>
 <script defer src="{{ '/assets/js/leaderboard-compute.js' | relative_url | bust_file_cache }}"></script>
+<script defer src="{{ '/assets/js/leaderboard-scores.js' | relative_url | bust_file_cache }}"></script>
 <script defer src="{{ '/assets/js/leaderboard.js' | relative_url | bust_file_cache }}"></script>
 
 {% else %}

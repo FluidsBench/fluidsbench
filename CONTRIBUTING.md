@@ -67,11 +67,12 @@ python3 bin/check_profile_contract.py \
 python3 bin/prepare_submission_status.py \
   --submission-root ../fluidsbench-submission --check
 ruby bin/check_launch_contract.rb
-node --test tests/test_launch.js tests/test_leaderboard_compute.js
+node --test tests/test_launch.js tests/test_leaderboard_compute.js tests/test_leaderboard_scores.js
 JEKYLL_ENV=production bundle exec jekyll build --lsi
 ```
 
 The dataset-page check verifies source snapshots, visual assets, getting-started guides, split status, and scientific-contract digests.
+The score-display check compares every feed row with the pinned submission repository's Python reference scorer. Set `FLUIDSBENCH_SUBMISSION_ROOT` if that checkout is not at `../fluidsbench-submission`.
 For a development build without production settings, use `bundle exec jekyll build --lsi`.
 
 When refreshing a source dataset description or image, also run the live revision audit:
