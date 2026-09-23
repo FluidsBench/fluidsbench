@@ -494,6 +494,7 @@ chart:
 </script>
 <script defer src="{{ '/assets/js/leaderboard-compute.js' | relative_url | bust_file_cache }}"></script>
 <script defer src="{{ '/assets/js/leaderboard-scores.js' | relative_url | bust_file_cache }}"></script>
+<script defer src="{{ '/assets/js/leaderboard-verification.js' | relative_url | bust_file_cache }}"></script>
 <script defer src="{{ '/assets/js/leaderboard.js' | relative_url | bust_file_cache }}"></script>
 
 {% else %}
