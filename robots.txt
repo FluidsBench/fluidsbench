@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://neilashton.github.io/fluidsbench/sitemap.xml
+Sitemap: https://fluidsbench.org/sitemap.xml
