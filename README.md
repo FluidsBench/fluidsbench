@@ -4,7 +4,7 @@ Assess physics AI surrogate models across realistic fluid dynamics datasets.
 
 - [Website](https://fluidsbench.org/)
 - [Development review site](https://fluidsbench.org/review-x4n7q9m2vk6p/) — work in progress
-- **[Submit results: specifications, evaluators, and instructions](https://github.com/FluidsBench/fluidsbench-submission)**
+- **[Submit results: specifications, evaluators, and instructions](https://github.com/neilashton/fluidsbench-submission)**
 
 ## Current status
 
@@ -29,7 +29,7 @@ latest-only; the submission repository publishes the complete hash-bound history
 ## Contributing to the website
 
 This repository contains the website, leaderboard interface, public profile-truth data, release tooling, and copies of shared
-data-contract schemas. The [submission repository](https://github.com/FluidsBench/fluidsbench-submission) owns benchmark
+data-contract schemas. The [submission repository](https://github.com/neilashton/fluidsbench-submission) owns benchmark
 specifications, scoring-support releases, submission schemas, validators, and result packages. Shared contract changes need
 coordinated PRs in both repositories.
 

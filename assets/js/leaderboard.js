@@ -10936,7 +10936,7 @@
       if (event.currentTarget.disabled || !activeDataset()) return;
       const sourceRef = String(window.FluidsBenchSubmissionSourceRef || "main");
       window.open(
-        `https://github.com/FluidsBench/fluidsbench-submission/tree/${encodeURIComponent(sourceRef)}/submissions/${activeDataset().slug}`,
+        `https://github.com/neilashton/fluidsbench-submission/tree/${encodeURIComponent(sourceRef)}/submissions/${activeDataset().slug}`,
         "_blank",
         "noopener,noreferrer"
       );

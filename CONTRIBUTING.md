@@ -1,6 +1,6 @@
 # Contributing to FluidsBench
 
-This repository contains the public website and leaderboard interface. Dataset contracts, scoring-support releases, submission schemas, validators, and result packages belong in [fluidsbench-submission](https://github.com/FluidsBench/fluidsbench-submission). A change that crosses that boundary should use two linked pull requests.
+This repository contains the public website and leaderboard interface. Dataset contracts, scoring-support releases, submission schemas, validators, and result packages belong in [fluidsbench-submission](https://github.com/neilashton/fluidsbench-submission). A change that crosses that boundary should use two linked pull requests.
 
 ## Workflow
 
@@ -23,7 +23,7 @@ For dataset-scientific changes, the dataset owner's recorded approval is distinc
 Docker is the simplest way to run the website locally:
 
 ```bash
-git clone https://github.com/FluidsBench/fluidsbench.git
+git clone https://github.com/neilashton/fluidsbench.git
 cd fluidsbench
 git switch dev
 docker compose pull

@@ -7,7 +7,7 @@ body:
       value: >
         Use this template for a proposed website or leaderboard-interface improvement.
         Proposals for dataset contracts, scoring support, validators, or result packages belong in
-        [fluidsbench-submission](https://github.com/FluidsBench/fluidsbench-submission/issues).
+        [fluidsbench-submission](https://github.com/neilashton/fluidsbench-submission/issues).
 
   - type: checkboxes
     id: requirements
@@ -17,9 +17,9 @@ body:
         Please check if somebody else has already filed the same 🚀 feature request.
         If you find a similar feature request, please add a 👍 reaction or comment on the original post.
       options:
-        - label: I read the [FluidsBench repository overview](https://github.com/FluidsBench/fluidsbench#readme).
+        - label: I read the [FluidsBench repository overview](https://github.com/neilashton/fluidsbench#readme).
           required: true
-        - label: I searched the [existing FluidsBench issues](https://github.com/FluidsBench/fluidsbench/issues) and did not find the same proposal.
+        - label: I searched the [existing FluidsBench issues](https://github.com/neilashton/fluidsbench/issues) and did not find the same proposal.
           required: true
 
   - type: textarea

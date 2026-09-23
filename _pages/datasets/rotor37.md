@@ -96,7 +96,7 @@ compact_masthead: true
       <li><a href="https://zenodo.org/records/14840190">Rotor37 archive on Zenodo</a></li>
       <li><a href="https://arxiv.org/abs/2505.02974">PLAID benchmark paper</a></li>
       <li><a href="https://arxiv.org/abs/2305.12871">MMGP Rotor37 study</a></li>
-      <li><a href="https://github.com/FluidsBench/fluidsbench-submission">FluidsBench submission repository</a></li>
+      <li><a href="https://github.com/neilashton/fluidsbench-submission">FluidsBench submission repository</a></li>
     </ul>
   </section>
 </div>

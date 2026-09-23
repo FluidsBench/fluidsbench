@@ -24,8 +24,8 @@ hide_header_background: true
     <span class="ux-community-icon" aria-hidden="true"><i class="fa-brands fa-github"></i></span>
     <h2>Build on GitHub</h2>
     <p>Follow development, report issues and contribute to the evaluation tools or website.</p>
-    <a href="https://github.com/FluidsBench/fluidsbench-submission">Evaluation repository <span aria-hidden="true">↗</span></a>
-    <a href="https://github.com/FluidsBench/fluidsbench">Website repository <span aria-hidden="true">↗</span></a>
+    <a href="https://github.com/neilashton/fluidsbench-submission">Evaluation repository <span aria-hidden="true">↗</span></a>
+    <a href="https://github.com/neilashton/fluidsbench">Website repository <span aria-hidden="true">↗</span></a>
   </section>
   <section class="ux-community-card">
     <span class="ux-community-icon" aria-hidden="true"><i class="fa-regular fa-envelope"></i></span>
