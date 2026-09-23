@@ -2184,6 +2184,24 @@
     return { code: "not_performed", label: "Not performed", count: 0, expected };
   }
 
+  function metricsVerification(row) {
+    return window.FluidsBenchVerification?.summarize(row, {
+      feedVerified: state.feedVerified,
+      manifestVerified: state.manifestPinVerified,
+      expectedCaseCount: splitTestCount(row),
+    });
+  }
+
+  function verificationDetailsHtml(row) {
+    const verification = metricsVerification(row);
+    if (!verification) return "";
+    return `<section id="details-verification" class="leaderboard-verification-summary" tabindex="-1" aria-label="Optional metric verification">
+      <h4>${window.FluidsBenchVerification.icon}${escapeHtml(verification.label)}</h4>
+      <p>${escapeHtml(verification.description)} ${detailsLink("View maintainer check record", fileUrl(verification.checkFile))}</p>
+      <p class="details-note">Verification is optional and does not affect ranking or eligibility. It does not certify training-data use or model execution.</p>
+    </section>`;
+  }
+
   function compactJson(value) {
     if (value === null || value === undefined || value === "") return null;
     if (typeof value !== "object") return String(value);
@@ -4822,7 +4840,26 @@
         event.preventDefault();
         openDetails(submission);
       });
-      cell.appendChild(link);
+      const modelName = document.createElement("span");
+      modelName.className = "leaderboard-model-name";
+      modelName.appendChild(link);
+      const verification = metricsVerification(submission);
+      if (verification) {
+        const badge = document.createElement("button");
+        badge.type = "button";
+        badge.className = "leaderboard-verification-badge";
+        badge.title = verification.tooltip;
+        badge.setAttribute("aria-label", `Metrics verified for ${submission.model}. View optional verification details.`);
+        badge.innerHTML = window.FluidsBenchVerification.icon;
+        badge.addEventListener("click", () => {
+          openDetails(submission);
+          const details = element("details-verification");
+          details?.scrollIntoView({ block: "nearest" });
+          details?.focus({ preventScroll: true });
+        });
+        modelName.appendChild(badge);
+      }
+      cell.appendChild(modelName);
       if (state.metricView === "summary") {
         const byline = document.createElement("span");
         byline.className = "ux-model-byline";
@@ -9837,6 +9874,7 @@
           ${summaryStatus("Environment", optionalArtifactAvailabilityLabel(reproducibilityArtifacts.environment))}
         </div>
       </section>
+      ${verificationDetailsHtml(row)}
       ${scoreBreakdownHtml(row)}
       ${computeDetailsHtml(row)}
       <details class="leaderboard-details-disclosure">
