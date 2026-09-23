@@ -6,7 +6,7 @@ FluidsBench brings together dataset-specific benchmark definitions, public score
 
 - [FluidsBench website](https://fluidsbench.org/)
 - [Development review site](https://fluidsbench.org/review-x4n7q9m2vk6p/) — work in progress
-- [Result specifications and submission repository](https://github.com/neilashton/fluidsbench-submission)
+- [Result specifications and submission repository](https://github.com/FluidsBench/fluidsbench-submission)
 
 ## Current status
 
@@ -26,7 +26,7 @@ Public code, model, environment, documentation, and prediction artifacts are opt
 
 This repository contains the FluidsBench website, leaderboard interface, public profile-ground-truth data, release tooling, and website copies of shared data-contract schemas.
 
-The companion [fluidsbench-submission repository](https://github.com/neilashton/fluidsbench-submission) contains dataset benchmark specifications, public scoring-support releases, schemas, validation tooling, and structured result packages.
+The companion [fluidsbench-submission repository](https://github.com/FluidsBench/fluidsbench-submission) contains dataset benchmark specifications, public scoring-support releases, schemas, validation tooling, and structured result packages.
 
 Changes that alter a shared schema or dataset contract normally require coordinated pull requests in both repositories.
 
@@ -37,7 +37,7 @@ Changes that alter a shared schema or dataset contract normally require coordina
 Docker is the simplest way to run the website locally:
 
 ```bash
-git clone https://github.com/neilashton/fluidsbench.git
+git clone https://github.com/FluidsBench/fluidsbench.git
 cd fluidsbench
 git switch dev
 docker compose pull

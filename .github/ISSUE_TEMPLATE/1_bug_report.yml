@@ -7,7 +7,7 @@ body:
       value: >
         Use this template for a problem with the FluidsBench website or leaderboard interface.
         Problems with dataset contracts, scoring support, validators, or result packages belong in
-        [fluidsbench-submission](https://github.com/neilashton/fluidsbench-submission/issues).
+        [fluidsbench-submission](https://github.com/FluidsBench/fluidsbench-submission/issues).
 
   - type: checkboxes
     id: requirements
@@ -17,9 +17,9 @@ body:
         Please check if somebody else has already filed the same issue.
         If you find a similar issue, please add a 👍 reaction or comment on the original post.
       options:
-        - label: I read the [FluidsBench repository overview](https://github.com/neilashton/fluidsbench#readme).
+        - label: I read the [FluidsBench repository overview](https://github.com/FluidsBench/fluidsbench#readme).
           required: true
-        - label: I searched the [existing FluidsBench issues](https://github.com/neilashton/fluidsbench/issues) and did not find the same problem.
+        - label: I searched the [existing FluidsBench issues](https://github.com/FluidsBench/fluidsbench/issues) and did not find the same problem.
           required: true
 
   - type: input
