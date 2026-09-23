@@ -14,11 +14,11 @@ from urllib.parse import unquote, urljoin, urlsplit
 
 
 SITE_ORIGIN = "https://fluidsbench.org"
-SUBMISSION_REPOSITORY = "https://github.com/FluidsBench/fluidsbench-submission"
-# The transfer preserves historical manifests and their content hashes.
+SUBMISSION_REPOSITORY = "https://github.com/neilashton/fluidsbench-submission"
+# Keep manifests from either ownership period valid without rewriting their hashes.
 SUBMISSION_REPOSITORY_ALIASES = {
     SUBMISSION_REPOSITORY,
-    "https://github.com/neilashton/fluidsbench-submission",
+    "https://github.com/FluidsBench/fluidsbench-submission",
 }
 SAFE_RELEASE_ID = re.compile(r"^[a-z0-9](?:[a-z0-9.-]{0,158}[a-z0-9])?$")
 FULL_GIT_SHA = re.compile(r"^[0-9a-f]{40}$")
