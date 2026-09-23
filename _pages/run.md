@@ -10,6 +10,10 @@ hide_header_background: true
 
 {% assign source_ref = site.submission_source_ref | default: 'main' %}
 {% assign source_root = 'https://github.com/neilashton/fluidsbench-submission/tree/' | append: source_ref %}
+{% comment %}Current process guidance is separate from the frozen evaluation/data revision.{% endcomment %}
+{% assign verification_ref = 'main' %}{% if site.preview_mode %}{% assign verification_ref = 'dev' %}{% endif %}
+{% assign verification_guide_url = 'https://github.com/neilashton/fluidsbench-submission/blob/' | append: verification_ref | append: '/docs/OPTIONAL_VERIFICATION.md' %}
+{% if site.optional_verification_guide_url %}{% assign verification_guide_url = site.optional_verification_guide_url %}{% endif %}
 
 <aside class="ux-page-notice" aria-label="Submission status">
   {% if site.launch.can_submit %}
@@ -85,6 +89,15 @@ python3 -m reference.example_calculation</code></pre>
     <p>For an open dataset, propose one new result directory through a pull request against <code>main</code> in the submission repository. Contributions and reviews are public, including the submitted scores.</p>
     <p>A complete package must satisfy the published evaluation rules at the first-release cutoff. Maintainers record its exact commit and finish their review before publication. Waiting for a maintainer or an automated check does not by itself make an otherwise complete package late.</p>
     <p>Submission does not guarantee acceptance. Incomplete packages or substantive changes after the cutoff are considered for a later release. The benchmark continues accepting submissions after the first leaderboard is published.</p>
+  </div>
+</details>
+
+<details class="ux-page-disclosure" id="optional-verification">
+  <summary>How do I request the blue Metrics verified badge?</summary>
+  <div>
+    <p>Tick the optional verification request in your submission PR and link versioned scored predictions covering the complete test split. A maintainer must recompute the reported metrics before the badge appears.</p>
+    <p>Verification does not change scores, ranks or eligibility. Code and model weights remain optional. The badge verifies metrics from shared predictions; it does not certify model execution or training-data use.</p>
+    <a href="{{ verification_guide_url }}">Request and checking process <span aria-hidden="true">↗</span></a>
   </div>
 </details>
 

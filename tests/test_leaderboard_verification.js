@@ -56,6 +56,7 @@ test("complete maintainer checks produce an optional, scoped badge without chang
   assert.equal(badge.caseCount, 50);
   assert.match(badge.description, /shared scored predictions across all 50 test cases/);
   assert.match(badge.description, /exact scope/);
+  assert.deepEqual(badge.checks, [{ artifactId: "predictions", checkedBy: "Example maintainer", checkedAt: "2026-09-23T12:00:00Z" }]);
   assert.deepEqual(row, before, "displaying verification must not mutate scores, ranks or eligibility");
   delete row.prediction_artifact_status;
   assert.equal(summarize(row, trusted), null);
