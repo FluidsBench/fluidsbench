@@ -84,6 +84,8 @@ window.__FluidsBenchClaimTest = {
   predictionArtifactStatus,
   predictionAvailability,
   predictionMetricRecomputation,
+  metricsVerification,
+  verificationDetailsHtml,
   profileFamilies,
   profileCoordinateViews,
   profilePlotValues,
@@ -191,6 +193,7 @@ const context = {
   },
   navigator: {},
   window: {
+    FluidsBenchVerification: require("../assets/js/leaderboard-verification.js"),
     FluidsBenchLeaderboardBaseUrl: "https://example.test/assets/",
     FluidsBenchLeaderboardManifestUrl: "https://example.test/assets/leaderboard/manifest.json",
     FluidsBenchLeaderboardManifestSha256: "9".repeat(64),
@@ -2154,6 +2157,23 @@ function verifyOfficialAcademicHappyPath() {
   const recomputedCitation = api.citationValues();
   assert.match(recomputedCitation.promotion, /recomputed the complete evaluation\/test split metrics/);
   assert.doesNotMatch(recomputedCitation.promotion, /did not recompute base metrics/);
+
+  const verifiedRow = JSON.parse(JSON.stringify(row));
+  verifiedRow.schema_version = "3.0";
+  verifiedRow.methodology = { record_kind: "submitter_reported" };
+  api.state.manifest.datasets[0].splits[0].test_count = 1;
+  const eligibilityBeforeBadge = api.claimEligibility(verifiedRow);
+  const optionalVerification = api.metricsVerification(verifiedRow);
+  assert.equal(optionalVerification?.label, "Metrics verified");
+  const verificationDetails = api.verificationDetailsHtml(verifiedRow);
+  assert.match(verificationDetails, /id="details-verification"/);
+  assert.match(verificationDetails, /Verification is optional and does not affect ranking or eligibility/);
+  assert.match(verificationDetails, /does not certify training-data use or model execution/);
+  assert.match(verificationDetails, /prediction-artifact-checks\.json/);
+  assert.deepEqual(api.claimEligibility(verifiedRow), eligibilityBeforeBadge, "rendering verification cannot alter claim eligibility");
+  assert.deepEqual(api.rowRanking(verifiedRow), api.rowRanking(row));
+  verifiedRow.prediction_artifact_status.checks[0].metric_recomputation = "partial";
+  assert.equal(api.verificationDetailsHtml(verifiedRow), "", "partial checks must not render a verified badge or summary");
 
   row.schema_version = "3.0";
   row.reproducibility.contract_version = "open-reproducibility-3.0";
