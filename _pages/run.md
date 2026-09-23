@@ -9,7 +9,7 @@ hide_header_background: true
 ---
 
 {% assign source_ref = site.submission_source_ref | default: 'main' %}
-{% assign source_root = 'https://github.com/neilashton/fluidsbench-submission/tree/' | append: source_ref %}
+{% assign source_root = 'https://github.com/FluidsBench/fluidsbench-submission/tree/' | append: source_ref %}
 
 <aside class="ux-page-notice" aria-label="Submission status">
   {% if site.launch.can_submit %}
@@ -30,7 +30,7 @@ hide_header_background: true
   </div>
   <div class="ux-code-panel">
     <div class="ux-code-label">Terminal <span>Python 3 · macOS / Linux</span></div>
-    <pre><code>git clone https://github.com/neilashton/fluidsbench-submission.git
+    <pre><code>git clone https://github.com/FluidsBench/fluidsbench-submission.git
 cd fluidsbench-submission
 git checkout {{ source_ref }}
 python3 -m venv .venv
@@ -49,7 +49,7 @@ python3 -m reference.example_calculation</code></pre>
       <article class="launch-submission-card" id="{{ slug }}">
         <h3>{{ site.data.dataset_catalog[slug].name }} <span>{% if availability.open and site.launch.accepting_submissions %}Open for submissions{% elsif availability.open %}Ready for opening{% else %}In preparation{% endif %}</span></h3>
         <div class="launch-submit-links"><a href="{{ '/datasets/' | append: slug | append: '/' | relative_url }}">Dataset guide →</a><a href="{{ source_root }}/benchmark-specs/{{ slug }}">Evaluation requirements ↗</a>
-        {% if availability.open and site.launch.accepting_submissions %}<a href="https://github.com/neilashton/fluidsbench-submission/compare/main...">Open a submission PR ↗</a>{% endif %}</div>
+        {% if availability.open and site.launch.accepting_submissions %}<a href="https://github.com/FluidsBench/fluidsbench-submission/compare/main...">Open a submission PR ↗</a>{% endif %}</div>
       </article>
       {% endunless %}
     {% endfor %}

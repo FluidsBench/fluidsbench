@@ -14,7 +14,12 @@ from urllib.parse import unquote, urljoin, urlsplit
 
 
 SITE_ORIGIN = "https://fluidsbench.org"
-SUBMISSION_REPOSITORY = "https://github.com/neilashton/fluidsbench-submission"
+SUBMISSION_REPOSITORY = "https://github.com/FluidsBench/fluidsbench-submission"
+# The transfer preserves historical manifests and their content hashes.
+SUBMISSION_REPOSITORY_ALIASES = {
+    SUBMISSION_REPOSITORY,
+    "https://github.com/neilashton/fluidsbench-submission",
+}
 SAFE_RELEASE_ID = re.compile(r"^[a-z0-9](?:[a-z0-9.-]{0,158}[a-z0-9])?$")
 FULL_GIT_SHA = re.compile(r"^[0-9a-f]{40}$")
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -153,7 +158,7 @@ def validate_manifest(manifest: object, release_id: str, artifact_commit: str) -
     source_commit = release.get("source_commit")
     if not isinstance(source_commit, str) or not FULL_GIT_SHA.fullmatch(source_commit):
         errors.append("manifest data_release.source_commit must be a full lowercase 40-character Git SHA")
-    if str(release.get("source_repository", "")).rstrip("/") != SUBMISSION_REPOSITORY:
+    if str(release.get("source_repository", "")).rstrip("/") not in SUBMISSION_REPOSITORY_ALIASES:
         errors.append(f"manifest data_release.source_repository must be {SUBMISSION_REPOSITORY}")
 
     expected_release_view = f"{SITE_ORIGIN}/releases/{release_id}/"

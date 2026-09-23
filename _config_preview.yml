@@ -5,5 +5,5 @@ preview_mode: true
 # Generate an unlinked, noindex committee page without changing the launch homepage.
 committee_review: true
 # Versioned HiLift SI diagnostics; other preview contracts remain unchanged.
-leaderboard_base_url: https://raw.githubusercontent.com/neilashton/fluidsbench-submission/b4c04d6131c81578eca4e7ef8bee53ebb9f69ec3/
+leaderboard_base_url: https://raw.githubusercontent.com/FluidsBench/fluidsbench-submission/b4c04d6131c81578eca4e7ef8bee53ebb9f69ec3/
 submission_source_ref: b4c04d6131c81578eca4e7ef8bee53ebb9f69ec3

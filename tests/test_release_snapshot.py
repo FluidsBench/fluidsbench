@@ -42,6 +42,30 @@ class ReleaseSnapshotTests(unittest.TestCase):
             [],
         )
 
+    def test_transferred_repository_and_historical_manifests_are_accepted(self) -> None:
+        for owner in ("FluidsBench", "neilashton"):
+            with self.subTest(owner=owner):
+                manifest = official_manifest()
+                manifest["data_release"]["source_repository"] = (
+                    f"https://github.com/{owner}/fluidsbench-submission"
+                )
+                self.assertEqual(
+                    check_release_snapshot.validate_manifest(
+                        manifest, RELEASE_ID, ARTIFACT_COMMIT
+                    ),
+                    [],
+                )
+        manifest = official_manifest()
+        manifest["data_release"]["source_repository"] = (
+            "https://github.com/unrelated-owner/fluidsbench-submission"
+        )
+        self.assertTrue(any(
+            "source_repository" in error
+            for error in check_release_snapshot.validate_manifest(
+                manifest, RELEASE_ID, ARTIFACT_COMMIT
+            )
+        ))
+
     def test_manifest_rejects_mutable_or_mismatched_release_metadata(self) -> None:
         manifest = official_manifest()
         manifest["data_release"]["status"] = "prototype_dummy_data"  # type: ignore[index]

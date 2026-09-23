@@ -476,7 +476,7 @@ chart:
 <script>
   const localLeaderboard = ["127.0.0.1", "localhost"].includes(window.location.hostname);
   const configuredLeaderboardBaseUrl =
-    {{ site.leaderboard_base_url | default: "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/main/" | jsonify }};
+    {{ site.leaderboard_base_url | default: "https://raw.githubusercontent.com/FluidsBench/fluidsbench-submission/main/" | jsonify }};
   const configuredLocalLeaderboardBaseUrl =
     {{ site.leaderboard_local_base_url | default: "http://127.0.0.1:4100/" | jsonify }};
   const selectedLeaderboardBaseUrl = localLeaderboard

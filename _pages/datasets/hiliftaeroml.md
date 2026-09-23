@@ -18,7 +18,7 @@ compact_masthead: true
     <p>
       HiLiftAeroML is a <strong>closed schema-v3 candidate</strong>. All fourteen official evaluation labels are bound to eight exact ordered
       case sets, covering 1,355 unique cases. The evaluator is frozen at
-      <a href="https://github.com/neilashton/fluidsbench-submission/tree/68899f780d96b70f2badb5658971c87af0b17172">revision 68899f7</a>
+      <a href="https://github.com/FluidsBench/fluidsbench-submission/tree/68899f780d96b70f2badb5658971c87af0b17172">revision 68899f7</a>
       for local candidate dry runs. Public submissions remain closed pending the final source-content pins, scoring-support publication and
       benchmark-owner approval.
     </p>
