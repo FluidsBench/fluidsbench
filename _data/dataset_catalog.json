@@ -372,7 +372,7 @@
         "stall"
       ],
       "case_id_status": "official",
-      "contract_digest": "8cdd2a8c735c7049bb4903e95838747279a156b976ff842537f76336295aefd3"
+      "contract_digest": "a622719206c50ed1d0c25c97295a34c927b9a99620a33173c4aa4e7ddc485561"
     },
     "visual": {
       "inputs": "CRM-HL geometry + angle of attack",

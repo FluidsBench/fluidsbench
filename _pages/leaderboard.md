@@ -399,6 +399,11 @@ chart:
       </div>
     </details>
 
+    <details class="metric-definitions" id="pressure-definition">
+      <summary>Pressure definition</summary>
+      <div id="pressure-definition-body" class="leaderboard-definition-body"></div>
+    </details>
+
     <details class="metric-definitions" id="split-definitions">
       <summary>Split definitions</summary>
       <div class="leaderboard-definition-body">
@@ -489,6 +494,8 @@ chart:
     {{ site.submission_source_ref | default: "main" | jsonify }};
   window.FluidsBenchLeaderboardDisplay =
     {{ site.data.leaderboard_display | default: empty | jsonify }};
+  window.FluidsBenchPressureReferences = {{ site.data.pressure_references | jsonify }};
+  window.FluidsBenchPressureReferenceUrl = {{ '/pressure-references/' | relative_url | jsonify }};
   window.FluidsBenchProfileGroundTruthBaseUrl =
     new URL("{{ '/assets/data/profile-ground-truth/' | relative_url }}", window.location.origin).href;
 </script>

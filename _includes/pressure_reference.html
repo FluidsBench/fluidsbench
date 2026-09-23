@@ -1,0 +1,64 @@
+{% assign pressure = site.data.pressure_references.datasets[include.slug] %} {% if pressure %}
+<details class="dataset-appendix pressure-reference" id="pressure-{{ include.slug }}">
+  <summary>Pressure definition <span class="pressure-reference-status">{{ pressure.status_label | escape }}</span></summary>
+  <div class="pressure-reference-body">
+    {% unless include.full %}
+    <p>{{ pressure.summary | escape }}</p>
+    {% endunless %} {% for field in pressure.fields %}
+    <h4>{{ field.domain | escape }}</h4>
+    <dl class="dataset-facts">
+      <div>
+        <dt>Native field</dt>
+        <dd><code>{{ field.raw_field | escape }}</code> · {{ field.association | escape }}</dd>
+      </div>
+      <div>
+        <dt>Units</dt>
+        <dd>{{ field.units | escape }}</dd>
+      </div>
+      <div>
+        <dt>Reference</dt>
+        <dd>{{ field.reference | escape }}</dd>
+      </div>
+      <div>
+        <dt>Evaluation</dt>
+        <dd>{{ field.evaluation | escape }}</dd>
+      </div>
+      <div>
+        <dt>Conversion</dt>
+        <dd>{{ field.conversion | escape }}</dd>
+      </div>
+    </dl>
+    {% endfor %} {% for note in pressure.notes %}
+    <p>{{ note | escape }}</p>
+    {% endfor %} {% if pressure.follow_up.size > 0 %}
+    <div class="pressure-reference-pending">
+      <strong>Still to confirm</strong> {% for note in pressure.follow_up %}
+      <p>{{ note | escape }}</p>
+      {% endfor %}
+    </div>
+    {% endif %} {% if include.full %}
+    <h4>Sources checked</h4>
+    <ul>
+      {% for source in pressure.sources %}
+      <li><a href="{{ source.url | escape }}">{{ source.label | escape }}</a> — {{ source.locator | escape }}. {{ source.finding | escape }}</li>
+      {% endfor %}
+    </ul>
+    <details>
+      <summary>Evaluator trace</summary>
+      <ul>
+        {% for source in pressure.code_evidence %}
+        <li>
+          <a
+            href="https://github.com/neilashton/fluidsbench-submission/blob/{{ site.data.pressure_references.audited_submission_revision }}/{{ source.path }}"
+            >{{ source.path | escape }}</a
+          >: {{ source.finding | escape }}
+        </li>
+        {% endfor %}
+      </ul>
+    </details>
+    {% else %}
+    <p><a href="{{ '/pressure-references/' | relative_url }}#{{ include.slug }}">Source evidence and audit details</a></p>
+    {% endif %}
+  </div>
+</details>
+{% endif %}

@@ -125,6 +125,7 @@ window.__FluidsBenchClaimTest = {
   versionsForRow,
   rowRanking,
   renderReleaseMetadata,
+  renderPressureDefinition,
   renderSubmissionAvailability,
   scoringSupportSummary,
   rowsForActiveSplit,
@@ -198,6 +199,8 @@ const context = {
     FluidsBenchLeaderboardManifestUrl: "https://example.test/assets/leaderboard/manifest.json",
     FluidsBenchLeaderboardManifestSha256: "9".repeat(64),
     FluidsBenchLeaderboardDisplay: displayConfig,
+    FluidsBenchPressureReferences: JSON.parse(fs.readFileSync(path.join(root, "_data/pressure_references.json"), "utf8")),
+    FluidsBenchPressureReferenceUrl: "/pressure-references/",
     FluidsBenchProfileGroundTruthBaseUrl: "https://example.test/profile-ground-truth/",
     addEventListener() {},
     clearTimeout,
@@ -212,6 +215,24 @@ vm.runInContext(fs.readFileSync(path.join(root, "assets/js/leaderboard-scores.js
 vm.runInContext(instrumented, context, { filename: scriptPath });
 
 const api = context.window.__FluidsBenchClaimTest;
+{
+  const previous = { ...api.state };
+  const manifest = JSON.parse(fs.readFileSync(path.join(submissionRoot, "leaderboard/manifest.json"), "utf8"));
+  api.state.manifest = manifest;
+  const target = { innerHTML: "", textContent: "" };
+  elements.set("pressure-definition-body", target);
+  const before = JSON.stringify(manifest);
+  for (const [slug, entry] of Object.entries(context.window.FluidsBenchPressureReferences.datasets)) {
+    api.state.dataset = entry.name;
+    api.renderPressureDefinition();
+    assert.ok(target.innerHTML.includes(entry.status_label), `${slug}: evidence status visible`);
+    assert.ok(target.innerHTML.includes(`/pressure-references/#${slug}`), `${slug}: correct evidence link`);
+    assert.ok(!target.innerHTML.includes("NaN"), `${slug}: descriptive metadata only`);
+  }
+  assert.equal(JSON.stringify(manifest), before, "pressure explanation must not alter the scoring manifest");
+  elements.delete("pressure-definition-body");
+  Object.assign(api.state, previous);
+}
 assert.equal(api.verifyManifestSha256("9".repeat(64)).verified, true);
 assert.equal(api.verifyManifestSha256("a".repeat(64), "").required, false);
 assert.throws(() => api.verifyManifestSha256("8".repeat(64)), /publication-time release snapshot SHA-256/);
