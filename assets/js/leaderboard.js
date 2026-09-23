@@ -339,6 +339,7 @@
     dataset: "",
     split: "",
     modelType: "",
+    verifiedOnly: false,
     showAllVersions: false,
     sortKey: "rank",
     sortDirection: "asc",
@@ -730,6 +731,7 @@
     if (dataset) params.set("dataset", slug(dataset.name));
     if (split) params.set("split", split.id || slug(split.name));
     if (state.modelType) params.set("model_type", state.modelType);
+    if (state.verifiedOnly) params.set("verification", "metrics_verified");
     if (state.showAllVersions) params.set("versions", "all");
     params.set("sort", state.sortKey);
     params.set("direction", state.sortDirection);
@@ -779,6 +781,7 @@
       dataset: params.get("dataset") || "",
       split: params.get("split") || "",
       modelType: params.get("model_type") || "",
+      verifiedOnly: params.get("verification") === "metrics_verified",
       showAllVersions: params.get("versions") === "all",
       sortKey: params.get("sort") || "",
       sortDirection: params.get("direction") || "",
@@ -2197,7 +2200,17 @@
     if (!verification) return "";
     return `<section id="details-verification" class="leaderboard-verification-summary" tabindex="-1" aria-label="Optional metric verification">
       <h4>${window.FluidsBenchVerification.icon}${escapeHtml(verification.label)}</h4>
-      <p>${escapeHtml(verification.description)} ${detailsLink("View maintainer check record", fileUrl(verification.checkFile))}</p>
+      <p>${escapeHtml(verification.description)}</p>
+      <dl>
+        ${detailsRow("Result revision", row.submission_id || row.id)}
+        ${detailsRow("Dataset / split", `${row.dataset} / ${row.split}`)}
+        ${detailsRow("Coverage", `All ${verification.caseCount.toLocaleString("en-GB")} test cases`)}
+        ${detailsRow("Submitted evaluator", row.evaluation?.reference_version || "See check record")}
+      </dl>
+      <ul>${verification.checks
+        .map((check) => `<li>${escapeHtml(check.artifactId)}: checked by ${escapeHtml(check.checkedBy)} on ${escapeHtml(check.checkedAt)}.</li>`)
+        .join("")}</ul>
+      <p>${detailsLink("View maintainer check record", fileUrl(verification.checkFile))} for the replay evaluator, command and evidence.</p>
       <p class="details-note">Verification is optional and does not affect ranking or eligibility. It does not certify training-data use or model execution.</p>
     </section>`;
   }
@@ -3501,13 +3514,17 @@
     return row?._ranking || generatedRanking(row, rankingPolicy()) || fallbackRankings([row], rankingPolicy())[0]?.ranking || null;
   }
 
+  function matchesResultFilters(row) {
+    return (!state.modelType || row.modelTypes.includes(state.modelType)) && (!state.verifiedOnly || Boolean(metricsVerification(row)));
+  }
+
   function rowsForCurrentModelType() {
-    return rowsForActiveSplit().filter((row) => !state.modelType || row.modelTypes.includes(state.modelType));
+    return rowsForActiveSplit().filter(matchesResultFilters);
   }
 
   function tableRowsForCurrentModelType() {
     const rows = state.showAllVersions ? revisionRowsForActiveSplit() : rowsForActiveSplit();
-    return rows.filter((row) => !state.modelType || row.modelTypes.includes(state.modelType));
+    return rows.filter(matchesResultFilters);
   }
 
   function figureRows() {
@@ -3812,6 +3829,7 @@
         split: state.split,
         split_id: activeSplitDefinition()?.id || null,
         model_type: currentView ? state.modelType || null : null,
+        metric_verification: currentView && state.verifiedOnly ? "metrics_verified" : "all",
         result_versions: currentView && state.showAllVersions ? "all" : "latest_only",
         sort: currentView ? { key: state.sortKey, direction: state.sortDirection } : { key: "rank", direction: "asc" },
         visible_column_groups: Array.from(state.visibleGroups),
@@ -4085,6 +4103,7 @@
       split: state.split,
       exportScope: state.exportScope,
       modelType: state.modelType,
+      verifiedOnly: state.verifiedOnly,
       sortKey: state.sortKey,
       sortDirection: state.sortDirection,
       loadVersion: state.loadVersion,
@@ -4101,6 +4120,7 @@
       state.split !== snapshot.split ||
       state.exportScope !== snapshot.exportScope ||
       state.modelType !== snapshot.modelType ||
+      state.verifiedOnly !== snapshot.verifiedOnly ||
       state.sortKey !== snapshot.sortKey ||
       state.sortDirection !== snapshot.sortDirection ||
       state.loadVersion !== snapshot.loadVersion ||
@@ -4966,6 +4986,19 @@
       : "Include superseded versions as unranked historical rows.";
   }
 
+  function renderVerificationFilter() {
+    const wrapper = element("leaderboard-verification-control");
+    const control = element("metrics-verified-only");
+    const rows = state.showAllVersions ? revisionRowsForActiveSplit() : rowsForActiveSplit();
+    const available = rows.some((row) => metricsVerification(row));
+    if (!available) state.verifiedOnly = false;
+    if (wrapper) wrapper.hidden = !available;
+    if (control) {
+      control.checked = state.verifiedOnly;
+      control.disabled = !available;
+    }
+  }
+
   function radarCandidateRows() {
     return tableRowsForCurrentModelType()
       .slice()
@@ -4992,7 +5025,7 @@
     const container = element("radar-model-options");
     const summary = element("radar-model-summary");
     if (!container || !summary) return;
-    const pickerContext = [state.dataset, state.split, state.modelType, state.showAllVersions ? "all" : "latest"].join("|");
+    const pickerContext = [state.dataset, state.split, state.modelType, state.verifiedOnly, state.showAllVersions ? "all" : "latest"].join("|");
     const resetScroll = container.dataset.pickerContext !== pickerContext;
     container.replaceChildren();
     summary.replaceChildren();
@@ -10144,6 +10177,7 @@
 
     const modelTypes = new Set((state.rows.get(state.dataset) || []).flatMap((row) => row.modelTypes));
     if (modelTypes.has(restored.modelType)) state.modelType = restored.modelType;
+    state.verifiedOnly = Boolean(restored.verifiedOnly);
     state.showAllVersions = restored.showAllVersions;
 
     const sortKeys = new Set(
@@ -10221,6 +10255,7 @@
   }
 
   function renderAll() {
+    renderVerificationFilter();
     renderReleaseMetadata();
     renderColumnToggles();
     renderTable();
@@ -10335,6 +10370,7 @@
       state.dataset = dataset.name;
       state.split = dataset.splits?.[0]?.name || "";
       state.modelType = "";
+      state.verifiedOnly = false;
       state.showAllVersions = false;
       state.sortKey = "rank";
       state.sortDirection = "asc";
@@ -10415,7 +10451,9 @@
     const summary = element("ux-results-summary");
     if (!summary) return;
     const rows = filteredRows();
-    summary.textContent = `${rows.length} result${rows.length === 1 ? "" : "s"} · ${state.dataset} · ${state.split}`;
+    summary.textContent = `${rows.length} result${rows.length === 1 ? "" : "s"} · ${state.dataset} · ${state.split}${
+      state.verifiedOnly ? " · Metrics verified only" : ""
+    }`;
     const link = element("ux-dataset-link");
     link.href = new URL(`${activeDatasetSlug()}/`, new URL(link.dataset.datasetBaseUrl, window.location.href)).href;
     const sort = element("ux-sort");
@@ -10980,10 +11018,16 @@
     });
     element("show-all-versions")?.addEventListener("change", (event) => {
       state.showAllVersions = event.target.checked;
-      renderTable();
+      renderVerificationFilter();
       renderRadarModelPicker();
-      renderRadarChart();
-      updateUrl();
+      updateFigureSelection();
+    });
+    element("metrics-verified-only")?.addEventListener("change", (event) => {
+      state.verifiedOnly = event.target.checked;
+      renderVerificationFilter();
+      setDefaultRadarModels();
+      renderRadarModelPicker();
+      updateFigureSelection();
     });
     element("leaderboard-metric-view-toggle")?.addEventListener("click", () => {
       if (state.metricView === "full") state.metricView = "summary";

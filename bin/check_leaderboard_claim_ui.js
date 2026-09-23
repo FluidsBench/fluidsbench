@@ -86,6 +86,10 @@ window.__FluidsBenchClaimTest = {
   predictionMetricRecomputation,
   metricsVerification,
   verificationDetailsHtml,
+  filteredRows,
+  renderVerificationFilter,
+  viewSearchParams,
+  readUrlState,
   profileFamilies,
   profileCoordinateViews,
   profilePlotValues,
@@ -2191,8 +2195,50 @@ function verifyOfficialAcademicHappyPath() {
   assert.match(verificationDetails, /Verification is optional and does not affect ranking or eligibility/);
   assert.match(verificationDetails, /does not certify training-data use or model execution/);
   assert.match(verificationDetails, /prediction-artifact-checks\.json/);
+  assert.match(verificationDetails, /Result revision/);
+  assert.match(verificationDetails, /Dataset \/ split/);
+  assert.match(verificationDetails, /Submitted evaluator/);
+  assert.ok(verificationDetails.includes(optionalVerification.checks[0].checkedBy));
+  assert.ok(verificationDetails.includes(optionalVerification.checks[0].checkedAt));
   assert.deepEqual(api.claimEligibility(verifiedRow), eligibilityBeforeBadge, "rendering verification cannot alter claim eligibility");
   assert.deepEqual(api.rowRanking(verifiedRow), api.rowRanking(row));
+
+  // An optional view filter never recomputes ranks among the checked subset.
+  const beforeVerificationFilter = api.state.rows.get("Example");
+  const unverifiedRow = {
+    ...JSON.parse(JSON.stringify(verifiedRow)),
+    id: "unchecked-model-v1",
+    submission_id: "unchecked-model-v1",
+    result_revision: { series_id: "unchecked-model", version: 1, supersedes: null },
+    metricValues: { score: verifiedRow.metricValues.score + 1 },
+    metric_values: { score: verifiedRow.metricValues.score + 1 },
+    ranking: undefined,
+    prediction_artifact_status: undefined,
+  };
+  api.state.rows.set("Example", [unverifiedRow, verifiedRow]);
+  api.state.verifiedOnly = false;
+  api.renderVerificationFilter();
+  assert.equal(elements.get("leaderboard-verification-control").hidden, false);
+  const unfilteredRows = api.filteredRows();
+  const originalCheckedRank = unfilteredRows.find((item) => item.id === verifiedRow.id).rank;
+  assert.equal(originalCheckedRank, 2);
+  api.state.verifiedOnly = true;
+  const onlyVerified = api.filteredRows();
+  assert.equal(onlyVerified.length, 1);
+  assert.equal(onlyVerified[0].id, verifiedRow.id);
+  assert.equal(onlyVerified[0].rank, originalCheckedRank);
+  assert.equal(api.viewSearchParams().get("verification"), "metrics_verified");
+  context.window.location.search = "?verification=metrics_verified";
+  assert.equal(api.readUrlState().verifiedOnly, true);
+  context.window.location.search = "";
+  api.state.rows.set("Example", [unverifiedRow]);
+  api.renderVerificationFilter();
+  assert.equal(elements.get("leaderboard-verification-control").hidden, true);
+  assert.equal(elements.get("metrics-verified-only").disabled, true);
+  assert.equal(api.state.verifiedOnly, false, "an unavailable filter must not leave the table empty");
+  assert.equal(api.filteredRows().length, 1);
+  api.state.rows.set("Example", beforeVerificationFilter);
+
   verifiedRow.prediction_artifact_status.checks[0].metric_recomputation = "partial";
   assert.equal(api.verificationDetailsHtml(verifiedRow), "", "partial checks must not render a verified badge or summary");
 

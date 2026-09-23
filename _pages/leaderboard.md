@@ -60,6 +60,13 @@ chart:
       <label class="leaderboard-control-title" for="type-filter">Model type</label>
       <select id="type-filter"><option value="">All model types</option></select>
     </div>
+    <div class="leaderboard-control" id="leaderboard-verification-control" hidden>
+      <span class="leaderboard-control-title">Optional verification</span>
+      <label for="metrics-verified-only" class="leaderboard-version-toggle">
+        <input id="metrics-verified-only" type="checkbox">
+        <span>Metrics verified only</span>
+      </label>
+    </div>
     <div class="leaderboard-control leaderboard-version-control" id="leaderboard-version-control">
       <span class="leaderboard-control-title">Result versions</span>
       <label for="show-all-versions" class="leaderboard-version-toggle">

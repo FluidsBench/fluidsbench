@@ -59,10 +59,15 @@
       label: "Metrics verified",
       caseCount: expectedCaseCount,
       checkFile,
-      tooltip: "Metrics verified: FluidsBench recomputed shared prediction metrics across the complete test split. View check details.",
-      description: `FluidsBench recorded metric recomputation from the shared scored predictions across all ${expectedCaseCount.toLocaleString(
+      tooltip:
+        "Metrics verified: FluidsBench recomputed the reported metrics from shared predictions across the complete test split. View check details.",
+      description: `FluidsBench recomputed the reported metrics from shared scored predictions across all ${expectedCaseCount.toLocaleString(
         "en-GB"
       )} test cases. See the check record for the exact scope.`,
+      checks: artifacts.map((artifact) => {
+        const check = checks.find((item) => item.artifact_id === artifact.artifact_id);
+        return { artifactId: artifact.artifact_id, checkedBy: check.checked_by, checkedAt: check.checked_at };
+      }),
     };
   }
 
