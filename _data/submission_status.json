@@ -1,8 +1,8 @@
 {
-  "source_commit": "a25633112a5f95ae29d62259f25e4c3eb1702480",
-  "manifest_sha256": "1011daf91abe64290ff386336612040907840cfe9eb581d0412423bb392fca90",
+  "source_commit": "b4c04d6131c81578eca4e7ef8bee53ebb9f69ec3",
+  "manifest_sha256": "d2bfca3409040416b57694dd98819323b373ec98733b6bb609262ca678e7fdc4",
   "release": {
-    "id": "prototype-dev-2026-09-16-7702b02f0140",
+    "id": "prototype-dev-2026-09-16-deb0cb44c653",
     "status": "prototype_dummy_data",
     "asset_base_url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/dev/",
     "archive_url": null
@@ -30,7 +30,7 @@
     },
     "hiliftaeroml": {
       "open": false,
-      "specification_sha256": "62f31f029c776e0a18bfe1e2d5485f76e68eb410bccae42591a4e69a4fca050e",
+      "specification_sha256": "864c80b632c9b6c4ba21ffa92b0da64b09a30987a5b6eb1e8f75ea72768bbfee",
       "scoring_release_id": null
     },
     "airfrans": {

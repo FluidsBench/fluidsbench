@@ -4,6 +4,6 @@ baseurl: /review-x4n7q9m2vk6p
 preview_mode: true
 # Generate an unlinked, noindex committee page without changing the launch homepage.
 committee_review: true
-# Same HiLift compact-v2 results, with corrected display equations. Keep CI on this revision.
-leaderboard_base_url: https://raw.githubusercontent.com/neilashton/fluidsbench-submission/a25633112a5f95ae29d62259f25e4c3eb1702480/
-submission_source_ref: a25633112a5f95ae29d62259f25e4c3eb1702480
+# Versioned HiLift SI diagnostics; other preview contracts remain unchanged.
+leaderboard_base_url: https://raw.githubusercontent.com/neilashton/fluidsbench-submission/b4c04d6131c81578eca4e7ef8bee53ebb9f69ec3/
+submission_source_ref: b4c04d6131c81578eca4e7ef8bee53ebb9f69ec3

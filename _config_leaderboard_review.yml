@@ -6,6 +6,6 @@ local_ux_preview: true
 launch:
   phase: live
   review_only: true
-leaderboard_local_base_url: https://raw.githubusercontent.com/neilashton/fluidsbench-submission/a25633112a5f95ae29d62259f25e4c3eb1702480/
+leaderboard_local_base_url: https://raw.githubusercontent.com/neilashton/fluidsbench-submission/b4c04d6131c81578eca4e7ef8bee53ebb9f69ec3/
 imagemagick:
   enabled: false

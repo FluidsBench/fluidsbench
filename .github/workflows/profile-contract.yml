@@ -18,22 +18,25 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: neilashton/fluidsbench-submission
-          # Match the immutable feed in _config_preview.yml. Equation metadata only;
-          # result bytes are unchanged. Publish the paired submission commit first.
-          ref: a25633112a5f95ae29d62259f25e4c3eb1702480
+          # SI-only snapshot of the existing preview contracts.
+          # Publish the paired submission history before the website.
+          ref: b4c04d6131c81578eca4e7ef8bee53ebb9f69ec3
           path: fluidsbench-submission
       - uses: actions/checkout@v4
         with:
           repository: neilashton/fluidsbench-submission
-          # Additive compute contract; publish the paired submission branch first.
-          # Result feeds and availability remain pinned to the revision above.
-          ref: 7c23156401d0a4d131024597171f892a58f68c49
-          sparse-checkout: schemas
+          # Public schemas and the canonical source audit from current dev.
+          # The feed above retains existing non-HiLift dataset contracts.
+          ref: 73c80037bbc96bb43043277b7121815802349d6b
+          sparse-checkout: |
+            schemas
+            docs
           path: fluidsbench-submission-schemas
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: python fluidsbench/bin/check_dataset_pages.py --submission-root fluidsbench-submission
+      - run: python fluidsbench/bin/check_pressure_references.py --submission-root fluidsbench-submission-schemas
       - run: python fluidsbench/bin/check_profile_contract.py --submission-root fluidsbench-submission --schema-root fluidsbench-submission-schemas
       - run: python fluidsbench/bin/prepare_submission_status.py --submission-root fluidsbench-submission --check
       - run: ruby fluidsbench/bin/check_launch_contract.rb

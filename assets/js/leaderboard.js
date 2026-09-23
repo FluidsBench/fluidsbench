@@ -8837,6 +8837,32 @@
     calculation.scrollIntoView({ block: "start", behavior: "smooth" });
   }
 
+  function renderPressureDefinition() {
+    const target = element("pressure-definition-body");
+    if (!target) return;
+    const slug = activeDataset()?.slug;
+    const audit = window.FluidsBenchPressureReferences;
+    const reference = audit?.datasets?.[slug];
+    if (!reference) {
+      target.textContent = "No pressure-reference audit is available for this dataset.";
+      return;
+    }
+    const fields = reference.fields
+      .map(
+        (field) => `<div><dt>${escapeHtml(field.domain)}</dt>
+      <dd><code>${escapeHtml(field.raw_field)}</code> · ${escapeHtml(field.units)}<br>${escapeHtml(field.reference)}<br>${escapeHtml(
+        field.evaluation
+      )}</dd></div>`
+      )
+      .join("");
+    const url = `${window.FluidsBenchPressureReferenceUrl}#${slug}`;
+    target.innerHTML = `<p class="pressure-reference-status">${escapeHtml(reference.status_label)}</p>
+      <p>${escapeHtml(reference.summary)}</p><dl>${fields}</dl>
+      <p>${escapeHtml(audit.common.reference_rule)}</p>
+      <p>${escapeHtml(audit.common.denominators)}</p>
+      <p><a href="${escapeHtml(url)}">Sources, conversions and remaining checks</a></p>`;
+  }
+
   function renderMetricDefinitions() {
     const list = element("metric-definitions-list");
     if (window.MathJax?.typesetClear) window.MathJax.typesetClear([list]);
@@ -8874,6 +8900,16 @@
         line.className = "leaderboard-metric-equation";
         line.textContent = `\\(${definition.equation}\\)`;
         description.appendChild(line);
+      }
+      if (definition.id.includes("pressure") && window.FluidsBenchPressureReferences?.datasets?.[activeDataset()?.slug]) {
+        const note = document.createElement("p");
+        const reference = window.FluidsBenchPressureReferences.datasets[activeDataset().slug];
+        note.appendChild(document.createTextNode(`${reference.summary} `));
+        const link = document.createElement("a");
+        link.href = "#pressure-definition";
+        link.textContent = "Pressure definition and evidence";
+        note.appendChild(link);
+        description.appendChild(note);
       }
       wrapper.append(summary, description);
       list.appendChild(wrapper);
@@ -8956,6 +8992,7 @@
 
   function renderDefinitions() {
     renderScoreMethodology();
+    renderPressureDefinition();
     renderMetricDefinitions();
     renderSplitDefinitions();
     renderTrainingDefinitions();
@@ -10871,6 +10908,12 @@
       }
       if (event.target.closest("a[href='#metric-definitions'], a[href='#split-definitions'], a[href='#training-definitions']"))
         activateWorkspace("methodology");
+      if (event.target.closest("a[href='#pressure-definition']")) {
+        activateWorkspace("methodology");
+        const disclosure = element("pressure-definition");
+        disclosure.open = true;
+        disclosure.querySelector("summary").focus();
+      }
       document.querySelectorAll(".ux-menu[open]").forEach((menu) => {
         if (!menu.contains(event.target) || event.target.closest("button")) menu.open = false;
       });
