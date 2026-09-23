@@ -27,7 +27,7 @@ jobs:
           repository: FluidsBench/fluidsbench-submission
           # Public schemas and the canonical source audit from current dev.
           # The feed above retains existing non-HiLift dataset contracts.
-          ref: 73c80037bbc96bb43043277b7121815802349d6b
+          ref: 9eea95f71a8b5f8cd98935aa18dbd81abec8bbb4
           sparse-checkout: |
             schemas
             docs
