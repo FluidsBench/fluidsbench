@@ -17,17 +17,17 @@ jobs:
           path: fluidsbench
       - uses: actions/checkout@v4
         with:
-          repository: neilashton/fluidsbench-submission
+          repository: FluidsBench/fluidsbench-submission
           # SI-only snapshot of the existing preview contracts.
           # Publish the paired submission history before the website.
           ref: b4c04d6131c81578eca4e7ef8bee53ebb9f69ec3
           path: fluidsbench-submission
       - uses: actions/checkout@v4
         with:
-          repository: neilashton/fluidsbench-submission
+          repository: FluidsBench/fluidsbench-submission
           # Public schemas and the canonical source audit from current dev.
           # The feed above retains existing non-HiLift dataset contracts.
-          ref: 73c80037bbc96bb43043277b7121815802349d6b
+          ref: 9eea95f71a8b5f8cd98935aa18dbd81abec8bbb4
           sparse-checkout: |
             schemas
             docs

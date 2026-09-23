@@ -10,7 +10,7 @@
       >
       Contributions are accepted only while its exact scoring-support release is marked <code>official</code> and open. For an open dataset,
       contributors propose one result directory at <code>submissions/{{ include.slug }}/&lt;submission-id&gt;/</code> in the
-      <a href="https://github.com/neilashton/fluidsbench-submission">FluidsBench submission repository</a>. The planned result package contains:
+      <a href="https://github.com/FluidsBench/fluidsbench-submission">FluidsBench submission repository</a>. The planned result package contains:
     </p>
     <ul>
       <li><code>submission.json</code> for model metadata and the required scalar metrics;</li>
@@ -40,15 +40,15 @@
       committed to the submission repository. Contributors may optionally publish example cases or the complete scored predictions in a public,
       immutable external repository and link that artifact from the submission. Use the
       <a
-        href="https://github.com/neilashton/fluidsbench-submission/tree/{{ site.submission_source_ref | default: 'main' }}/benchmark-specs/{{ include.slug }}"
+        href="https://github.com/FluidsBench/fluidsbench-submission/tree/{{ site.submission_source_ref | default: 'main' }}/benchmark-specs/{{ include.slug }}"
         >{{ include.dataset }} benchmark specification</a
       >
       for the exact split, metric, case, panel, station, and quantity IDs. The
-      <a href="https://github.com/neilashton/fluidsbench-submission/tree/{{ site.submission_source_ref | default: 'main' }}/reference"
+      <a href="https://github.com/FluidsBench/fluidsbench-submission/tree/{{ site.submission_source_ref | default: 'main' }}/reference"
         >reference equations and code</a
       >
       define how the scalar values must be calculated, and the
-      <a href="https://github.com/neilashton/fluidsbench-submission/tree/{{ site.submission_source_ref | default: 'main' }}/examples"
+      <a href="https://github.com/FluidsBench/fluidsbench-submission/tree/{{ site.submission_source_ref | default: 'main' }}/examples"
         >worked examples</a
       >
       show the JSON structure.

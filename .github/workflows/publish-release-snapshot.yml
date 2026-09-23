@@ -24,7 +24,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  SUBMISSION_REPOSITORY: neilashton/fluidsbench-submission
+  SUBMISSION_REPOSITORY: FluidsBench/fluidsbench-submission
 
 jobs:
   publish-release-snapshot:
