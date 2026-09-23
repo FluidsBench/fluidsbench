@@ -4,5 +4,5 @@ contact_links:
     url: https://fluidsbench.org/
     about: Read the public benchmark, dataset, and leaderboard information.
   - name: 📦 Submission contracts and results
-    url: https://github.com/FluidsBench/fluidsbench-submission/issues
+    url: https://github.com/neilashton/fluidsbench-submission/issues
     about: Report problems with dataset contracts, scoring support, validators, or result packages in the submission repository.

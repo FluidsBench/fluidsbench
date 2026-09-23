@@ -2,7 +2,7 @@
 
 Thank you for contributing to FluidsBench.
 
-This repository contains the public website and leaderboard interface. Dataset contracts, scoring-support releases, submission schemas, validators, and result packages belong in [fluidsbench-submission](https://github.com/FluidsBench/fluidsbench-submission). A change that crosses that boundary should use two linked pull requests.
+This repository contains the public website and leaderboard interface. Dataset contracts, scoring-support releases, submission schemas, validators, and result packages belong in [fluidsbench-submission](https://github.com/neilashton/fluidsbench-submission). A change that crosses that boundary should use two linked pull requests.
 
 ## Workflow
 
