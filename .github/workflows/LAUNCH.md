@@ -22,7 +22,8 @@ Retired standalone result demos are excluded from site builds. Public source rep
 1. Agree the two deadlines and a reveal time, set `dates_confirmed: true`, and nominate a release maintainer and backup, dataset
    reviewers, and a community contact. Set `community_discord_url` when a public invite exists. The site already has GitHub/contact fallbacks.
 2. Select datasets whose owners have completed the actual scientific activation requirements. Exercise a complete external-style
-   submission for each one. Site configuration cannot open a closed scoring contract. BlendedNet remains hidden.
+   submission for each one. Site configuration cannot open a closed scoring contract. Rotor37, VKI-LS59 and BlendedNet
+   remain visible only as greyed-out **Coming soon** entries, without dataset instructions, submission actions or selectable results.
 3. Promote the tested submission contract to submission `main` before directing real participants to submit against it. Pin the
    matching source commit in website `_config.yml`, `_config_preview.yml`, `_config_leaderboard_review.yml` (local data URL), and the
    checkout in `profile-contract.yml`. Keep the raw data URLs consistent with that pin. Regenerate the score-free availability snapshot:

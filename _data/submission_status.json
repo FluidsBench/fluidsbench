@@ -38,6 +38,11 @@
       "specification_sha256": "fa6b9b77a81c4a12d89642b17a64f7007f6f997599028f76ba4f742cb7d8d098",
       "scoring_release_id": null
     },
+    "blendednet": {
+      "open": false,
+      "specification_sha256": "7fdbc1f205e290687d4a2fbef8620293ec3a29e7900196be642bd60fb6684545",
+      "scoring_release_id": null
+    },
     "rotor37": {
       "open": false,
       "specification_sha256": "edb83b0bfd53a227ed0af73704dd5ec48f4b74f89750d069fa8adb30d4f606c6",

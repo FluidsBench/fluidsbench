@@ -501,6 +501,12 @@ chart:
     {{ site.submission_source_ref | default: "main" | jsonify }};
   window.FluidsBenchLeaderboardDisplay =
     {{ site.data.leaderboard_display | default: empty | jsonify }};
+  window.FluidsBenchComingSoonDatasets = [
+    {% for entry in site.data.dataset_catalog %}{% assign slug = entry[0] %}
+    {% if site.data.leaderboard_display[slug].coming_soon %}
+    { slug: {{ slug | jsonify }}, name: {{ entry[1].name | jsonify }}, url: {{ '/datasets/' | append: slug | append: '/' | relative_url | jsonify }} },
+    {% endif %}{% endfor %}
+  ];
   window.FluidsBenchPressureReferences = {{ site.data.pressure_references | jsonify }};
   window.FluidsBenchPressureReferenceUrl = {{ '/pressure-references/' | relative_url | jsonify }};
   window.FluidsBenchProfileGroundTruthBaseUrl =

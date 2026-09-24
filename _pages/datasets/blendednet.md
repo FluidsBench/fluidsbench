@@ -1,6 +1,6 @@
 ---
 layout: page
-published: false
+dataset_id: blendednet
 permalink: /datasets/blendednet/
 title: BlendedNet dataset
 page_title: BlendedNet dataset
@@ -10,6 +10,9 @@ hide_header_background: true
 compact_masthead: true
 ---
 
+{% if site.data.leaderboard_display.blendednet.coming_soon %}
+{% include dataset_coming_soon.html slug="blendednet" %}
+{% else %}
 <div class="dataset-page">
   {% include dataset_intro.html slug="blendednet" %}
 
@@ -112,3 +115,4 @@ compact_masthead: true
     </ul>
   </section>
 </div>
+{% endif %}

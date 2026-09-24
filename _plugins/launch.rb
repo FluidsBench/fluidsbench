@@ -71,7 +71,10 @@ module FluidsBench
 
       launch["leaderboard_visible"] = live
       launch["accepting_submissions"] = %w[collecting reviewing live].include?(phase)
-      launch["open_count"] = status.fetch("datasets", {}).count { |_, item| item["open"] == true }
+      display = site.data.fetch("leaderboard_display", {})
+      launch["open_count"] = status.fetch("datasets", {}).count do |slug, item|
+        item["open"] == true && !display.fetch(slug, {})["hidden"] && !display.fetch(slug, {})["coming_soon"]
+      end
       launch["can_submit"] = launch["accepting_submissions"] && launch["open_count"] > 0
       launch["deadline_passed"] = site.time >= dates[1]
       launch["reveal_passed"] = site.time >= dates[2]
@@ -79,6 +82,14 @@ module FluidsBench
 
       add_committee_review(site)
       site.pages.each do |page|
+        dataset_id = page.data["dataset_id"]
+        if display.fetch(dataset_id, {})["coming_soon"]
+          name = site.data.fetch("dataset_catalog", {}).fetch(dataset_id).fetch("name")
+          page.data["title"] = "#{name} — Coming soon"
+          page.data["page_title"] = "#{name} — Coming soon"
+          page.data["page_description"] = "This benchmark is in preparation."
+          page.data["description"] = "#{name} is coming soon to FluidsBench."
+        end
         if page.data["permalink"] == "/"
           page.data["chart"] = {} unless live
           page.data["description"] = "Assess physics AI surrogate models across realistic fluid dynamics datasets. Prepare your model for the first FluidsBench leaderboard release." unless live

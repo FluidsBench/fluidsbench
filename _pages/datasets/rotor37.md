@@ -1,5 +1,6 @@
 ---
 layout: page
+dataset_id: rotor37
 permalink: /datasets/rotor37/
 title: Rotor37 dataset
 page_title: Rotor37 dataset
@@ -9,6 +10,9 @@ hide_header_background: true
 compact_masthead: true
 ---
 
+{% if site.data.leaderboard_display.rotor37.coming_soon %}
+{% include dataset_coming_soon.html slug="rotor37" %}
+{% else %}
 <div class="dataset-page">
   {% include dataset_intro.html slug="rotor37" %}
 
@@ -100,3 +104,4 @@ compact_masthead: true
     </ul>
   </section>
 </div>
+{% endif %}

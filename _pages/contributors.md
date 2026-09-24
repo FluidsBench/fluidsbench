@@ -19,10 +19,14 @@ hide_header_background: true
   <h2 id="dataset-teams-title">Dataset and software contributors</h2>
   <p>FluidsBench builds on the work of the original dataset authors and maintainers. Each dataset guide links to its source project and publications.</p>
   <div class="ux-dataset-credits">
-    {% assign dataset_order = 'ahmedml,drivaerml,drivaernetplusplus,windsorml,hiliftaeroml,airfrans,vki-ls59,rotor37' | split: ',' %}
+    {% assign dataset_order = 'ahmedml,drivaerml,drivaernetplusplus,windsorml,hiliftaeroml,airfrans,blendednet,vki-ls59,rotor37' | split: ',' %}
     {% for slug in dataset_order %}
       {% unless site.data.leaderboard_display[slug].hidden %}
+        {% if site.data.leaderboard_display[slug].coming_soon %}
+        <span class="dataset-coming-soon dataset-credit-coming-soon" data-dataset-id="{{ slug }}" data-dataset-status="coming-soon">{{ site.data.dataset_catalog[slug].name }} <span class="dataset-coming-soon-badge">Coming soon</span></span>
+        {% else %}
         <a href="{{ '/datasets/' | append: slug | append: '/' | relative_url }}">{{ site.data.dataset_catalog[slug].name }} <span aria-hidden="true">↗</span></a>
+        {% endif %}
       {% endunless %}
     {% endfor %}
   </div>

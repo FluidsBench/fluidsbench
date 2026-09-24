@@ -50,10 +50,16 @@ python3 -m reference.example_calculation</code></pre>
   <div class="launch-submission-grid">
     {% for entry in site.data.submission_status.datasets %}{% assign slug = entry[0] %}{% assign availability = entry[1] %}
       {% unless site.data.leaderboard_display[slug].hidden %}
-      <article class="launch-submission-card" id="{{ slug }}">
+      {% assign coming_soon = site.data.leaderboard_display[slug].coming_soon %}
+      <article class="launch-submission-card{% if coming_soon %} dataset-coming-soon{% endif %}" id="{{ slug }}" data-dataset-id="{{ slug }}"{% if coming_soon %} data-dataset-status="coming-soon"{% endif %}>
+        {% if coming_soon %}
+        <h3>{{ site.data.dataset_catalog[slug].name }} <span class="dataset-coming-soon-badge">Coming soon</span></h3>
+        <p>The dataset guide and leaderboard will be available here when ready.</p>
+        {% else %}
         <h3>{{ site.data.dataset_catalog[slug].name }} <span>{% if availability.open and site.launch.accepting_submissions %}Open for submissions{% elsif availability.open %}Ready for opening{% else %}In preparation{% endif %}</span></h3>
         <div class="launch-submit-links"><a href="{{ '/datasets/' | append: slug | append: '/' | relative_url }}">Dataset guide →</a><a href="{{ source_root }}/benchmark-specs/{{ slug }}">Evaluation requirements ↗</a>
         {% if availability.open and site.launch.accepting_submissions %}<a href="https://github.com/neilashton/fluidsbench-submission/compare/main...">Open a submission PR ↗</a>{% endif %}</div>
+        {% endif %}
       </article>
       {% endunless %}
     {% endfor %}

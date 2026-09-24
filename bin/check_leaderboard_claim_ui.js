@@ -12,6 +12,10 @@ const root = path.resolve(__dirname, "..");
 const submissionRoot = path.resolve(process.env.FLUIDSBENCH_SUBMISSION_ROOT || path.resolve(root, "../fluidsbench-submission"));
 const scriptPath = path.join(root, "assets/js/leaderboard.js");
 const displayConfig = JSON.parse(fs.readFileSync(path.join(root, "_data/leaderboard_display.json"), "utf8"));
+const catalog = JSON.parse(fs.readFileSync(path.join(root, "_data/dataset_catalog.json"), "utf8"));
+const comingSoon = Object.entries(catalog)
+  .filter(([slug]) => displayConfig[slug]?.coming_soon)
+  .map(([slug, dataset]) => ({ slug, name: dataset.name, url: "/review-x4n7q9m2vk6p/datasets/" + slug + "/" }));
 const source = fs.readFileSync(scriptPath, "utf8");
 
 function sha256File(filePath) {
@@ -53,6 +57,10 @@ window.__FluidsBenchClaimTest = {
   citationValues,
   claimEligibility,
   datasetEntries,
+  datasetOptions,
+  populateSelect,
+  redirectComingSoonDataset,
+  initialize,
   decimalHalfUp,
   defaultProfileCoordinateView,
   decodeHiLiftVelocityStorage,
@@ -203,6 +211,7 @@ const context = {
     FluidsBenchLeaderboardManifestUrl: "https://example.test/assets/leaderboard/manifest.json",
     FluidsBenchLeaderboardManifestSha256: "9".repeat(64),
     FluidsBenchLeaderboardDisplay: displayConfig,
+    FluidsBenchComingSoonDatasets: comingSoon,
     FluidsBenchPressureReferences: JSON.parse(fs.readFileSync(path.join(root, "_data/pressure_references.json"), "utf8")),
     FluidsBenchPressureReferenceUrl: "/pressure-references/",
     FluidsBenchProfileGroundTruthBaseUrl: "https://example.test/profile-ground-truth/",
@@ -227,6 +236,7 @@ const api = context.window.__FluidsBenchClaimTest;
   elements.set("pressure-definition-body", target);
   const before = JSON.stringify(manifest);
   for (const [slug, entry] of Object.entries(context.window.FluidsBenchPressureReferences.datasets)) {
+    if (displayConfig[slug]?.coming_soon) continue;
     api.state.dataset = entry.name;
     api.renderPressureDefinition();
     assert.ok(target.innerHTML.includes(entry.status_label), `${slug}: evidence status visible`);
@@ -1423,7 +1433,7 @@ assert.deepEqual(
   "every dataset must have exactly one headline-metric configuration"
 );
 manifest.datasets.forEach((dataset) => {
-  if (displayConfig[dataset.slug]?.hidden) return;
+  if (displayConfig[dataset.slug]?.hidden || displayConfig[dataset.slug]?.coming_soon) return;
   api.state.dataset = dataset.name;
   const configuredIds = displayConfig[dataset.slug].headline_metric_ids;
   assert.equal(configuredIds.length, 5, `${dataset.name} must declare five headline metrics`);
@@ -1523,7 +1533,7 @@ assert.equal(
   "dataset presentation overrides must not mutate the shared metric definition"
 );
 manifest.datasets.forEach((dataset) => {
-  if (displayConfig[dataset.slug]?.hidden) return;
+  if (displayConfig[dataset.slug]?.hidden || displayConfig[dataset.slug]?.coming_soon) return;
   api.state.dataset = dataset.name;
   api.activeMetricDefinitions().forEach((definition) => {
     assert.doesNotMatch(definition.label, /area- or length-weighted/i, `${dataset.name}/${definition.id} must use exact weighting wording`);
@@ -1543,7 +1553,7 @@ manifest.datasets.forEach((dataset) => {
 
 feed.map(api.normalizeRow).forEach((row) => api.state.rows.get(row.dataset)?.push(row));
 manifest.datasets.forEach((dataset) => {
-  if (displayConfig[dataset.slug]?.hidden) return;
+  if (displayConfig[dataset.slug]?.hidden || displayConfig[dataset.slug]?.coming_soon) return;
   api.state.dataset = dataset.name;
   dataset.splits.forEach((split) => {
     api.state.split = split.name;
@@ -1581,7 +1591,7 @@ async function verifyGeneratedClaimRecords() {
   const claimIndex = await api.ensureClaimsIndex();
   assert.ok(claimIndex, "claim index must pass browser-equivalent hash and binding verification");
   for (const dataset of manifest.datasets) {
-    if (displayConfig[dataset.slug]?.hidden) continue;
+    if (displayConfig[dataset.slug]?.hidden || displayConfig[dataset.slug]?.coming_soon) continue;
     api.state.dataset = dataset.name;
     for (const split of dataset.splits) {
       api.state.split = split.name;
@@ -2753,6 +2763,65 @@ async function verifyWindsorNativeGroundTruth() {
   }
 }
 
+async function verifyComingSoonSelection() {
+  const previous = { ...api.state };
+  const previousLocation = context.window.location;
+  const previousCreateElement = context.document.createElement;
+  const manifest = JSON.parse(fs.readFileSync(path.join(submissionRoot, "leaderboard/manifest.json"), "utf8"));
+  try {
+    api.state.manifest = manifest;
+    assert.deepEqual(
+      Array.from(api.datasetEntries(), (dataset) => dataset.slug).sort(),
+      ["ahmedml", "airfrans", "drivaerml", "drivaernetplusplus", "hiliftaeroml", "windsorml"],
+      "only the six current datasets may expose leaderboard results"
+    );
+    const options = api.datasetOptions();
+    assert.equal(options.length, 9);
+    assert.deepEqual(
+      Array.from(
+        options.filter((option) => option.disabled),
+        (option) => option.value
+      ).sort(),
+      ["BlendedNet", "Rotor37", "VKI-LS59"]
+    );
+    assert.ok(options.filter((option) => option.disabled).every((option) => option.label.endsWith(" — Coming soon")));
+    context.document.createElement = () => ({});
+    const select = {
+      children: [],
+      replaceChildren() {
+        this.children = [];
+      },
+      appendChild(item) {
+        this.children.push(item);
+      },
+    };
+    api.populateSelect(select, options, "Rotor37");
+    assert.equal(select.children.filter((option) => option.disabled).length, 3, "upcoming options must be natively disabled");
+    assert.notEqual(select.value, "Rotor37", "a disabled dataset cannot become the default");
+    api.state.manifest = { ...manifest, datasets: manifest.datasets.filter((dataset) => !displayConfig[dataset.slug]?.coming_soon) };
+    assert.equal(api.datasetOptions().length, 9, "coming-soon labels must not depend on published result feeds");
+    const redirects = [];
+    const requestCount = fetchedUrls.length;
+    context.window.location = {
+      href: "https://fluidsbench.org/review-x4n7q9m2vk6p/committee-leaderboard/",
+      replace(url) {
+        redirects.push(url);
+      },
+    };
+    for (const dataset of comingSoon) {
+      context.window.location.search = "?dataset=" + dataset.slug;
+      await api.initialize();
+      assert.equal(redirects.at(-1), "https://fluidsbench.org" + dataset.url);
+    }
+    assert.equal(fetchedUrls.length, requestCount, "old coming-soon links must not fetch leaderboard data");
+    assert.equal(api.redirectComingSoonDataset("ahmedml"), false);
+  } finally {
+    Object.assign(api.state, previous);
+    context.window.location = previousLocation;
+    context.document.createElement = previousCreateElement;
+  }
+}
+
 async function verifyInitialFeedLoading() {
   const previous = { ...api.state };
   const previousPreviewMode = context.window.FluidsBenchLeaderboardPreviewMode;
@@ -2777,7 +2846,7 @@ async function verifyInitialFeedLoading() {
     context.window.FluidsBenchLeaderboardPreviewMode = true;
     const visible = api.datasetEntries();
     assert.ok(visible.length > 0);
-    assert.ok(visible.every((dataset) => !displayConfig[dataset.slug]?.hidden));
+    assert.ok(visible.every((dataset) => !displayConfig[dataset.slug]?.hidden && !displayConfig[dataset.slug]?.coming_soon));
     const requestStart = fetchedUrls.length;
     await api.ensureRows(visible[0]);
     assert.equal(api.state.feedVerified, true);
@@ -2786,7 +2855,7 @@ async function verifyInitialFeedLoading() {
     assert.equal(api.state.rows.size, manifest.datasets.length);
     assert.equal(api.state.revisionRows.size, manifest.datasets.length);
     assert.equal([...api.state.rows.values()].flat().length, feed.length);
-    for (const dataset of manifest.datasets.filter((entry) => displayConfig[entry.slug]?.hidden)) {
+    for (const dataset of manifest.datasets.filter((entry) => displayConfig[entry.slug]?.hidden || displayConfig[entry.slug]?.coming_soon)) {
       const expected = feed.filter((row) => row.dataset_id === dataset.slug || row.dataset === dataset.name);
       assert.ok(expected.length > 0, "the hidden-dataset fixture must exercise full-feed validation");
       assert.equal(api.state.rows.get(dataset.name).length, expected.length);
@@ -2803,7 +2872,8 @@ async function verifyInitialFeedLoading() {
   }
 }
 
-verifyInitialFeedLoading()
+verifyComingSoonSelection()
+  .then(() => verifyInitialFeedLoading())
   .then(() => verifyDrivaerLegacyTruthFailsClosed())
   .then(() => verifyWindsorNativeGroundTruth())
   .then(() => verifyNativeV3CpDisplayCoordinates())
