@@ -1,5 +1,6 @@
 ---
 layout: page
+dataset_id: vki-ls59
 permalink: /datasets/vki-ls59/
 title: VKI-LS59 dataset
 page_title: VKI-LS59 dataset
@@ -9,6 +10,9 @@ hide_header_background: true
 compact_masthead: true
 ---
 
+{% if site.data.leaderboard_display["vki-ls59"].coming_soon %}
+{% include dataset_coming_soon.html slug="vki-ls59" %}
+{% else %}
 <div class="dataset-page">
   {% include dataset_intro.html slug="vki-ls59" %}
 
@@ -102,3 +106,4 @@ compact_masthead: true
     </ul>
   </section>
 </div>
+{% endif %}

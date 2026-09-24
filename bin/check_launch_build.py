@@ -2,18 +2,70 @@
 """Check the rendered publication boundary, including old standalone demo routes."""
 
 import argparse
+import json
 import re
 from pathlib import Path
-from urllib.parse import unquote, urlsplit
+from urllib.parse import parse_qs, unquote, urlsplit
 
 from check_preview_build import PreviewLinkParser
 
 
 COMMITTEE_REVIEW = Path("committee-leaderboard/index.html")
+SOURCE = Path(__file__).resolve().parents[1]
+DISPLAY = json.loads((SOURCE / "_data/leaderboard_display.json").read_text())
+CATALOG = json.loads((SOURCE / "_data/dataset_catalog.json").read_text())
+COMING_SOON = {slug: CATALOG[slug]["name"] for slug, display in DISPLAY.items() if display.get("coming_soon")}
+
+
+class DatasetStatusParser(PreviewLinkParser):
+    def __init__(self):
+        super().__init__()
+        self.upcoming = set()
+        self.text = []
+        self.ids = set()
+        self.in_script = False
+
+    def handle_starttag(self, tag, attrs):
+        super().handle_starttag(tag, attrs)
+        values = dict(attrs)
+        if tag in {"script", "style"}:
+            self.in_script = True
+        if values.get("id"):
+            self.ids.add(values["id"])
+        if values.get("data-dataset-status") == "coming-soon" and "dataset-coming-soon" in values.get("class", "").split():
+            self.upcoming.add(values.get("data-dataset-id"))
+
+    def handle_endtag(self, tag):
+        if tag in {"script", "style"}:
+            self.in_script = False
+
+    def handle_data(self, value):
+        if not self.in_script:
+            self.text.append(value)
+
+
+def validate_coming_soon(root):
+    errors = []
+    for path in root.rglob("*.html"):
+        parser = DatasetStatusParser()
+        parser.feed(path.read_text())
+        text = " ".join(parser.text)
+        relative = path.relative_to(root)
+        for slug, name in COMING_SOON.items():
+            if name in text and (slug not in parser.upcoming or "Coming soon" not in text):
+                errors.append(f"{relative} mentions {name} without its Coming soon status")
+            for link in parser.links:
+                target = urlsplit(link)
+                if slug in parse_qs(target.query).get("dataset", []):
+                    errors.append(f"{relative} links to results for coming-soon dataset {slug}")
+            if relative == Path(f"datasets/{slug}/index.html"):
+                if slug not in parser.upcoming or {"dataset-start", "dataset-evaluation"} & parser.ids:
+                    errors.append(f"{relative} must show a Coming soon placeholder instead of evaluation instructions")
+    return errors
 
 
 def validate(root: Path, phase: str, committee_review: bool = False) -> list[str]:
-    errors = []
+    errors = validate_coming_soon(root)
     index = (root / "index.html").read_text()
     review_path = root / COMMITTEE_REVIEW
     if committee_review:
@@ -69,9 +121,6 @@ def validate(root: Path, phase: str, committee_review: bool = False) -> list[str
         for directory in ("leaderboards", "assets/html", "assets/jupyter", "assets/plotly"):
             if (root / directory).exists():
                 errors.append(f"prelaunch build contains standalone demos: {directory}")
-        for relative in ("index.html", "run/index.html", "datasets/index.html"):
-            if "BlendedNet" in (root / relative).read_text():
-                errors.append(f"hidden dataset appears in {relative}")
         if 'aria-live="assertive"' in index:
             errors.append("countdown must not constantly interrupt screen readers")
     return errors

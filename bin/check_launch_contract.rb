@@ -28,6 +28,7 @@ ROOT = File.expand_path("..", __dir__)
 def site_for(phase = "announced")
   data = {
     "launch" => YAML.load_file(File.join(ROOT, "_data/launch.yml")),
+    "leaderboard_display" => JSON.parse(File.read(File.join(ROOT, "_data/leaderboard_display.json"))),
     "submission_status" => JSON.parse(File.read(File.join(ROOT, "_data/submission_status.json")))
   }
   config = {
@@ -63,6 +64,14 @@ end
   check(site.pages[0].data["chart"] == {}, "prelaunch loaded chart dependencies")
   check(site.pages.length == 1, "normal build generated a committee review page")
 end
+
+# Coming-soon entries cannot become submittable merely because a source contract opens.
+site = site_for("collecting")
+site.data["submission_status"]["datasets"].each do |slug, item|
+  item["open"] = site.data["leaderboard_display"].fetch(slug, {})["coming_soon"] == true
+end
+FluidsBench::Launch.new.generate(site)
+check(site.config["launch"]["open_count"] == 0 && !site.config["launch"]["can_submit"], "coming-soon datasets became submittable")
 
 # Ready datasets can accept entries without exposing a leaderboard, including after cutoff.
 %w[collecting reviewing].each do |phase|

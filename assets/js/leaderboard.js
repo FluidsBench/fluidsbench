@@ -6,6 +6,7 @@
   const expectedManifestSha256 = String(window.FluidsBenchLeaderboardManifestSha256 || "").trim();
   const groundTruthBaseUrl = window.FluidsBenchProfileGroundTruthBaseUrl;
   const leaderboardDisplay = window.FluidsBenchLeaderboardDisplay || {};
+  const comingSoonDatasets = window.FluidsBenchComingSoonDatasets || [];
   const palette = [
     "#0072b2",
     "#d55e00",
@@ -1809,7 +1810,24 @@
   }
 
   function datasetEntries() {
-    return allDatasetEntries().filter((dataset) => leaderboardDisplay[dataset.slug || slug(dataset.name)]?.hidden !== true);
+    return allDatasetEntries().filter((dataset) => {
+      const display = leaderboardDisplay[dataset.slug || slug(dataset.name)];
+      return display?.hidden !== true && display?.coming_soon !== true;
+    });
+  }
+
+  function datasetOptions() {
+    return [
+      ...datasetEntries().map((dataset) => ({ value: dataset.name, label: dataset.name })),
+      ...comingSoonDatasets.map((dataset) => ({ value: dataset.name, label: dataset.name + " — Coming soon", disabled: true })),
+    ];
+  }
+
+  function redirectComingSoonDataset(datasetId) {
+    const dataset = comingSoonDatasets.find((entry) => entry.slug === slug(datasetId));
+    if (!dataset) return false;
+    window.location.replace(new URL(dataset.url, window.location.href).href);
+    return true;
   }
 
   function activeDataset() {
@@ -1853,16 +1871,19 @@
       const item = document.createElement("option");
       item.value = option.value;
       item.textContent = option.label;
+      item.disabled = Boolean(option.disabled);
       if (option.title) item.title = option.title;
       select.appendChild(item);
     });
-    const selected = options.some((option) => option.value === current) ? current : options[0]?.value || "";
+    const selected = options.some((option) => option.value === current && !option.disabled)
+      ? current
+      : options.find((option) => !option.disabled)?.value || "";
     select.value = selected;
     return selected;
   }
 
   function syncDatasetSelects() {
-    const options = datasetEntries().map((dataset) => ({ value: dataset.name, label: dataset.name }));
+    const options = datasetOptions();
     datasetSelects().forEach((select) => populateSelect(select, options, state.dataset));
   }
 
@@ -11172,6 +11193,7 @@
     window.addEventListener("resize", hideHelp);
     window.addEventListener("popstate", () => {
       const restored = readUrlState();
+      if (redirectComingSoonDataset(restored.dataset)) return;
       state.requestedReleaseId = restored.releaseId;
       state.releaseMismatch = Boolean(restored.releaseId && restored.releaseId !== dataRelease().id);
       const dataset = datasetEntries().find((candidate) => slug(candidate.name) === restored.dataset) || datasetEntries()[0];
@@ -11188,6 +11210,8 @@
   }
 
   async function initialize() {
+    const restored = readUrlState();
+    if (redirectComingSoonDataset(restored.dataset)) return;
     configureEvents();
     try {
       const loadedManifest = await fetchJsonWithProvenance(manifestUrl, "leaderboard manifest");
@@ -11199,7 +11223,6 @@
         throw new Error("manifest is missing dataset-driven leaderboard definitions");
       }
       state.metrics = new Map(state.manifest.metric_definitions.map((definition) => [definition.id, definition]));
-      const restored = readUrlState();
       state.requestedReleaseId = restored.releaseId;
       state.releaseMismatch = Boolean(restored.releaseId && restored.releaseId !== dataRelease().id);
       const initial = datasetEntries().find((dataset) => slug(dataset.name) === restored.dataset) || datasetEntries()[0];

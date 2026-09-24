@@ -37,15 +37,17 @@
     "radar_metric_ids": ["surface_pressure_rel_l2", "volume_velocity_rel_l2", "velocity_profile_r2", "cd_r2"]
   },
   "vki-ls59": {
+    "coming_soon": true,
     "headline_metric_ids": ["overall_score", "vki_mach_rrmse", "vki_nut_rrmse", "vki_pr_rrmse", "vki_eth_is_rrmse"],
     "radar_metric_ids": ["vki_mach_rrmse", "vki_nut_rrmse", "vki_pr_rrmse", "vki_eth_is_rrmse"]
   },
   "rotor37": {
+    "coming_soon": true,
     "headline_metric_ids": ["overall_score", "rotor_pressure_rrmse", "rotor_temperature_rrmse", "rotor_massflow_rrmse", "rotor_efficiency_rrmse"],
     "radar_metric_ids": ["rotor_pressure_rrmse", "rotor_temperature_rrmse", "rotor_massflow_rrmse", "rotor_efficiency_rrmse"]
   },
   "blendednet": {
-    "hidden": true,
+    "coming_soon": true,
     "headline_metric_ids": ["overall_score", "blended_cp_area_rel_l2", "blended_cfx_area_rel_l2", "blended_cfz_area_rel_l2", "c_drag_mae"],
     "radar_metric_ids": ["blended_cp_area_rel_l2", "blended_cfx_area_rel_l2", "blended_cfy_area_rel_l2", "blended_cfz_area_rel_l2"]
   }

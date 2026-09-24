@@ -110,7 +110,7 @@
       <div class="launch-open-datasets" aria-label="Datasets with official open scoring releases">
         {% for entry in site.data.submission_status.datasets -%}
           {%- assign slug = entry[0] -%}
-          {%- if entry[1].open -%}
+          {%- if entry[1].open and site.data.leaderboard_display[slug].coming_soon != true and site.data.leaderboard_display[slug].hidden != true -%}
             <a href="{{ '/run/' | relative_url }}#{{ slug }}">
               {{- site.data.dataset_catalog[slug].name }}
               <span>
@@ -142,6 +142,12 @@
           </a>
         {% endunless %}
       {% endfor %}
+    </div>
+    <div class="dataset-coming-soon-list" aria-label="Datasets coming soon">
+      {% for entry in site.data.dataset_catalog %}{% assign slug = entry[0] %}
+      {% if site.data.leaderboard_display[slug].coming_soon %}
+      <span class="dataset-coming-soon" data-dataset-id="{{ slug }}" data-dataset-status="coming-soon">{{ entry[1].name }} <span class="dataset-coming-soon-badge">Coming soon</span></span>
+      {% endif %}{% endfor %}
     </div>
   </section>
 

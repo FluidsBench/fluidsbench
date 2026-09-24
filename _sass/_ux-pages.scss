@@ -479,6 +479,69 @@ html[data-theme="dark"] .ux-page-notice {
   border: 1px solid var(--ux-border);
   border-radius: 6px;
 }
+.dataset-coming-soon,
+a.dataset-coming-soon,
+.dataset-coming-soon h2,
+.dataset-coming-soon h3,
+.datasets-page .dataset-coming-soon .dataset-card-copy h3 {
+  color: var(--ux-muted);
+}
+.dataset-coming-soon img {
+  filter: grayscale(1);
+  opacity: 0.65;
+}
+.datasets-page .dataset-card.dataset-coming-soon,
+.launch-submission-card.dataset-coming-soon {
+  background: var(--ux-background);
+  border-style: dashed;
+}
+.dataset-coming-soon-badge {
+  display: inline-block;
+  padding: 4px 9px;
+  border: 1px solid var(--ux-border);
+  border-radius: 5px;
+  color: var(--ux-muted);
+  background: var(--ux-background);
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.dataset-credit-coming-soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 11px;
+  border: 1px dashed var(--ux-border);
+  border-radius: 6px;
+  font-size: 12px;
+}
+.dataset-coming-soon-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 24px;
+  margin-top: 24px;
+  font-size: 13px;
+}
+.dataset-coming-soon-page {
+  padding: 28px;
+  border: 1px dashed var(--ux-border);
+  border-radius: 10px;
+  background: var(--ux-surface);
+}
+.dataset-coming-soon-page p {
+  max-width: 680px;
+  margin-top: 18px;
+}
+.dataset-coming-soon-page img {
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  max-height: 300px;
+  object-fit: contain;
+  margin-top: 24px;
+}
 .ux-community-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
