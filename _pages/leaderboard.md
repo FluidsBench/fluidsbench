@@ -516,14 +516,12 @@ chart:
     {% if site.launch.dev_intake %}"dev"{% else %}{{ site.submission_source_ref | default: "main" | jsonify }}{% endif %};
   window.FluidsBenchDevIntake = {{ site.launch.dev_intake | default: false | jsonify }};
   window.FluidsBenchSubmissionAvailability = {{ site.data.submission_status.datasets | jsonify }};
-  {% if site.preview_mode %}
   window.FluidsBenchDrivaernetplusplusNativeProfiles = {{ site.data.drivaernetplusplus_native_profiles | jsonify }};
   window.FluidsBenchDrivaernetplusplusNativeProfiles.manifest_url = new URL(
     {{ '/' | append: site.data.drivaernetplusplus_native_profiles.manifest_path | relative_url | jsonify }}, window.location.origin).href;
   window.FluidsBenchAirfransNativeProfiles = {{ site.data.airfrans_native_profiles | jsonify }};
   window.FluidsBenchAirfransNativeProfiles.manifest_url = new URL(
     {{ '/' | append: site.data.airfrans_native_profiles.manifest_path | relative_url | jsonify }}, window.location.origin).href;
-  {% endif %}
   window.FluidsBenchLeaderboardDisplay =
     {{ site.data.leaderboard_display | default: empty | jsonify }};
   window.FluidsBenchComingSoonDatasets = [
