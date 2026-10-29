@@ -39,7 +39,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 16px 25px;
+  gap: 12px;
 }
 .launch-actions .ux-primary-link {
   padding: 13px 18px;
@@ -52,12 +52,27 @@
   color: inherit;
 }
 .launch-secondary-link {
-  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--ux-accent);
+  border-radius: 5px;
+  font-size: 14px;
   font-weight: 600;
+  text-decoration: none !important;
+}
+.launch-secondary-link:hover {
+  background: var(--ux-tint);
+}
+.launch-secondary-link:focus-visible,
+.launch-dataset-card:focus-visible {
+  outline: 3px solid var(--ux-accent);
+  outline-offset: 4px;
 }
 .launch-availability {
   color: var(--ux-muted);
-  font-size: 12px;
+  font-size: 13px;
   margin: 17px 0 0;
   line-height: 1.6;
 }
@@ -70,9 +85,9 @@
   margin-right: 5px;
 }
 .launch-countdown-card {
-  background: #123c43;
+  background: #233e63;
   color: #f3fcfb;
-  border: 1px solid #27515a;
+  border: 1px solid #405b80;
   border-radius: 18px;
   padding: 30px;
   position: relative;
@@ -89,23 +104,23 @@
   font-weight: 650;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #a3d7d2;
+  color: #c4d5ee;
 }
 .launch-orbit {
-  border: 1px solid #41686c;
+  border: 1px solid #657c9b;
   border-radius: 50%;
   width: 35px;
   height: 35px;
   line-height: 32px;
   text-align: center;
-  color: #a3d7d2;
+  color: #c4d5ee;
   font-size: 20px;
 }
 .launch-date {
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 650;
   letter-spacing: -0.7px;
-  margin: 20px 0 2px;
+  margin: 20px 0 4px;
 }
 .launch-countdown-card .launch-date,
 .launch-countdown-card time,
@@ -114,11 +129,11 @@
   color: #f3fcfb;
 }
 .launch-countdown-card .launch-time span {
-  color: #bad2d4;
+  color: #d0dced;
 }
 .launch-time {
-  color: #bad2d4;
-  font-size: 12px;
+  color: #d0dced;
+  font-size: 13px;
   margin: 0;
   line-height: 1.7;
 }
@@ -126,7 +141,7 @@
   display: grid;
   grid-template-columns: 1fr auto 1fr auto 1fr;
   gap: 8px;
-  margin: 32px 0 24px;
+  margin: 26px 0 20px;
   font-variant-numeric: tabular-nums;
 }
 .launch-clock > div {
@@ -135,45 +150,45 @@
   align-items: center;
 }
 .launch-clock [data-unit] {
-  font-size: clamp(38px, 4.2vw, 60px);
+  font-size: clamp(34px, 3.6vw, 51px);
   line-height: 1.1;
   font-weight: 550;
   letter-spacing: -2px;
 }
 .launch-clock small {
-  color: #b1d1d1;
-  font-size: 11px;
+  color: #c9d8eb;
+  font-size: 13px;
   margin-top: 9px;
 }
 .launch-clock-separator {
   font-size: 32px;
-  color: #658c91;
+  color: #97adc9;
   padding-top: 3px;
 }
 .launch-countdown-message {
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.7;
-  color: #c3deda;
+  color: #d0dced;
   margin: 20px 0 22px;
 }
 .launch-cutoff {
-  border-top: 1px solid #41636a;
+  border-top: 1px solid #526b8e;
   padding-top: 19px;
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
 .launch-cutoff > span {
-  color: #b4d2d0;
-  font-size: 11px;
+  color: #d0dced;
+  font-size: 13px;
 }
 .launch-cutoff strong {
   font-size: 14px;
   font-weight: 600;
 }
 .launch-cutoff strong span {
-  color: #b4d2d0;
-  font-size: 12px;
+  color: #d0dced;
+  font-size: 13px;
   font-weight: 400;
 }
 .launch-provisional {
@@ -216,7 +231,7 @@
 .launch-value small {
   color: var(--ux-muted);
   line-height: 1.65;
-  font-size: 12px;
+  font-size: 13px;
   display: block;
 }
 .launch-datasets,
@@ -241,7 +256,7 @@
   margin-bottom: 8px;
 }
 .launch-section-heading > a {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
   padding-bottom: 4px;
@@ -264,8 +279,8 @@
 }
 .launch-dataset-image {
   background: #f7f9fa;
-  height: 140px;
-  padding: 8px;
+  height: 160px;
+  padding: 16px;
   overflow: hidden;
 }
 .launch-dataset-image img {
@@ -273,12 +288,13 @@
   height: 100%;
   object-fit: contain;
   mix-blend-mode: multiply;
+  display: block;
 }
 .launch-dataset-copy {
   padding: 19px;
 }
-.launch-dataset-copy > span {
-  font-size: 10px;
+.launch-dataset-copy > .launch-dataset-category {
+  font-size: 13px;
   color: var(--ux-muted);
 }
 .launch-dataset-copy h3 {
@@ -295,27 +311,27 @@
   font-size: 16px;
 }
 .launch-dataset-copy p {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--ux-muted);
   margin: 0;
   line-height: 1.6;
 }
-.launch-open-datasets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 22px;
-}
-.launch-open-datasets a {
-  background: var(--ux-tint);
-  padding: 10px 13px;
-  font-size: 13px;
-  border-radius: 7px;
-}
-.launch-open-datasets span {
-  display: block;
-  font-size: 10px;
+.launch-dataset-badge {
+  display: inline-block;
+  padding: 4px 9px;
+  margin-bottom: 10px;
+  border: 1px solid var(--ux-border);
+  border-radius: 5px;
   color: var(--ux-muted);
+  background: var(--ux-background);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.launch-dataset-badge.is-open {
+  background: var(--ux-tint);
+  border-color: var(--ux-accent);
+  color: var(--ux-accent);
 }
 .launch-steps {
   display: grid;
@@ -470,14 +486,34 @@
   .launch-description {
     font-size: 17px;
   }
+  .launch-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .launch-actions a {
+    justify-content: space-between;
+  }
   .launch-countdown-card {
-    padding: 24px;
+    padding: 20px;
+  }
+  .launch-clock {
+    margin: 20px 0 16px;
   }
   .launch-clock [data-unit] {
-    font-size: 52px;
+    font-size: 44px;
   }
   .launch-date {
-    font-size: 25px;
+    font-size: 28px;
+    margin-top: 14px;
+  }
+  .launch-clock small {
+    margin-top: 5px;
+  }
+  .launch-countdown-message {
+    margin: 14px 0 16px;
+  }
+  .launch-cutoff {
+    padding-top: 14px;
   }
   .launch-value {
     grid-template-columns: 1fr;
@@ -512,7 +548,7 @@
   .launch-dataset-image {
     height: 100%;
     min-height: 105px;
-    padding: 5px;
+    padding: 8px;
   }
   .launch-dataset-copy {
     padding: 15px;
@@ -601,14 +637,14 @@
 .tour-toolbar div > span {
   display: block;
   color: var(--ux-muted);
-  font-size: 12px;
+  font-size: 13px;
   margin-top: 4px;
 }
 .tour-example-label {
   border: 1px solid var(--ux-border);
   border-radius: 30px;
   padding: 5px 9px;
-  font-size: 10px;
+  font-size: 13px;
   color: var(--ux-muted);
   white-space: nowrap;
 }
@@ -651,7 +687,7 @@
 .tour-table caption {
   caption-side: top;
   color: var(--ux-muted);
-  font-size: 11px;
+  font-size: 13px;
   padding: 18px 0 8px;
 }
 .tour-table th,
@@ -666,7 +702,7 @@
   padding-left: 0;
 }
 .tour-table thead th {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--ux-muted);
 }
@@ -693,7 +729,7 @@
 }
 .tour-formula {
   color: var(--ux-muted);
-  font-size: 11px;
+  font-size: 13px;
   margin: 0 24px 20px;
   line-height: 1.7;
 }
@@ -702,7 +738,7 @@
   margin: 0;
   border-top: 1px solid var(--ux-border);
   color: var(--ux-muted);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.7;
 }
 .tour-guide article {
@@ -712,7 +748,7 @@
 }
 .tour-guide article > span {
   color: var(--ux-accent);
-  font-size: 11px;
+  font-size: 13px;
   padding-top: 4px;
 }
 .tour-guide h3 {
@@ -768,7 +804,7 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 15px;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--ux-muted);
 }
 .tour-legend i {
@@ -901,7 +937,7 @@
 }
 .tour-guide article a {
   display: inline-block;
-  font-size: 12px;
+  font-size: 13px;
   margin-top: 8px;
 }
 .tour-methodology-links {

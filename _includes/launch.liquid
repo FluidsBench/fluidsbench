@@ -130,22 +130,6 @@
       </div>
       <a href="{{ '/datasets/' | relative_url }}">All datasets <span aria-hidden="true">→</span></a>
     </div>
-    {% if site.launch.open_count > 0 %}
-      <div class="launch-open-datasets" aria-label="Datasets with official open scoring releases">
-        {% for entry in site.data.submission_status.datasets -%}
-          {%- assign slug = entry[0] -%}
-          {%- if entry[1].open and site.data.leaderboard_display[slug].coming_soon != true and site.data.leaderboard_display[slug].hidden != true -%}
-            <a href="{{ '/run/' | relative_url }}#{{ slug }}">
-              {{- site.data.dataset_catalog[slug].name }}
-              <span>
-                {%- if site.launch.accepting_submissions %}Open for submissions{% else %}Ready for opening{% endif -%}
-              </span>
-              →</a
-            >
-          {%- endif -%}
-        {%- endfor %}
-      </div>
-    {% endif %}
     <div class="launch-dataset-grid">
       {% assign featured = 'airfrans,drivaerml,drivaernetplusplus,ahmedml,windsorml,hiliftaeroml,blendednet,rotor37,vki-ls59' | split: ',' %}
       {% for slug in featured %}
@@ -167,7 +151,7 @@
             >
           </div>
           <div class="launch-dataset-copy">
-            <span>{{ dataset.category }}</span>
+            <span class="launch-dataset-category">{{ dataset.category }}</span>
             <h3>
               {{ dataset.name -}}
               {%- unless coming_soon -%}
@@ -175,10 +159,17 @@
               {%- endunless %}
             </h3>
             {% if coming_soon %}
-              <p><span class="dataset-coming-soon-badge">Coming soon</span></p>
+              <span class="launch-dataset-badge">Coming soon</span>
+            {% elsif site.data.submission_status.datasets[slug].open and site.launch.accepting_submissions %}
+              <span class="launch-dataset-badge is-open">Open for submissions</span>
+            {% elsif site.data.submission_status.datasets[slug].open %}
+              <span class="launch-dataset-badge">Ready for opening</span>
             {% else %}
-              <p>Dataset, test splits and evaluation metrics</p>
+              <span class="launch-dataset-badge">Submissions closed</span>
             {% endif %}
+            {% unless coming_soon %}
+              <p>Dataset, test splits and evaluation metrics</p>
+            {% endunless %}
           </div>
           {% if coming_soon %}</article>{% else %}</a>{% endif %}
         {% endunless %}

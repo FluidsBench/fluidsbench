@@ -737,3 +737,13 @@ a.dataset-coming-soon,
     gap: 12px 18px;
   }
 }
+
+@media (max-width: 360px) {
+  .ux-site-nav {
+    padding-inline: 12px;
+    gap: 8px;
+  }
+  .ux-nav-tools {
+    gap: 4px;
+  }
+}
