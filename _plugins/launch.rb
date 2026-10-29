@@ -35,6 +35,28 @@ module FluidsBench
       site.pages << review
     end
 
+    # Use the real interface with a separately pinned, empty snapshot.
+    def add_leaderboard_preview(site)
+      return unless site.config["leaderboard_preview_enabled"] == true
+      preview = site.data.fetch("leaderboard_preview", {})
+      reject!("leaderboard preview requires an immutable snapshot") unless
+        preview["base_url"].to_s.match?(%r{\Ahttps://raw\.githubusercontent\.com/FluidsBench/fluidsbench-submission/[0-9a-f]{40}/\z}) &&
+        preview["manifest_sha256"].to_s.match?(/\A[0-9a-f]{64}\z/)
+      home = site.pages.find { |page| page.data["permalink"] == "/" }
+      reject!("leaderboard preview requires the leaderboard template") unless home
+      page = Jekyll::PageWithoutAFile.new(site, site.source, "leaderboard-preview", "index.html")
+      page.content = home.content
+      page.data = home.data.merge(
+        "permalink" => "/leaderboard-preview/",
+        "leaderboard_preview" => true,
+        "title" => "Leaderboard preview",
+        "description" => "Explore the FluidsBench leaderboard interface, metrics and methodology before results are published.",
+        "nav" => false,
+        "sitemap" => false
+      )
+      site.pages << page
+    end
+
     def generate(site)
       launch = site.data.fetch("launch", {}).merge(site.config.fetch("launch", {}))
       phase = launch["phase"]
@@ -88,6 +110,7 @@ module FluidsBench
       site.config["launch"] = launch
 
       add_committee_review(site)
+      add_leaderboard_preview(site)
       site.pages.each do |page|
         dataset_id = page.data["dataset_id"]
         if display.fetch(dataset_id, {})["coming_soon"]

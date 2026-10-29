@@ -121,6 +121,13 @@
       </article>
     </div>
   </div>
+  {% if site.leaderboard_preview_enabled %}
+    <p class="tour-preview-action">
+      <a class="ux-primary-link" href="{{ '/leaderboard-preview/' | relative_url }}?dataset=drivaerml"
+        >Preview the leaderboard <span aria-hidden="true">→</span></a
+      ><span>Explore the full interface and methodology before results are published.</span>
+    </p>
+  {% endif %}
   <nav class="tour-methodology-links" aria-label="DrivAerML evaluation documentation">
     <a href="{{ '/datasets/drivaerml/' | relative_url }}#overall-score">Scoring formula, weights and error caps →</a>
     <a href="{{ site.submission_repository_url }}/blob/{{ site.submission_source_ref }}/benchmark-specs/drivaerml/submission-spec.json"

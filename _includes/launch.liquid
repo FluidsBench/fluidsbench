@@ -15,7 +15,13 @@
           {%- if site.launch.can_submit %}Submit your model{% else %}Prepare your model{% endif %}
           <span aria-hidden="true">→</span></a
         >
-        <a class="launch-secondary-link" href="#leaderboard-tour">Leaderboard and metrics <span aria-hidden="true">↓</span></a>
+        {% if site.leaderboard_preview_enabled %}
+          <a class="launch-secondary-link" href="{{ '/leaderboard-preview/' | relative_url }}"
+            >Preview the leaderboard <span aria-hidden="true">→</span></a
+          >
+        {% else %}
+          <a class="launch-secondary-link" href="#leaderboard-tour">Leaderboard and metrics <span aria-hidden="true">↓</span></a>
+        {% endif %}
       </div>
       <p class="launch-availability">
         {% if site.launch.can_submit %}

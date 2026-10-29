@@ -12,7 +12,7 @@ chart:
   vega_lite: true
 ---
 
-{% if site.launch.leaderboard_visible or page.committee_review %}
+{% if site.launch.leaderboard_visible or page.committee_review or page.leaderboard_preview %}
 
 <div class="leaderboard-page ux-leaderboard">
   <header class="leaderboard-masthead">
@@ -22,7 +22,7 @@ chart:
       {% else %}
       <p class="ux-eyebrow">Open benchmarks for scientific machine learning</p>
       {% endif %}
-      <h1>Fluidsbench leaderboard</h1>
+      <h1>FluidsBench leaderboard{% if page.leaderboard_preview %} preview{% endif %}</h1>
       <p>Assess physics AI surrogate models across realistic fluid dynamics datasets</p>
     </div>
     <div class="leaderboard-source-row">
@@ -36,6 +36,15 @@ chart:
       >Submissions opening soon</button>
     </div>
   </header>
+
+{% if page.leaderboard_preview %}
+
+  <aside class="leaderboard-preview-notice" id="leaderboard-preview-notice" aria-label="Leaderboard preview">
+    <div><strong>Preview — results will be published on {{ site.launch.reveal_at | date: '%-d %B %Y' }}</strong>
+    <p>Explore the datasets, test splits, metrics and methodology. This preview contains no submitted results. The first release is scheduled for {{ site.launch.reveal_at | date: '%-d %B %Y' }} Anywhere on Earth (UTC−12).</p></div>
+    <a href="{{ '/' | relative_url }}">Back to launch overview →</a>
+  </aside>
+  {% endif %}
 
   <aside id="leaderboard-data-warning" class="leaderboard-data-warning" role="note" aria-label="Leaderboard data status">
     <strong id="leaderboard-data-warning-title">Loading release status:</strong>
@@ -487,17 +496,21 @@ chart:
     {{ site.leaderboard_base_url | default: "https://raw.githubusercontent.com/FluidsBench/fluidsbench-submission/main/" | jsonify }};
   const configuredLocalLeaderboardBaseUrl =
     {{ site.leaderboard_local_base_url | default: "http://127.0.0.1:4100/" | jsonify }};
-  const selectedLeaderboardBaseUrl = localLeaderboard
-    ? configuredLocalLeaderboardBaseUrl
-    : configuredLeaderboardBaseUrl;
+  const selectedLeaderboardBaseUrl =
+    {% if page.leaderboard_preview %}
+    {{ site.data.leaderboard_preview.base_url | jsonify }};
+    {% else %}
+    localLeaderboard ? configuredLocalLeaderboardBaseUrl : configuredLeaderboardBaseUrl;
+    {% endif %}
   window.FluidsBenchLeaderboardBaseUrl = selectedLeaderboardBaseUrl.endsWith("/")
     ? selectedLeaderboardBaseUrl
     : selectedLeaderboardBaseUrl + "/";
   window.FluidsBenchLeaderboardManifestUrl =
     window.FluidsBenchLeaderboardBaseUrl + "leaderboard/manifest.json";
-  window.FluidsBenchLeaderboardPreviewMode = {{ site.preview_mode | default: false | jsonify }};
+  window.FluidsBenchLeaderboardPreviewMode = {% if page.leaderboard_preview %}true{% else %}{{ site.preview_mode | default: false | jsonify }}{% endif %};
+  window.FluidsBenchLeaderboardEmptyPreview = {{ page.leaderboard_preview | default: false | jsonify }};
   window.FluidsBenchLeaderboardManifestSha256 =
-    {{ site.leaderboard_manifest_sha256 | default: "" | jsonify }};
+    {% if page.leaderboard_preview %}{{ site.data.leaderboard_preview.manifest_sha256 | jsonify }}{% else %}{{ site.leaderboard_manifest_sha256 | default: "" | jsonify }}{% endif %};
   window.FluidsBenchSubmissionRepositoryUrl = {{ site.submission_repository_url | jsonify }};
   window.FluidsBenchSubmissionSourceRef =
     {% if site.launch.dev_intake %}"dev"{% else %}{{ site.submission_source_ref | default: "main" | jsonify }}{% endif %};

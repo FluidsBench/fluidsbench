@@ -2553,6 +2553,9 @@
       if (!expectedSha256 || loaded.sha256 !== expectedSha256) {
         throw new Error("complete leaderboard feed checksum does not match the selected data release");
       }
+      if (window.FluidsBenchLeaderboardEmptyPreview === true && loaded.data.length !== 0) {
+        throw new Error("The interface preview requires an empty results feed. Submitted results cannot be displayed here.");
+      }
       allDatasetEntries().forEach((entry) => state.rows.set(entry.name, []));
       loaded.data
         .map((entry, index) => normalizeRow(entry, index))
