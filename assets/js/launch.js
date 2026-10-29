@@ -15,6 +15,20 @@
   if (typeof module !== "undefined" && module.exports) module.exports = { countdown };
   if (!root.document) return;
 
+  root.document.querySelectorAll("[data-results-tour]").forEach(function (tour) {
+    tour.querySelectorAll("[data-tour-button]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        const selected = button.dataset.tourButton;
+        tour.querySelectorAll("[data-tour-button]").forEach(function (item) {
+          item.setAttribute("aria-pressed", String(item === button));
+        });
+        tour.querySelectorAll("[data-tour-panel]").forEach(function (panel) {
+          panel.hidden = panel.dataset.tourPanel !== selected;
+        });
+      });
+    });
+  });
+
   root.document.querySelectorAll("[data-countdown]").forEach(function (card) {
     const clock = card.querySelector("[data-clock]");
     const message = card.querySelector("[data-countdown-message]");

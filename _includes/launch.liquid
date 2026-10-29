@@ -2,20 +2,20 @@
   <section class="launch-hero" aria-labelledby="launch-title">
     <div class="launch-intro">
       <p class="ux-eyebrow">Open benchmarks for scientific machine learning</p>
-      <h1 id="launch-title">
-        Fluidsbench<br>
-        leaderboard
-      </h1>
-      <p class="launch-description">Assess physics AI surrogate models across realistic fluid dynamics datasets</p>
+      <h1 id="launch-title">FluidsBench</h1>
+      <p class="launch-description">Evaluate the accuracy and generalisation of AI surrogate models across fluid dynamics datasets.</p>
+      <p class="launch-purpose">
+        Shared test splits, reference evaluation tools and published metrics support systematic comparison of model performance.
+      </p>
       <p class="launch-invitation">
-        {% if site.launch.dev_intake %}Preview submissions are open.{% else %}Be part of the first release.{% endif %}
+        {% if site.launch.dev_intake %}Preview submissions are open.{% else %}Contribute to the first benchmark release.{% endif %}
       </p>
       <div class="launch-actions">
         <a class="ux-primary-link" href="{{ '/run/' | relative_url }}">
           {%- if site.launch.can_submit %}Submit your model{% else %}Prepare your model{% endif %}
           <span aria-hidden="true">→</span></a
         >
-        <a class="launch-secondary-link" href="{{ '/datasets/' | relative_url }}">Explore datasets <span aria-hidden="true">↗</span></a>
+        <a class="launch-secondary-link" href="#leaderboard-tour">Leaderboard and metrics <span aria-hidden="true">↓</span></a>
       </div>
       <p class="launch-availability">
         {% if site.launch.can_submit %}
@@ -60,7 +60,11 @@
             The planned release date has passed. A new date will be confirmed here.
           {%- endif -%}
         {%- else -%}
-          {% if site.launch.dev_intake %}Counting down to the first leaderboard launch.{% else %}A shared starting point for physics AI.{% endif %}
+          {% if site.launch.dev_intake -%}
+            Counting down to the first leaderboard launch.
+          {%- else -%}
+            A shared evaluation framework for physics AI.
+          {%- endif %}
         {%- endif %}
       </p>
       <div class="launch-cutoff">
@@ -100,19 +104,23 @@
     </div>
     <div>
       <span aria-hidden="true">02</span>
-      <p><strong>Physics you can inspect</strong><small>Compare field errors, forces and flow profiles.</small></p>
+      <p><strong>Physical performance metrics</strong><small>Compare field errors, forces and flow profiles.</small></p>
     </div>
     <div>
       <span aria-hidden="true">03</span>
-      <p><strong>Evidence behind each result</strong><small>Trace the model, evaluation rules and submitted data.</small></p>
+      <p><strong>Traceable evaluation</strong><small>Trace the model, evaluation rules and submitted data.</small></p>
     </div>
   </section>
+
+  {% include leaderboard_tour.liquid %}
+
+  {% include scoring_explainer.liquid %}
 
   <section class="launch-datasets" aria-labelledby="launch-datasets-title">
     <div class="launch-section-heading">
       <div>
-        <p class="ux-page-eyebrow">Find your benchmark</p>
-        <h2 id="launch-datasets-title">Start with a physical problem.</h2>
+        <p class="ux-page-eyebrow">Benchmark datasets</p>
+        <h2 id="launch-datasets-title">Datasets and evaluation tasks</h2>
       </div>
       <a href="{{ '/datasets/' | relative_url }}">All datasets <span aria-hidden="true">→</span></a>
     </div>
@@ -133,45 +141,51 @@
       </div>
     {% endif %}
     <div class="launch-dataset-grid">
-      {% assign featured = 'airfrans,drivaerml,drivaernetplusplus' | split: ',' %}
-      {% for slug in featured -%}
-        {%- assign dataset = site.data.dataset_catalog[slug] %}
+      {% assign featured = 'airfrans,drivaerml,drivaernetplusplus,ahmedml,windsorml,hiliftaeroml,blendednet,rotor37,vki-ls59' | split: ',' %}
+      {% for slug in featured %}
+        {% assign dataset = site.data.dataset_catalog[slug] %}
+        {% assign coming_soon = site.data.leaderboard_display[slug].coming_soon %}
         {% unless site.data.leaderboard_display[slug].hidden %}
-          <a class="launch-dataset-card" href="{{ '/datasets/' | append: slug | append: '/' | relative_url }}">
-            <div class="launch-dataset-image">
-              <img src="{{ dataset.source.image.path | relative_url }}" alt="" loading="lazy" width="480" height="240">
-            </div>
-            <div class="launch-dataset-copy">
-              <span>{{ dataset.category }}</span>
-              <h3>
-                {{ dataset.name }}
+          {% if coming_soon %}
+            <article class="launch-dataset-card dataset-coming-soon" data-dataset-id="{{ slug }}" data-dataset-status="coming-soon">
+          {% else %}
+            <a class="launch-dataset-card" data-dataset-id="{{ slug }}" href="{{ '/datasets/' | append: slug | append: '/' | relative_url }}">
+          {% endif %}
+          <div class="launch-dataset-image">
+            <img
+              src="{{ dataset.source.image.path | relative_url }}"
+              alt="{{ dataset.source.image.alt | escape }}"
+              loading="lazy"
+              width="480"
+              height="240"
+            >
+          </div>
+          <div class="launch-dataset-copy">
+            <span>{{ dataset.category }}</span>
+            <h3>
+              {{ dataset.name -}}
+              {%- unless coming_soon -%}
                 <span aria-hidden="true">↗</span>
-              </h3>
-              <p>Explore the dataset and evaluation guide</p>
-            </div>
-          </a>
+              {%- endunless %}
+            </h3>
+            {% if coming_soon %}
+              <p><span class="dataset-coming-soon-badge">Coming soon</span></p>
+            {% else %}
+              <p>Dataset, test splits and evaluation metrics</p>
+            {% endif %}
+          </div>
+          {% if coming_soon %}</article>{% else %}</a>{% endif %}
         {% endunless %}
       {% endfor %}
-    </div>
-    <div class="dataset-coming-soon-list" aria-label="Datasets coming soon">
-      {% for entry in site.data.dataset_catalog -%}
-        {%- assign slug = entry[0] %}
-        {% if site.data.leaderboard_display[slug].coming_soon %}
-          <span class="dataset-coming-soon" data-dataset-id="{{ slug }}" data-dataset-status="coming-soon">
-            {{- entry[1].name }}
-            <span class="dataset-coming-soon-badge">Coming soon</span></span
-          >
-        {% endif -%}
-      {%- endfor %}
     </div>
   </section>
 
   <section class="launch-participate" aria-labelledby="launch-participate-title">
     <div class="launch-section-heading">
       <div>
-        <p class="ux-page-eyebrow">Bring your model</p>
+        <p class="ux-page-eyebrow">Participation</p>
         <h2 id="launch-participate-title">
-          {% if site.launch.dev_intake %}Submit your result.{% else %}A clear route to the first release.{% endif %}
+          {% if site.launch.dev_intake %}Submit your result.{% else %}Evaluation and submission{% endif %}
         </h2>
       </div>
       <a href="{{ '/run/' | relative_url }}">Submission guide <span aria-hidden="true">→</span></a>
@@ -203,8 +217,8 @@
 
   <section class="launch-faq" aria-labelledby="launch-faq-title">
     <div>
-      <p class="ux-page-eyebrow">Before you begin</p>
-      <h2 id="launch-faq-title">A few useful details.</h2>
+      <p class="ux-page-eyebrow">Submission information</p>
+      <h2 id="launch-faq-title">Frequently asked questions</h2>
       <p>
         Questions about your submission?<br>
         <a href="{{ '/community/' | relative_url }}">Talk to the community →</a>

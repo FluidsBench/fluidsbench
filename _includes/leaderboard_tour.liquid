@@ -1,0 +1,131 @@
+<section class="leaderboard-tour" id="leaderboard-tour" aria-labelledby="tour-title">
+  <div class="launch-section-heading">
+    <div>
+      <p class="ux-page-eyebrow">Benchmark results</p>
+      <h2 id="tour-title">Leaderboard and model comparison</h2>
+    </div>
+  </div>
+  <p class="explainer-lead">
+    Compare models within a dataset and test split using overall scores, individual error metrics and reference flow profiles. The DrivAerML
+    illustration below uses the published scoring structure.
+  </p>
+  <div class="tour-layout">
+    <div class="tour-workspace" data-results-tour>
+      <div class="tour-toolbar">
+        <div><strong>DrivAerML</strong><span>Full split · surface and volume</span></div>
+        <span class="tour-example-label">Illustrative data</span>
+      </div>
+      <div class="tour-switcher" role="group" aria-label="Explore the leaderboard illustration">
+        <button type="button" aria-pressed="true" aria-controls="tour-ranking" data-tour-button="ranking">Rankings</button>
+        <button type="button" aria-pressed="false" aria-controls="tour-profiles" data-tour-button="profiles">Compare profiles</button>
+      </div>
+      <div id="tour-ranking" data-tour-panel="ranking">
+        <div class="tour-table-scroll" role="region" aria-label="Illustrative model scores" tabindex="0">
+          <table class="tour-table">
+            <caption>
+              Illustrative group scores (0–100) · higher is better
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Model</th>
+                <th scope="col">Overall</th>
+                <th scope="col">Fields</th>
+                <th scope="col">Forces</th>
+                <th scope="col">Profiles</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row"><span class="tour-rank">1</span> Example A</th>
+                <td><strong>86.5</strong></td>
+                <td>84</td>
+                <td>90</td>
+                <td>88</td>
+              </tr>
+              <tr>
+                <th scope="row"><span class="tour-rank">2</span> Example B</th>
+                <td><strong>84.0</strong></td>
+                <td>90</td>
+                <td>80</td>
+                <td>76</td>
+              </tr>
+              <tr>
+                <th scope="row"><span class="tour-rank">3</span> Example C</th>
+                <td><strong>80.5</strong></td>
+                <td>78</td>
+                <td>84</td>
+                <td>82</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="tour-insight">
+          <strong>Component-level comparison.</strong> Example B has the highest field score, while Example A has the highest overall score through
+          higher force and profile scores.
+        </p>
+        <p class="tour-formula">
+          DrivAerML: 50% fields + 25% forces + 25% profiles. Group scores are normalised weighted means of the corresponding component scores.
+        </p>
+      </div>
+      <div id="tour-profiles" data-tour-panel="profiles" hidden>
+        <div class="tour-chart">
+          <svg viewBox="0 0 560 235" role="img" aria-labelledby="tour-chart-title tour-chart-description">
+            <title id="tour-chart-title">Illustrative velocity-profile comparison</title>
+            <desc id="tour-chart-description">Schematic curves only, not CFD or submitted predictions. Example A follows the reference more closely; Example B deviates in the middle of the profile.</desc>
+            <g class="tour-chart-grid" fill="none"><path d="M55 25V185H535 M55 65H535 M55 105H535 M55 145H535"/></g>
+            <path class="tour-reference" d="M55 180 C80 120 130 70 210 45 S390 30 535 30"/>
+            <path class="tour-model-a" d="M55 180 C83 125 133 76 210 50 S390 33 535 33"/>
+            <path class="tour-model-b" d="M55 180 C105 170 160 110 240 68 S405 36 535 36"/>
+            <g class="tour-axis-labels"><text x="295" y="220" text-anchor="middle">Distance along profile →</text><text transform="translate(18 105) rotate(-90)" text-anchor="middle">|U| / U∞ →</text></g>
+          </svg>
+          <div class="tour-legend">
+            <span><i class="tour-key-reference"></i>Reference</span><span><i class="tour-key-a"></i>Example A</span
+            ><span><i class="tour-key-b"></i>Example B</span>
+          </div>
+        </div>
+        <p class="tour-insight">
+          <strong>Spatially resolved assessment.</strong> Profile comparisons identify local deviations from CFD reference data that may be obscured
+          by aggregate metrics.
+        </p>
+        <p class="tour-formula">
+          Schematic velocity profiles; no physical values are represented. DrivAerML scores 16 fixed velocity lines and four fixed Cp cuts.
+        </p>
+      </div>
+      <p class="tour-disclaimer">Illustration only. These fictional models, scores and curves are not submissions or benchmark results.</p>
+      <noscript><p class="tour-disclaimer">Enable JavaScript to switch to the profile illustration.</p></noscript>
+    </div>
+    <div class="tour-guide">
+      <article>
+        <span>50%</span>
+        <div>
+          <h3>Field accuracy</h3>
+          <p>Relative L2 errors in surface pressure (15%), wall shear (10%), volume velocity (15%) and volume pressure (10%).</p>
+          <a href="{{ '/datasets/drivaerml/' | relative_url }}#metric-definitions">Field metric definitions →</a>
+        </div>
+      </article>
+      <article>
+        <span>25%</span>
+        <div>
+          <h3>Integrated forces and moments</h3>
+          <p>R² for drag (15%), lift (5%) and pitching moment (5%), computed from the predicted surface fields.</p>
+          <a href="{{ '/datasets/drivaerml/' | relative_url }}#force-metrics">Force and moment definitions →</a>
+        </div>
+      </article>
+      <article>
+        <span>25%</span>
+        <div>
+          <h3>Flow profiles</h3>
+          <p>R² for fixed velocity profiles (15%) and fixed Cp cuts (10%). Geometry-relative profiles are diagnostic and carry no scoring weight.</p>
+          <a href="{{ '/datasets/drivaerml/' | relative_url }}#profile-metrics">Profile metric definitions →</a>
+        </div>
+      </article>
+    </div>
+  </div>
+  <nav class="tour-methodology-links" aria-label="DrivAerML evaluation documentation">
+    <a href="{{ '/datasets/drivaerml/' | relative_url }}#overall-score">Scoring formula, weights and error caps →</a>
+    <a href="{{ site.submission_repository_url }}/blob/{{ site.submission_source_ref }}/benchmark-specs/drivaerml/submission-spec.json"
+      >Full evaluation specification ↗</a
+    >
+    <a href="{{ '/run/' | relative_url }}#validation">Submission validation policy →</a>
+  </nav>
+</section>

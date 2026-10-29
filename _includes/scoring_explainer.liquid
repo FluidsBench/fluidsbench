@@ -1,0 +1,50 @@
+<section class="scoring-explainer" id="consistent-scoring" aria-labelledby="scoring-explainer-title">
+  <div class="launch-section-heading">
+    <div>
+      <p class="ux-page-eyebrow">A common basis for comparison</p>
+      <h2 id="scoring-explainer-title">Consistent evaluation and scoring</h2>
+    </div>
+  </div>
+  <p class="explainer-lead">
+    Reported errors depend on the test split, spatial sampling, normalisation and aggregation procedure. FluidsBench specifies these choices for each
+    benchmark to support reproducible evaluation and meaningful comparisons between models.
+  </p>
+  <div class="scoring-principles">
+    <article>
+      <span>01 / Evaluation protocol</span>
+      <h3>Common test conditions</h3>
+      <p>
+        Models are evaluated on the same required cases and locations within a dataset and split, even when they use different meshes or
+        representations.
+      </p>
+    </article>
+    <article>
+      <span>02 / Metric definitions</span>
+      <h3>Complementary physical quantities</h3>
+      <p>
+        Where supported, fields, integrated forces and flow profiles test complementary aspects of the physics. Each dataset publishes its metrics,
+        weights and score calculation.
+      </p>
+    </article>
+    <article>
+      <span>03 / Result interpretation</span>
+      <h3>Aggregate and component metrics</h3>
+      <p>
+        The overall score summarises performance under the published weighting. Individual metrics and profile comparisons expose differences in field
+        accuracy, integrated quantities and local flow structure.
+      </p>
+    </article>
+  </div>
+  <aside class="scoring-reading-note">
+    <strong>Interpreting normalised scores</strong>
+    <p>
+      Higher overall scores are better on the published 0–100 scale. A score of 90 does not mean 90% accuracy. Compare models within the same dataset
+      and split; scores across different benchmarks are not interchangeable. Raw metrics remain available alongside the summary.
+    </p>
+  </aside>
+  <div class="tour-methodology-links">
+    <a href="{{ '/datasets/drivaerml/' | relative_url }}#overall-score">DrivAerML scoring formula and weights →</a>
+    <a href="{{ '/datasets/drivaerml/' | relative_url }}#metric-definitions">DrivAerML metric definitions →</a>
+    <a href="{{ '/datasets/' | relative_url }}">All dataset evaluation guides →</a>
+  </div>
+</section>
