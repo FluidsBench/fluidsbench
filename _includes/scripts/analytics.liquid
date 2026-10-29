@@ -1,14 +1,19 @@
-{% if site.enable_google_analytics %}
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      window.dataLayer.push(arguments);
-    }
-    gtag('js', new Date());
-    gtag('config', '{{ site.google_analytics }}');
-  </script>
+{% if site.enable_google_analytics and jekyll.environment == 'production' and site.url == 'https://fluidsbench.org' %}
+  {% unless site.local_ux_preview %}
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        window.dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', '{{ site.google_analytics }}', {
+        allow_google_signals: false,
+        allow_ad_personalization_signals: false,
+      });
+    </script>
+  {% endunless %}
 {% endif %}
 {% if site.enable_cronitor_analytics %}
   <!-- Cronitor RUM -->
