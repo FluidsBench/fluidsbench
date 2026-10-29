@@ -65,12 +65,23 @@ def validate_coming_soon(root):
     return errors
 
 
+def validate_native_profile_bindings(html):
+    errors = []
+    for dataset, global_name in (("airfrans", "Airfrans"), ("drivaernetplusplus", "Drivaernetplusplus")):
+        binding = json.loads((SOURCE / f"_data/{dataset}_native_profiles.json").read_text())
+        if (f"window.FluidsBench{global_name}NativeProfiles" not in html
+                or binding["manifest_sha256"] not in html or binding["manifest_path"] not in html):
+            errors.append(f"leaderboard must load the checksum-bound {dataset} native profile reference")
+    return errors
+
+
 def validate(root: Path, phase: str, committee_review: bool = False, dev_intake: bool = False) -> list[str]:
     errors = validate_coming_soon(root)
     index = (root / "index.html").read_text()
     preview_path = root / PUBLIC_PREVIEW
     if preview_path.exists():
         preview = preview_path.read_text()
+        errors.extend(validate_native_profile_bindings(preview))
         binding = json.loads((SOURCE / "_data/leaderboard_preview.json").read_text())
         if 'id="leaderboard-preview-notice"' not in preview or "Preview — results will be published" not in preview:
             errors.append("public preview must explain its release status")
@@ -120,6 +131,7 @@ def validate(root: Path, phase: str, committee_review: bool = False, dev_intake:
 
     live = phase == "live"
     if live:
+        errors.extend(validate_native_profile_bindings(index))
         if 'id="leaderboard-table"' not in index or '/assets/js/leaderboard.js' not in index:
             errors.append("live build does not contain the leaderboard")
         if 'data-countdown' in index:

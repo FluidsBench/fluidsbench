@@ -41,10 +41,18 @@ class LaunchBuildTests(unittest.TestCase):
             '<table id="leaderboard-table"></table><script src="/assets/js/leaderboard.js"></script>'
             '<script>window.FluidsBenchLeaderboardEmptyPreview = true;'
             'window.FluidsBenchLeaderboardPreviewMode = true;'
-            + json.dumps(binding) + '</script>'
+            + json.dumps(binding)
+            + ''.join(
+                f'window.FluidsBench{global_name}NativeProfiles = '
+                + (check_launch_build.SOURCE / f'_data/{dataset}_native_profiles.json').read_text()
+                for dataset, global_name in (('airfrans', 'Airfrans'), ('drivaernetplusplus', 'Drivaernetplusplus'))
+            ) + '</script>'
         )
         self.write(check_launch_build.PUBLIC_PREVIEW, preview)
         self.assertEqual(self.errors(False), [])
+        for global_name in ('Airfrans', 'Drivaernetplusplus'):
+            self.write(check_launch_build.PUBLIC_PREVIEW, preview.replace(f'window.FluidsBench{global_name}NativeProfiles', 'missingBinding'))
+            self.assertTrue(any('native profile reference' in error for error in self.errors(False)))
         self.write(check_launch_build.PUBLIC_PREVIEW, preview.replace('EmptyPreview = true', 'EmptyPreview = false'))
         self.assertIn("public preview must reject nonempty result feeds", self.errors(False))
         self.write(check_launch_build.PUBLIC_PREVIEW, preview.replace(binding['base_url'], 'https://example.com/latest/'))
