@@ -31,6 +31,9 @@ hide_header_background: true
   <p class="ux-page-eyebrow">Start here</p>
   <h2 id="submission-datasets-title">Choose a dataset</h2>
   <p>Start with one dataset and one supported split. Its guide sets out the required evaluation cases.</p>
+  {% if site.launch.can_submit %}
+  <p class="ux-small-note">To open a submission PR, first push your submission to a branch in your fork. On GitHub, select <strong>compare across forks</strong>, choose your fork and submission branch, and target <code>{{ site.submission_repository_url | remove: 'https://github.com/' }}:{{ submission_branch }}</code>.</p>
+  {% endif %}
   <div class="launch-submission-grid">
     {% for entry in site.data.submission_status.datasets %}{% assign slug = entry[0] %}{% assign availability = entry[1] %}
       {% unless site.data.leaderboard_display[slug].hidden %}
@@ -48,7 +51,7 @@ hide_header_background: true
         {% endif %}
         {% if availability.guide %}<p><a href="{{ source_root }}/{{ availability.guide }}">Participant quickstart ↗</a></p>{% endif %}
         <div class="launch-submit-links"><a href="{{ '/datasets/' | append: slug | append: '/' | relative_url }}">Dataset guide →</a><a href="{{ source_root }}/benchmark-specs/{{ slug }}">Evaluation requirements ↗</a>
-        {% if dev_candidate or availability.open and site.launch.accepting_submissions %}<a href="{{ site.submission_repository_url }}/compare/{{ submission_branch }}...">Open a submission PR ↗</a>{% endif %}</div>
+        {% if dev_candidate or availability.open and site.launch.accepting_submissions %}<a href="{{ site.submission_repository_url }}/compare">Open a submission PR ↗</a>{% endif %}</div>
         {% endif %}
       </article>
       {% endunless %}
