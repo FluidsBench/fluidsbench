@@ -14,3 +14,7 @@ assets/data/airfrans-native-profiles/**
 
 # Checksum-bound native DrivAerNet++ browser artifacts.
 assets/data/drivaernetplusplus-native-profiles/**
+
+# Byte-identical scientific schemas and frozen reference contracts.
+schemas/**
+tests/fixtures/profile-reference-contracts/**

@@ -1100,9 +1100,9 @@ nav[data-toggle="toc"] {
 
   .p {
     font-style: monospace;
-    font-size:.75em;
-    margin-top:10px;
-    margin-left:230px;
+    font-size: 0.75em;
+    margin-top: 10px;
+    margin-left: 230px;
   }
 }
 @media (min-width: 576px) {
@@ -1123,14 +1123,12 @@ nav[data-toggle="toc"] {
     }
 
     .bio {
-      font-size:.75em;
-      margin-top:10px;
-      margin-left:230px;
+      font-size: 0.75em;
+      margin-top: 10px;
+      margin-left: 230px;
     }
   }
 }
-
-
 
 .featured-posts {
   a {

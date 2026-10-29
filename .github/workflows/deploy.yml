@@ -28,7 +28,9 @@ jobs:
           pip3 install --upgrade jupyter
           JEKYLL_ENV=production bundle exec jekyll build --lsi
       - name: Verify native scientific assets
-        run: python3 bin/check_native_profile_build.py _site
+        run: |
+          python3 bin/check_native_profile_build.py _site
+          python3 bin/check_site_links.py _site
       - name: Finish styles and check production launch
         run: |
           npm install -g purgecss

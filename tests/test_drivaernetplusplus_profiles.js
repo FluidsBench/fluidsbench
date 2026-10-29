@@ -98,7 +98,7 @@ test(
       assert.equal(entry.native_point_count, record.native.point_count);
       for (const station of manifest.station_ids) assert.equal(entry.station_point_counts[station], record.profile_stations[station].point_count);
       const truth = await loader.getCase(context, id);
-      for (const {row, predictions} of submissions) validatePrediction(predictions.get(id), truth, row);
+      for (const { row, predictions } of submissions) validatePrediction(predictions.get(id), truth, row);
     }
   }
 );

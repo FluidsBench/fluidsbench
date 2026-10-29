@@ -4,6 +4,7 @@ permalink: /leaderboards/
 title: leaderboards
 nav: false
 ---
+
 <!doctype html>
 <html lang="{{ site.lang }}">
   <head>

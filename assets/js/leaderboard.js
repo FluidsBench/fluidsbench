@@ -2688,10 +2688,10 @@
 
   async function groundTruthIndex(datasetName, splitName) {
     const manifest = await ensureGroundTruthManifest();
-    if (airfransProfiles && datasetName === "AirfRANS" && dataRelease().source_ref === "dev") {
+    if (airfransProfiles && datasetName === "AirfRANS") {
       return airfransProfiles.getIndex(activeSplitDefinition()?.id);
     }
-    if (drivaernetplusplusProfiles && datasetName === "DrivAerNet++" && dataRelease().source_ref === "dev") {
+    if (drivaernetplusplusProfiles && datasetName === "DrivAerNet++") {
       return drivaernetplusplusProfiles.getIndex(activeSplitDefinition()?.id);
     }
     const dataset = (manifest.datasets || []).find((candidate) => candidate.name === datasetName);
@@ -3766,15 +3766,21 @@
     const windsorTruthOnly = activeDatasetSlug() === "windsorml" && activeDataset()?.submission_count === 0;
     if (dataWarning) dataWarning.className = `leaderboard-data-warning${officialRelease ? " is-official" : ""}`;
     if (dataWarningTitle)
-      dataWarningTitle.textContent = emptyRelease ? "No results yet" : windsorTruthOnly ? "Native CFD ground truth" : officialRelease ? "Official release" : "Prototype results";
+      dataWarningTitle.textContent = emptyRelease
+        ? "No results yet"
+        : windsorTruthOnly
+          ? "Native CFD ground truth"
+          : officialRelease
+            ? "Official release"
+            : "Prototype results";
     if (dataWarningText) {
       dataWarningText.textContent = emptyRelease
         ? " — the leaderboard is ready for its first reviewed model submissions."
         : windsorTruthOnly
-        ? " — all eight WindsorML splits are available below. No model results have been submitted; the benchmark is awaiting owner review."
-        : officialRelease
-          ? " — submitted packages are validated and maintainer-approved."
-          : " — dev preview containing retained examples and reviewed results; not citable or suitable for official leaderboard claims.";
+          ? " — all eight WindsorML splits are available below. No model results have been submitted; the benchmark is awaiting owner review."
+          : officialRelease
+            ? " — submitted packages are validated and maintainer-approved."
+            : " — dev preview containing retained examples and reviewed results; not citable or suitable for official leaderboard claims.";
     }
     element("leaderboard-release-id").textContent = release.id || "Unversioned";
     const details = [];
@@ -5016,8 +5022,8 @@
         state.manifest?.datasets?.every((dataset) => dataset.submission_count === 0) === true
           ? "No model results have been published yet."
           : activeDatasetSlug() === "windsorml" && activeDataset()?.submission_count === 0
-          ? "No WindsorML model results yet. Explore native CFD ground-truth profiles below."
-          : "No leaderboard rows match this dataset, split, and model type.";
+            ? "No WindsorML model results yet. Explore native CFD ground-truth profiles below."
+            : "No leaderboard rows match this dataset, split, and model type.";
       row.appendChild(cell);
       body.appendChild(row);
       return;

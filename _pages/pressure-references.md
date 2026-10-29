@@ -29,8 +29,9 @@ compact_masthead: true
   </details>
 
 {% for entry in site.data.dataset_catalog %}
-  {% assign pressure_slug = entry[0] %}
-  {% if site.data.leaderboard_display[pressure_slug].coming_soon %}
+{% assign pressure_slug = entry[0] %}
+{% if site.data.leaderboard_display[pressure_slug].coming_soon %}
+
   <section id="{{ pressure_slug }}" class="pressure-reference-section dataset-coming-soon" data-dataset-id="{{ pressure_slug }}" data-dataset-status="coming-soon">
     <h2>{{ entry[1].name }} <span class="dataset-coming-soon-badge">Coming soon</span></h2>
     <p>The benchmark definition will be published when ready.</p>
