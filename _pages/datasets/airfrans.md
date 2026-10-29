@@ -63,6 +63,9 @@ compact_masthead: true
 
   <section class="dataset-panel">
     <h3>Overall score</h3>
+    <p>Field errors assess the predicted flow, forces assess drag and lift, and velocity profiles reveal local flow structure.
+      The overall score summarises these complementary checks; individual metrics show where a model succeeds or struggles.
+      Compare scores within the same dataset and split. A score of 90 does not mean 90% accuracy.</p>
     <p>
       The score combines <strong>50% fields, 25% forces, and 25% profiles</strong>.
       Field and force weights match AhmedML and WindsorML. AirfRANS uses its balanced velocity-profile

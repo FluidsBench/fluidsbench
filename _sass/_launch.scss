@@ -540,3 +540,393 @@
     font-size: 12px;
   }
 }
+
+/* Explain the benchmark before asking visitors to take part. */
+.launch-intro h1 {
+  font-size: clamp(38px, 4vw, 55px);
+}
+.launch-hero {
+  grid-template-columns: 1.3fr 1fr;
+  gap: 55px;
+}
+.launch-description {
+  color: var(--ux-ink);
+  margin-bottom: 14px;
+}
+.launch-purpose {
+  max-width: 500px;
+  color: var(--ux-muted);
+  font-size: 15px;
+  line-height: 1.75;
+  margin-bottom: 24px;
+}
+.leaderboard-tour,
+.scoring-explainer {
+  margin: 58px 0;
+  scroll-margin-top: 95px;
+}
+.explainer-lead {
+  color: var(--ux-muted);
+  font-size: 16px;
+  line-height: 1.8;
+  max-width: 840px;
+  margin: 0 0 26px;
+}
+.tour-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: 34px;
+  align-items: center;
+}
+.tour-workspace {
+  border: 1px solid var(--ux-border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--ux-surface);
+  box-shadow: 0 10px 32px rgba(20, 55, 60, 0.05);
+}
+.tour-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  background: var(--ux-tint);
+}
+.tour-toolbar strong {
+  display: block;
+  color: var(--ux-ink);
+  font-size: 18px;
+}
+.tour-toolbar div > span {
+  display: block;
+  color: var(--ux-muted);
+  font-size: 12px;
+  margin-top: 4px;
+}
+.tour-example-label {
+  border: 1px solid var(--ux-border);
+  border-radius: 30px;
+  padding: 5px 9px;
+  font-size: 10px;
+  color: var(--ux-muted);
+  white-space: nowrap;
+}
+.tour-switcher {
+  display: flex;
+  gap: 22px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--ux-border);
+}
+.tour-switcher button {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 15px 0 12px;
+  background: transparent;
+  color: var(--ux-muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.tour-switcher button[aria-pressed="true"] {
+  border-bottom-color: var(--ux-accent);
+  color: var(--ux-accent);
+  font-weight: 650;
+}
+.tour-switcher button:focus-visible,
+.tour-table-scroll:focus-visible {
+  outline: 2px solid var(--ux-accent);
+  outline-offset: -2px;
+}
+.tour-table-scroll {
+  overflow-x: auto;
+  padding: 0 24px;
+}
+.tour-table {
+  width: 100%;
+  font-size: 13px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.tour-table caption {
+  caption-side: top;
+  color: var(--ux-muted);
+  font-size: 11px;
+  padding: 18px 0 8px;
+}
+.tour-table th,
+.tour-table td {
+  padding: 14px 9px;
+  border-bottom: 1px solid var(--ux-border);
+  text-align: right;
+  color: var(--ux-ink);
+}
+.tour-table th:first-child {
+  text-align: left;
+  padding-left: 0;
+}
+.tour-table thead th {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ux-muted);
+}
+.tour-table tbody th {
+  font-weight: 500;
+}
+.tour-table td strong {
+  color: var(--ux-accent);
+}
+.tour-rank {
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 11px;
+  color: var(--ux-muted);
+}
+.tour-insight {
+  margin: 18px 24px 8px;
+  color: var(--ux-muted);
+  font-size: 13px;
+  line-height: 1.75;
+}
+.tour-insight strong {
+  color: var(--ux-ink);
+}
+.tour-formula {
+  color: var(--ux-muted);
+  font-size: 11px;
+  margin: 0 24px 20px;
+  line-height: 1.7;
+}
+.tour-disclaimer {
+  padding: 14px 24px;
+  margin: 0;
+  border-top: 1px solid var(--ux-border);
+  color: var(--ux-muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+.tour-guide article {
+  display: flex;
+  gap: 16px;
+  margin: 24px 0;
+}
+.tour-guide article > span {
+  color: var(--ux-accent);
+  font-size: 11px;
+  padding-top: 4px;
+}
+.tour-guide h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+.tour-guide p {
+  color: var(--ux-muted);
+  font-size: 13px;
+  line-height: 1.8;
+  margin: 0;
+}
+.tour-guide > a {
+  font-size: 12px;
+  margin-left: 30px;
+}
+.tour-chart {
+  padding: 20px 24px 0;
+}
+.tour-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.tour-chart-grid {
+  stroke: var(--ux-border);
+  stroke-width: 1;
+}
+.tour-reference,
+.tour-model-a,
+.tour-model-b {
+  fill: none;
+  stroke-width: 3;
+}
+.tour-reference {
+  stroke: var(--ux-ink);
+}
+.tour-model-a {
+  stroke: var(--ux-accent);
+  stroke-dasharray: 8 4;
+}
+.tour-model-b {
+  stroke: #b86b35;
+  stroke-dasharray: 3 5;
+}
+.tour-axis-labels {
+  fill: var(--ux-muted);
+  font-size: 12px;
+}
+.tour-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  font-size: 11px;
+  color: var(--ux-muted);
+}
+.tour-legend i {
+  display: inline-block;
+  vertical-align: middle;
+  width: 18px;
+  border-top: 2px solid;
+  margin-right: 5px;
+}
+.tour-key-reference {
+  color: var(--ux-ink);
+}
+.tour-key-a {
+  color: var(--ux-accent);
+  border-top-style: dashed !important;
+}
+.tour-key-b {
+  color: #b86b35;
+  border-top-style: dotted !important;
+}
+.scoring-explainer {
+  padding-top: 35px;
+  border-top: 1px solid var(--ux-border);
+}
+.scoring-principles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+.scoring-principles article > span {
+  font-size: 11px;
+  color: var(--ux-accent);
+}
+.scoring-principles h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 12px 0 10px;
+  color: var(--ux-ink);
+}
+.scoring-principles p {
+  font-size: 14px;
+  color: var(--ux-muted);
+  line-height: 1.8;
+}
+.scoring-reading-note {
+  background: var(--ux-tint);
+  border-left: 3px solid var(--ux-accent);
+  padding: 20px 24px;
+  margin: 20px 0;
+  border-radius: 0 8px 8px 0;
+}
+.scoring-reading-note strong {
+  color: var(--ux-ink);
+  font-size: 14px;
+}
+.scoring-reading-note p {
+  margin: 7px 0 0;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--ux-muted);
+}
+@media (max-width: 1000px) {
+  .launch-hero {
+    gap: 30px;
+  }
+  .tour-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+  .tour-guide {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+  .tour-guide article {
+    margin: 18px 0 0;
+  }
+  .tour-guide > a {
+    grid-column: 1 / -1;
+    margin-left: 0;
+  }
+}
+@media (max-width: 740px) {
+  .launch-hero {
+    grid-template-columns: 1fr;
+  }
+  .launch-intro h1 {
+    font-size: 42px;
+  }
+  .leaderboard-tour,
+  .scoring-explainer {
+    margin: 36px 0;
+  }
+  .scoring-principles,
+  .tour-guide {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .tour-guide article {
+    margin: 10px 0;
+  }
+  .tour-toolbar,
+  .tour-disclaimer {
+    padding: 16px;
+  }
+  .tour-table-scroll,
+  .tour-switcher {
+    padding: 0 16px;
+  }
+  .tour-insight {
+    margin-inline: 16px;
+  }
+  .tour-formula {
+    margin-inline: 16px;
+  }
+  .tour-table th,
+  .tour-table td {
+    padding: 12px 7px;
+  }
+  .tour-chart {
+    padding: 15px 12px 0;
+  }
+  .explainer-lead {
+    font-size: 15px;
+  }
+}
+
+.tour-guide article > span {
+  min-width: 30px;
+}
+.tour-guide article a {
+  display: inline-block;
+  font-size: 12px;
+  margin-top: 8px;
+}
+.tour-methodology-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 28px;
+  border-top: 1px solid var(--ux-border);
+  padding-top: 18px;
+  margin-top: 24px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.launch-dataset-card.dataset-coming-soon {
+  display: block;
+  opacity: 1;
+  padding: 0;
+}
+.launch-dataset-card.dataset-coming-soon:hover {
+  border-color: var(--ux-border);
+}
+.dataset-page [id] {
+  scroll-margin-top: 90px;
+}
+@media (max-width: 740px) {
+  .launch-dataset-card.dataset-coming-soon {
+    display: grid;
+  }
+}

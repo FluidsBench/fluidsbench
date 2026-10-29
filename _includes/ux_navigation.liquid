@@ -1,4 +1,11 @@
 <a
+  href="{{ '/about/' | relative_url }}"
+  {% if page.permalink == '/about/' %}
+    aria-current="page"
+  {% endif %}
+  >About</a
+>
+<a
   href="{{ '/datasets/' | relative_url }}"
   {% if page.permalink contains '/datasets/' %}
     aria-current="page"

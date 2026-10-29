@@ -156,8 +156,8 @@ compact_masthead: true
     <p>
       These four FluidsBench cuts follow the validation regions used by DrivAerML but are defined as continuous intersections of each participant's
       complete native surface prediction. They are distinct from the 209 discrete AutoCFD5 pressure taps, which are explicitly excluded from the
-      DrivAerML submission and score. Publishing the all-case native reference curves does not activate profile scoring; scoring remains behind a
-      separate reviewed activation change.
+      DrivAerML submission and score. Submissions are open for all eight prescribed splits. Fixed Cp cuts contribute 10% and fixed velocity profiles
+      contribute 15% of the overall score. Geometry-relative profiles remain report-only diagnostics with zero scoring weight.
     </p>
     <p>
       Leaderboard Cp plots default to the producer-bound segment-midpoint streamwise x coordinate in metres so native CFD and submitted predictions can be compared
@@ -190,7 +190,7 @@ compact_masthead: true
   </section>
 
   <section class="dataset-panel">
-    <h3>Metric definitions</h3>
+    <h3 id="metric-definitions">Metric definitions</h3>
     <dl class="metric-definition-list">
       <div>
         <dt>Relative L2 error</dt>
@@ -257,7 +257,7 @@ compact_masthead: true
         </dd>
       </div>
       <div>
-        <dt>C<sub>d</sub>, C<sub>l</sub>, and C<sub>m,pitch</sub> R<sup>2</sup></dt>
+        <dt id="force-metrics">C<sub>d</sub>, C<sub>l</sub>, and C<sub>m,pitch</sub> R<sup>2</sup></dt>
         <dd>
           Separate equal-case R² values computed from forces and moments integrated from the submitted complete surface fields. The authoritative truth
           is <code>force_mom_constref_all.csv</code>; pitching moment is reconstructed casewise as <code>(clf - clr) / 2</code>. Cd, Cl, and pitch
@@ -269,7 +269,7 @@ compact_masthead: true
         <dd>Normalized weighted mean of the bounded C<sub>d</sub>, C<sub>l</sub>, and C<sub>m,pitch</sub> component scores.</dd>
       </div>
       <div>
-        <dt>Cp cut R<sup>2</sup></dt>
+        <dt id="profile-metrics">Cp cut R<sup>2</sup></dt>
         <dd>
           Equal-case, equal-cut global R² over the four fixed native-surface cuts, with normalized trapezoidal arc-length weighting within each cut.
           Unsupported gaps are never bridged.
@@ -295,9 +295,12 @@ compact_masthead: true
   </section>
 
   <section class="dataset-panel">
-    <h3>Default overall score</h3>
+    <h3 id="overall-score">Default overall score</h3>
     <p>
-      The leaderboard can be ranked by any individual metric. Its default ranking is a bounded 0-100 weighted score:
+      The leaderboard can be ranked by any individual metric. Its default ranking is a bounded 0–100 weighted score.
+      Fields measure the predicted flow and surface quantities, forces measure integrated aerodynamic behaviour, and profiles reveal local flow structure.
+      Together they help distinguish models that have similar overall scores but different strengths. Compare scores within the same dataset and split;
+      a score of 90 does not mean 90% accuracy.
     </p>
     <p>
       The four field components contribute 50%, the three field-integrated force components 25%, and the two profile components 25%. Diagnostic
