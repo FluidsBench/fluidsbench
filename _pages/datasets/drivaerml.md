@@ -374,7 +374,7 @@ S_overall  = sum(weight_q * S_q)</code></pre>
     <ul>
       <li><a href="https://caemldatasets.org/drivaerml/">DrivAerML dataset page</a></li>
       <li><a href="https://arxiv.org/abs/2408.11969">DrivAerML paper</a></li>
-      <li><a href="{{ '/' | relative_url }}?dataset=drivaerml">FluidsBench leaderboard</a></li>
+      <li>{% include dataset_leaderboard_link.html slug="drivaerml" %}</li>
     </ul>
   </section>
 </div>

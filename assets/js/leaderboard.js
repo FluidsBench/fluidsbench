@@ -736,7 +736,7 @@
     const dataset = activeDataset();
     const split = activeSplitDefinition();
     if (dataRelease().id) params.set("release", dataRelease().id);
-    if (dataset) params.set("dataset", slug(dataset.name));
+    if (dataset) params.set("dataset", dataset.slug || slug(dataset.name));
     if (split) params.set("split", split.id || slug(split.name));
     if (state.modelType) params.set("model_type", state.modelType);
     if (state.verifiedOnly) params.set("verification", "metrics_verified");
@@ -1840,6 +1840,11 @@
 
   function activeDataset() {
     return datasetEntries().find((dataset) => dataset.name === state.dataset);
+  }
+
+  function datasetFromUrl(datasetId) {
+    const datasets = datasetEntries();
+    return datasets.find((dataset) => dataset.slug === datasetId || slug(dataset.name) === datasetId) || datasets[0];
   }
 
   function metricDefinition(metricId) {
@@ -11498,7 +11503,7 @@
       if (redirectComingSoonDataset(restored.dataset)) return;
       state.requestedReleaseId = restored.releaseId;
       state.releaseMismatch = Boolean(restored.releaseId && restored.releaseId !== dataRelease().id);
-      const dataset = datasetEntries().find((candidate) => slug(candidate.name) === restored.dataset) || datasetEntries()[0];
+      const dataset = datasetFromUrl(restored.dataset);
       if (dataset) void setDataset(dataset.name, restored, false);
     });
     const helpPopover = element("column-help-popover");
@@ -11527,7 +11532,7 @@
       state.metrics = new Map(state.manifest.metric_definitions.map((definition) => [definition.id, definition]));
       state.requestedReleaseId = restored.releaseId;
       state.releaseMismatch = Boolean(restored.releaseId && restored.releaseId !== dataRelease().id);
-      const initial = datasetEntries().find((dataset) => slug(dataset.name) === restored.dataset) || datasetEntries()[0];
+      const initial = datasetFromUrl(restored.dataset);
       await setDataset(initial.name, restored, false);
     } catch (error) {
       showError(error);

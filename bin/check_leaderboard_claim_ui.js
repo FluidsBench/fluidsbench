@@ -57,6 +57,7 @@ window.__FluidsBenchClaimTest = {
   citationValues,
   claimEligibility,
   datasetEntries,
+  datasetFromUrl,
   datasetOptions,
   populateSelect,
   redirectComingSoonDataset,
@@ -2773,6 +2774,13 @@ async function verifyComingSoonSelection() {
   const manifest = JSON.parse(fs.readFileSync(path.join(submissionRoot, "leaderboard/manifest.json"), "utf8"));
   try {
     api.state.manifest = manifest;
+    for (const dataset of api.datasetEntries()) {
+      assert.equal(api.datasetFromUrl(dataset.slug).name, dataset.name, "canonical dataset IDs must reopen the matching leaderboard");
+    }
+    assert.equal(api.datasetFromUrl("drivaernet").name, "DrivAerNet++", "previously shared display-name URLs remain valid");
+    assert.equal(api.datasetFromUrl("drivaernetplusplus").name, "DrivAerNet++");
+    api.state.dataset = "DrivAerNet++";
+    assert.equal(api.viewSearchParams().get("dataset"), "drivaernetplusplus", "new shared links use the canonical dataset ID");
     assert.deepEqual(
       Array.from(api.datasetEntries(), (dataset) => dataset.slug).sort(),
       ["ahmedml", "airfrans", "drivaerml", "drivaernetplusplus", "windsorml"],

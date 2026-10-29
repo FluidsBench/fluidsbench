@@ -1,5 +1,5 @@
 {% if site.enable_google_analytics and jekyll.environment == 'production' and site.url == 'https://fluidsbench.org' %}
-  {% unless site.local_ux_preview %}
+  {% unless site.local_ux_preview or site.preview_mode %}
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
     <script>

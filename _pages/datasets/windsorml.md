@@ -57,7 +57,7 @@ compact_masthead: true
     <h3>Benchmark splits</h3>
     <p>
       All eight splits in the <a href="https://huggingface.co/datasets/neashton/windsorml/blob/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/splits/manifest.json">pinned Hugging Face manifest</a>
-      are available in the <a href="{{ '/' | relative_url }}?dataset=windsorml&amp;split=full">leaderboard profile viewer</a>.
+      are available in the {% include dataset_leaderboard_link.html slug="windsorml" live_label="leaderboard profile viewer" preview_label="leaderboard profile preview" %}.
       FluidsBench retains the official assignments and uses the intersection with published field files.
       Runs <code>350–354</code> have no public per-run payload and are excluded, without replacement or reassignment.
       Counts below show <strong>available / official</strong> cases.
@@ -267,7 +267,7 @@ S_overall  = sum(weight_q * S_q)</code></pre>
             <td>12% cap</td>
           </tr>
           <tr>
-            <td>Dimensional volume pressure, unweighted cell relative L2</td>
+            <td>Raw published <code>pressureavg</code>, unweighted cell relative L2 (physical units/reference remain under audit)</td>
             <td>10%</td>
             <td>15% cap</td>
           </tr>
@@ -301,7 +301,7 @@ S_overall  = sum(weight_q * S_q)</code></pre>
     <ul>
       <li><a href="https://caemldatasets.org/windsorml/">WindsorML dataset page</a></li>
       <li><a href="https://arxiv.org/abs/2407.19320">WindsorML paper</a></li>
-      <li><a href="{{ '/' | relative_url }}?dataset=windsorml">FluidsBench leaderboard</a></li>
+      <li>{% include dataset_leaderboard_link.html slug="windsorml" %}</li>
     </ul>
   </section>
 </div>

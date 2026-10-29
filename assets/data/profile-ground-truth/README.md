@@ -90,7 +90,7 @@ python3 bin/export_hiliftaeroml_compact_profile_truth.py \
   --authority-index /authorized/local/hiliftaeroml-native-profile-truth-authority-v1.json \
   --authority-index-sha256 991988cba62214ee85e7066f53a8bc82f639baa76b92f07b4e375e0364986ea4 \
   --output-root assets/data/profile-ground-truth/datasets/hiliftaeroml/compact-all1355-v1 \
-  --source-repository https://github.com/neilashton/fluidsbench-submission \
+  --source-repository https://github.com/FluidsBench/fluidsbench-submission \
   --source-revision <full-commit-sha> \
   --generated-at YYYY-MM-DDTHH:MM:SSZ
 ```

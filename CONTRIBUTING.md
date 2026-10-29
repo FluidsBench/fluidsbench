@@ -45,7 +45,7 @@ npm ci
 bundle check
 ```
 
-With `fluidsbench-submission` cloned alongside this repository, run the website and leaderboard checks. Match the data revision pinned in `.github/workflows/profile-contract.yml` when reproducing CI. Create a second checkout named `fluidsbench-submission-schemas` at that workflow's schema revision: optional contract additions can advance independently of the immutable results feed. Both schema equality and result integrity are checked.
+With `fluidsbench-submission` cloned alongside this repository, run the website and leaderboard checks. To reproduce CI, check out the immutable submission revision pinned in `.github/workflows/profile-contract.yml`; use that same checkout for both data and schemas. CI also validates current submission `main` separately for compatibility with newly accepted packages and contracts.
 
 ```bash
 npx prettier . --check
@@ -55,7 +55,7 @@ python3 bin/check_dataset_pages.py \
   --submission-root ../fluidsbench-submission
 python3 bin/check_profile_contract.py \
   --submission-root ../fluidsbench-submission \
-  --schema-root ../fluidsbench-submission-schemas
+  --schema-root ../fluidsbench-submission
 python3 bin/prepare_submission_status.py \
   --submission-root ../fluidsbench-submission --check
 ruby bin/check_launch_contract.rb
@@ -73,7 +73,7 @@ When refreshing a source dataset description or image, also run the live revisio
 python3 bin/check_dataset_pages.py --check-live-sources
 ```
 
-To reproduce the review deployment:
+To build the unlisted committee review configuration locally (with analytics disabled):
 
 ```bash
 JEKYLL_ENV=production bundle exec jekyll build --lsi \
@@ -97,7 +97,7 @@ Keep unrelated changes in separate pull requests.
 
 ## Repository ownership
 
-See the [ownership transfer checklist](docs/OWNERSHIP_TRANSFER.md) for the remaining link, deployment and submission checks when moving the repositories to the FluidsBench organisation.
+Both repositories are owned by the FluidsBench organisation and use `main`. See the [repository ownership and deployment record](docs/OWNERSHIP_TRANSFER.md) for the completed migration, current release process and preserved scientific provenance.
 
 ## Licence
 

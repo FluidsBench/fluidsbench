@@ -2,7 +2,7 @@
 <div class="ux-dataset-topline">
   <a href="{{ '/datasets/' | relative_url }}">← All datasets</a>{% if site.launch.leaderboard_visible %}<a
     class="ux-primary-link"
-    href="{{ '/' | relative_url }}?dataset={{ dataset.name | slugify }}"
+    href="{{ '/' | relative_url }}?dataset={{ include.slug }}"
     >View {{ dataset.name }} leaderboard →</a
   >{% else %}<a class="ux-primary-link" href="{{ '/run/' | relative_url }}#{{ include.slug }}">Submission guide →</a>{% endif %}
 </div>

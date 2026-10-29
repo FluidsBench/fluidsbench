@@ -1,0 +1,9 @@
+{%- if site.launch.leaderboard_visible -%}
+<a href="{{ '/' | relative_url }}?dataset={{ include.slug }}">{{ include.live_label | default: 'FluidsBench leaderboard' }}</a>
+{%- elsif site.leaderboard_preview_enabled -%}
+<a href="{{ '/leaderboard-preview/' | relative_url }}?dataset={{ include.slug }}"
+  >{{ include.preview_label | default: 'Preview the FluidsBench leaderboard' }}</a
+>
+{%- else -%}
+<a href="{{ '/run/' | relative_url }}#{{ include.slug }}">Submission guide</a>
+{%- endif -%}

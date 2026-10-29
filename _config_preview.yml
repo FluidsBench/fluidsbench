@@ -1,4 +1,4 @@
-# Build overrides for the unlisted dev review deployment.
+# Build overrides for an unlisted committee review; this does not deploy it.
 url: https://fluidsbench.org
 baseurl: /review-x4n7q9m2vk6p
 preview_mode: true
@@ -12,6 +12,6 @@ launch:
 # Pin the blank review feed; this preview does not publish submitted results.
 leaderboard_base_url: https://raw.githubusercontent.com/FluidsBench/fluidsbench-submission/d45eb286f1c3fa73c02832c064d675e36ffedae5/
 # Intake documentation and availability retain their matching audited source pin.
-submission_source_ref: d45eb286f1c3fa73c02832c064d675e36ffedae5
+submission_source_ref: 5ca2815e418bb55b447ad0e7b148fa76f3e02b7e
 
 launch_empty_preview: true
