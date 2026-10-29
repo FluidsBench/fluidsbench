@@ -364,7 +364,7 @@ S_overall  = sum(weight_q * S_q)</code></pre>
     <ul>
       <li><a href="https://caemldatasets.org/ahmedml/">AhmedML dataset page</a></li>
       <li><a href="https://arxiv.org/abs/2407.20801">AhmedML paper</a></li>
-      <li><a href="{{ '/' | relative_url }}?dataset=ahmedml">FluidsBench leaderboard</a></li>
+      <li>{% include dataset_leaderboard_link.html slug="ahmedml" %}</li>
     </ul>
   </section>
 </div>

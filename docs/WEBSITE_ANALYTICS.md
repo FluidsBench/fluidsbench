@@ -20,5 +20,7 @@ disabled cannot be recovered. Browser blocking can also reduce recorded visits.
 The tag is configured in `_config.yml` and rendered by
 `_includes/scripts/analytics.liquid`. It is enabled only for production builds
 with the canonical `https://fluidsbench.org` URL, and is excluded when
-`local_ux_preview` is enabled. Ordinary development builds do not load it.
+`local_ux_preview` or `preview_mode` is enabled. Ordinary development and hosted
+committee review builds do not load it. The public leaderboard preview remains
+part of the live website and is tracked.
 Google signals and advertising-personalisation signals are disabled in the tag.

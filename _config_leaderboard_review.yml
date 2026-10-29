@@ -1,4 +1,4 @@
-# Local-only preservation of the full leaderboard while the public dev site is prelaunch.
+# Local-only leaderboard review using the empty FluidsBench launch feed.
 url: http://127.0.0.1:8092
 baseurl: ""
 preview_mode: true
@@ -6,6 +6,6 @@ local_ux_preview: true
 launch:
   phase: live
   review_only: true
-leaderboard_local_base_url: https://raw.githubusercontent.com/neilashton/fluidsbench-submission/f0f5b455929f18fef5c9b41c04beba7468bb3c84/
+leaderboard_local_base_url: https://raw.githubusercontent.com/FluidsBench/fluidsbench-submission/d45eb286f1c3fa73c02832c064d675e36ffedae5/
 imagemagick:
   enabled: false

@@ -13,7 +13,7 @@ hide_header_background: true
 {% assign submission_branch = site.submission_target_branch | default: 'main' %}
 {% assign source_root = site.submission_repository_url | append: '/tree/' | append: source_ref %}
 {% comment %}Current process guidance is separate from the frozen evaluation/data revision.{% endcomment %}
-{% assign verification_ref = 'main' %}{% if site.preview_mode %}{% assign verification_ref = 'dev' %}{% endif %}
+{% assign verification_ref = 'main' %}
 {% assign verification_guide_url = site.submission_repository_url | append: '/blob/' | append: verification_ref | append: '/docs/OPTIONAL_VERIFICATION.md' %}
 {% if site.optional_verification_guide_url %}{% assign verification_guide_url = site.optional_verification_guide_url %}{% endif %}
 
