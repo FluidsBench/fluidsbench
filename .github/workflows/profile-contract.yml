@@ -1,0 +1,58 @@
+name: Profile data contract
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: fluidsbench
+      - uses: actions/checkout@v4
+        with:
+          repository: FluidsBench/fluidsbench-submission
+          ref: main
+          path: fluidsbench-submission
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python fluidsbench/bin/check_dataset_pages.py --submission-root fluidsbench-submission
+      - run: python fluidsbench/bin/check_pressure_references.py --submission-root fluidsbench-submission
+      - run: python fluidsbench/bin/export_profile_locations.py --submission-root fluidsbench-submission --check
+      - run: python fluidsbench/bin/check_profile_contract.py --submission-root fluidsbench-submission --schema-root fluidsbench-submission
+      - run: python fluidsbench/bin/prepare_submission_status.py --submission-root fluidsbench-submission --check
+      - run: ruby fluidsbench/bin/check_launch_contract.rb
+      - run: node --test fluidsbench/tests/test_display_replacements.js fluidsbench/tests/test_launch.js fluidsbench/tests/test_leaderboard_compute.js fluidsbench/tests/test_compute_chart.js fluidsbench/tests/test_leaderboard_scores.js fluidsbench/tests/test_leaderboard_verification.js fluidsbench/tests/test_profile_locations.js fluidsbench/tests/test_drivaernetplusplus_profiles.js
+      - run: node fluidsbench/bin/check_leaderboard_claim_ui.js
+      - run: python -m unittest discover -s fluidsbench/tests -p "test_*.py"
+      - name: Checkout current main leaderboard data
+        if: github.base_ref == 'main' || github.ref_name == 'main'
+        uses: actions/checkout@v4
+        with:
+          repository: FluidsBench/fluidsbench-submission
+          ref: main
+          # Validate the complete current submission source.
+          fetch-depth: 0
+          path: fluidsbench-submission-current
+      - name: Install feed validation dependencies
+        if: github.base_ref == 'main' || github.ref_name == 'main'
+        run: python -m pip install -r fluidsbench-submission-current/requirements.txt
+      - name: Validate current main submissions and generated feeds
+        if: github.base_ref == 'main' || github.ref_name == 'main'
+        run: python fluidsbench-submission-current/scripts/manage_leaderboard.py check
+      - name: Check website scores against current main results
+        if: github.base_ref == 'main' || github.ref_name == 'main'
+        env:
+          FLUIDSBENCH_SUBMISSION_ROOT: ${{ github.workspace }}/fluidsbench-submission-current
+        run: |
+          node --test fluidsbench/tests/test_leaderboard_scores.js fluidsbench/tests/test_airfrans_profiles.js fluidsbench/tests/test_drivaernetplusplus_profiles.js
+          python fluidsbench/bin/check_dataset_pages.py --submission-root fluidsbench-submission-current
+          python fluidsbench/bin/check_pressure_references.py --submission-root fluidsbench-submission-current
+          python fluidsbench/bin/prepare_submission_status.py --submission-root fluidsbench-submission-current --check-contracts

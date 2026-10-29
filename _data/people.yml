@@ -1,0 +1,128 @@
+organisers:
+  - name: Neil Ashton
+    affiliation: Mistral
+    initials: NA
+    image: /assets/img/people/nashton-small.jpeg
+    crop: upper
+    profile: https://neilashton.co.uk
+  - name: Paola Cinnella
+    affiliation: Sorbonne University
+    initials: PC
+    image: /assets/img/people/paola-cinnella.jpg
+    profile: https://www.sorbonne-universite.fr/portraits/paola-cinnella
+  - name: Astrid Walle
+    affiliation: Pasteur Labs
+    initials: AW
+    image: /assets/img/people/astrid.jpeg
+    crop: astrid
+    profile: https://www.pasteurlabs.ai/
+  - name: Mohamed Elrefaie
+    affiliation: MIT
+    initials: ME
+    image: /assets/img/people/mohamed-elrefaie.jpg
+    profile: https://cse.mit.edu/people/mohamed-elrefaie/
+  - name: Jean Kossaifi
+    affiliation: NVIDIA
+    initials: JK
+    image: /assets/img/people/jean-kossaifi.jpg
+    crop: upper
+    profile: https://research.nvidia.com/person/jean-kossaifi
+  - name: Ricardo Vinuesa
+    affiliation: University of Michigan
+    initials: RV
+    image: /assets/img/people/ricardo-vinuesa.png
+    crop: upper
+    profile: https://aero.engin.umich.edu/people/ricardo-vinuesa/
+  - name: Daniel Leibovici
+    affiliation: NVIDIA
+    initials: DL
+    image: /assets/img/people/daniel-leibovici.jpg
+    profile: https://research.nvidia.com/labs/lpr/author/daniel-leibovici/
+  - name: Faez Ahmed
+    affiliation: MIT
+    initials: FA
+    image: /assets/img/people/faez-ahmed.jpg
+    crop: faez
+    profile: https://sqi.mit.edu/about/people/faez-ahmed
+  - name: Emanuele Tamburini
+    affiliation: Sorbonne University
+    initials: ET
+    image: /assets/img/people/emanuele-tamburini.jpg
+    profile: https://www.linkedin.com/in/emanuele-tamburini/
+    email: emanuele.tamburini@sorbonne-universite.fr
+  - name: Tyler Buchanan
+    affiliation: TU Delft
+    initials: TB
+    image: /assets/img/people/tyler-buchanan.jpg
+    profile: https://www.tudelft.nl/staff/t.s.b.buchanan/
+
+advisory_board:
+  - name: Siddhartha Mishra
+    affiliation: ETH Zurich
+    initials: SM
+  - name: Nils Thuerey
+    affiliation: Technical University of Munich
+    initials: NT
+  - name: Nathan Kutz
+    affiliation: Autodesk
+    initials: NK
+  - name: Michalis Michaelides
+    affiliation: PhysicsX
+    initials: MM
+  - name: Oriol Lehmkuhl
+    affiliation: Barcelona Supercomputing Center
+    initials: OL
+    image: /assets/img/people/oriol.jpeg
+  - name: Cristian Bodnar
+    affiliation: Project Prometheus
+    initials: CB
+  - name: Fabien Casenave
+    affiliation: Safran
+    initials: FC
+  - name: Sofiane Haddad
+    affiliation: Airbus
+    initials: SH
+  - name: Johannes Brandstetter
+    affiliation: Mistral
+    initials: JB
+  - name: Adam Clarke
+    affiliation: Boeing
+    initials: AC
+  - name: Burkhard Hupertz
+    affiliation: Ford
+    initials: BH
+  - name: Dirk Hartmann
+    affiliation: Siemens / TU Darmstadt
+    initials: DH
+  - name: Sina Hassanli
+    affiliation: Arup
+    initials: SH
+  - name: Simon Dodman
+    affiliation: Cadillac Formula 1 Team
+    initials: SD
+  - name: Daniel Morales Brotons
+    affiliation: Neural Concept
+    initials: DMB
+  - name: Danielle Maddix Robinson
+    affiliation: Siemens
+    initials: DMR
+  - name: Victor Oancea
+    affiliation: Dassault Systèmes
+    initials: VO
+  - name: Dirk Wunsch
+    affiliation: Cadence Design Systems
+    initials: DW
+  - name: Juan Alonso
+    affiliation: Luminary Cloud / Stanford University
+    initials: JA
+  - name: Richard Dwight
+    affiliation: TU Delft
+    initials: RD
+    image: /assets/img/people/richard-dwight.jpg
+    crop: upper
+    profile: https://aerodynamics.lr.tudelft.nl/~rdwight/
+  - name: Rishi Ranade
+    affiliation: NVIDIA
+    initials: RR
+    image: /assets/img/people/rishi-ranade.png
+    profile: https://developer.nvidia.com/blog/author/rranade/

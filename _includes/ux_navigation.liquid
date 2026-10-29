@@ -1,0 +1,34 @@
+<a
+  href="{{ '/datasets/' | relative_url }}"
+  {% if page.permalink contains '/datasets/' %}
+    aria-current="page"
+  {% endif %}
+  >Datasets</a
+>
+<a
+  href="{{ '/run/' | relative_url }}"
+  {% if page.permalink == '/run/' %}
+    aria-current="page"
+  {% endif %}
+  >Run benchmark</a
+>
+<a
+  href="{{ '/contributors/' | relative_url }}"
+  {% if page.permalink == '/contributors/' %}
+    aria-current="page"
+  {% endif %}
+  >Contributors</a
+>
+{% if site.community_discord_url and site.community_discord_url != '' %}
+  <a href="{{ site.community_discord_url }}" target="_blank" rel="noopener noreferrer"
+    >Community <span aria-hidden="true">↗</span><span class="sr-only"> (Discord, opens in a new tab)</span></a
+  >
+{% else %}
+  <a
+    href="{{ '/community/' | relative_url }}"
+    {% if page.permalink == '/community/' %}
+      aria-current="page"
+    {% endif %}
+    >Community</a
+  >
+{% endif %}

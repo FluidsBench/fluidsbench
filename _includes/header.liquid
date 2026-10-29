@@ -1,0 +1,46 @@
+<header class="ux-site-header">
+  <div class="ux-site-nav">
+    <a
+      class="ux-brand"
+      href="{{ '/' | relative_url }}"
+      aria-label="{% if site.launch.leaderboard_visible %}FluidsBench leaderboard{% else %}FluidsBench home{% endif %}"
+      {% if page.permalink == '/' %}
+        aria-current="page"
+      {% endif %}
+    >
+      <span class="ux-brand-mark" aria-hidden="true">≈</span>
+      <span class="ux-brand-label"
+        >FluidsBench<span class="ux-brand-caption">
+          {%- if site.launch.leaderboard_visible %}Leaderboard{% else %}First release coming soon{% endif -%}
+        </span></span
+      >
+    </a>
+    <nav class="ux-nav-links" aria-label="Main navigation">{% include ux_navigation.liquid %}</nav>
+    <div class="ux-nav-tools">
+      {% if site.local_ux_preview -%}
+        <span class="ux-local-badge">Local design preview</span>
+      {%- endif %}
+      {% if site.enable_darkmode %}
+        <button id="light-toggle" class="ux-theme-toggle" type="button" title="Change theme" aria-label="Change theme">
+          <i class="ti ti-sun-moon" id="light-toggle-system" aria-hidden="true"></i>
+          <i class="ti ti-moon-filled" id="light-toggle-dark" aria-hidden="true"></i>
+          <i class="ti ti-sun-filled" id="light-toggle-light" aria-hidden="true"></i>
+        </button>
+      {% endif %}
+      <details class="ux-mobile-menu">
+        <summary>Menu <span aria-hidden="true">⌄</span></summary>
+        <nav aria-label="Mobile navigation">
+          <a
+            href="{{ '/' | relative_url }}"
+            {% if page.permalink == '/' %}
+              aria-current="page"
+            {% endif %}
+          >
+            {%- if site.launch.leaderboard_visible %}Leaderboard{% else %}Launch overview{% endif -%}
+          </a>
+          {% include ux_navigation.liquid %}
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>

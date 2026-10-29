@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "drivaernetplusplus",
+  "case_set_id": "default",
+  "case_count": 1,
+  "case_id_status": "prototype_generated",
+  "chunks": [
+    {
+      "file": "chunk-000.json",
+      "case_ids": [
+        "drivaernetplusplus_default_test_0001"
+      ],
+      "sha256": "a030f422923888f7cf05ba480bd8cb51871918645d30b017b9ab2d81547d71bc"
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "drivaerml",
+  "case_set_id": "standard",
+  "case_count": 50,
+  "case_id_status": "official",
+  "chunks": [
+    {
+      "file": "chunk-000.json",
+      "case_ids": [
+        "run_11",
+        "run_12",
+        "run_19",
+        "run_20",
+        "run_24"
+      ],
+      "sha256": "467d1ac00c0d008e323c8642aaa928c17a5a15d3a429c960bb585dbb9d309368"
+    },
+    {
+      "file": "chunk-001.json",
+      "case_ids": [
+        "run_26",
+        "run_29",
+        "run_41",
+        "run_55",
+        "run_59"
+      ],
+      "sha256": "866a9e80d2f62bec2947f12ad462e05935a3f372f3e90a2b9659607c00692683"
+    },
+    {
+      "file": "chunk-002.json",
+      "case_ids": [
+        "run_108",
+        "run_124",
+        "run_127",
+        "run_133",
+        "run_142"
+      ],
+      "sha256": "ebee4f74ef8fb51ca077a46ab678271bbadae4babdb0eaa4b3deab262e3ae949"
+    },
+    {
+      "file": "chunk-003.json",
+      "case_ids": [
+        "run_158",
+        "run_173",
+        "run_180",
+        "run_187",
+        "run_188"
+      ],
+      "sha256": "738692593182eb5212f62a8b5a655a92feccb0db9e4087720a2aec87fedce685"
+    },
+    {
+      "file": "chunk-004.json",
+      "case_ids": [
+        "run_197",
+        "run_199",
+        "run_203",
+        "run_205",
+        "run_207"
+      ],
+      "sha256": "7bc4ce384f3b1eac21f94800ae0dfdb2e9e19167900cc01c5860c0b37fbf7a88"
+    },
+    {
+      "file": "chunk-005.json",
+      "case_ids": [
+        "run_208",
+        "run_210",
+        "run_215",
+        "run_222",
+        "run_226"
+      ],
+      "sha256": "f8f25a94a466ef1eacd8d7f36ca4fd8a1fd9cf17d43a5996a61c019bcb43d525"
+    },
+    {
+      "file": "chunk-006.json",
+      "case_ids": [
+        "run_258",
+        "run_263",
+        "run_280",
+        "run_284",
+        "run_290"
+      ],
+      "sha256": "536f17e084c327d703d2ba965f6533798667561bdba1a936be3b9ff1a6690c59"
+    },
+    {
+      "file": "chunk-007.json",
+      "case_ids": [
+        "run_322",
+        "run_337",
+        "run_350",
+        "run_354",
+        "run_363"
+      ],
+      "sha256": "59ad1ec2a33f0237259c5f324b9ecc4d9289bb1b8021f0e9651ae8bbf4506b76"
+    },
+    {
+      "file": "chunk-008.json",
+      "case_ids": [
+        "run_372",
+        "run_382",
+        "run_387",
+        "run_405",
+        "run_410"
+      ],
+      "sha256": "d244cffbaf876d81133b2f5f93ad1a725c889dc93ccfb5104d6f6acd0fe3f214"
+    },
+    {
+      "file": "chunk-009.json",
+      "case_ids": [
+        "run_424",
+        "run_428",
+        "run_429",
+        "run_436",
+        "run_472"
+      ],
+      "sha256": "26ec244f9b43e8f7d696c28609e394169a9b1db9a3b081dff9dfa150eab0a857"
+    }
+  ]
+}

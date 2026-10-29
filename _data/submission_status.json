@@ -1,0 +1,201 @@
+{
+  "source_commit": "83c9af8a49bc141ae32e1fb0aecd9b0759f4328d",
+  "manifest_sha256": "a3ff224f1efc550a72e1f54d24bdff7d488bf386c75ba7484dbcaf80ea3b882d",
+  "release": {
+    "id": "fluidsbench-2026-unreleased",
+    "status": "unreleased",
+    "asset_base_url": "https://raw.githubusercontent.com/FluidsBench/fluidsbench-submission/main/",
+    "archive_url": null
+  },
+  "datasets": {
+    "ahmedml": {
+      "open": true,
+      "dev_candidate": false,
+      "guide": "benchmark-specs/ahmedml/QUICKSTART.md",
+      "specification_sha256": "9086004b34c6c33654a8f9f4b533a30b3727ab3a578dae02c6ab1c1e0f43b21d",
+      "scoring_release_id": "ahmedml-native-support-v1",
+      "open_splits": [
+        {
+          "id": "full",
+          "label": "Full"
+        },
+        {
+          "id": "medium",
+          "label": "Medium"
+        },
+        {
+          "id": "scarce",
+          "label": "Scarce"
+        },
+        {
+          "id": "super_scarce",
+          "label": "Super scarce"
+        },
+        {
+          "id": "geometry",
+          "label": "Geometry OOD"
+        },
+        {
+          "id": "high_drag",
+          "label": "High drag OOD"
+        },
+        {
+          "id": "low_drag",
+          "label": "Low drag OOD"
+        },
+        {
+          "id": "image_wake",
+          "label": "Image wake OOD"
+        }
+      ]
+    },
+    "drivaerml": {
+      "open": true,
+      "dev_candidate": false,
+      "guide": "benchmark-specs/drivaerml/QUICKSTART.md",
+      "specification_sha256": "e078ebf3e1444c30390c374765098018151224c3617a101716f3c2f09a802008",
+      "scoring_release_id": "drivaerml-native-support-v3",
+      "open_splits": [
+        {
+          "id": "full",
+          "label": "Full"
+        },
+        {
+          "id": "medium",
+          "label": "Medium"
+        },
+        {
+          "id": "scarce",
+          "label": "Scarce"
+        },
+        {
+          "id": "super_scarce",
+          "label": "Super scarce"
+        },
+        {
+          "id": "geometry",
+          "label": "Geometry"
+        },
+        {
+          "id": "high_drag",
+          "label": "High drag"
+        },
+        {
+          "id": "low_drag",
+          "label": "Low drag"
+        },
+        {
+          "id": "rear_separation",
+          "label": "Rear separation"
+        }
+      ]
+    },
+    "drivaernetplusplus": {
+      "open": true,
+      "dev_candidate": false,
+      "guide": "benchmark-specs/drivaernetplusplus/QUICKSTART.md",
+      "specification_sha256": "cf0c641061c98670acbb092982f1132847395f8101024de9c47360853de2447a",
+      "scoring_release_id": "drivaernetplusplus-native-pressure-support-v1",
+      "open_splits": [
+        {
+          "id": "official_test",
+          "label": "Official test"
+        }
+      ]
+    },
+    "windsorml": {
+      "open": true,
+      "dev_candidate": false,
+      "guide": "benchmark-specs/windsorml/QUICKSTART.md",
+      "specification_sha256": "fa986f21f88ceaaf7d96bb4a5111fcb46470285d71d81921fa74af8d64ee357d",
+      "scoring_release_id": "windsorml-native-support-v1",
+      "open_splits": [
+        {
+          "id": "full",
+          "label": "Full"
+        },
+        {
+          "id": "medium",
+          "label": "Medium"
+        },
+        {
+          "id": "scarce",
+          "label": "Scarce"
+        },
+        {
+          "id": "super_scarce",
+          "label": "Super scarce"
+        },
+        {
+          "id": "geometry",
+          "label": "Geometry OOD"
+        },
+        {
+          "id": "high_drag",
+          "label": "High drag"
+        },
+        {
+          "id": "low_drag",
+          "label": "Low drag"
+        },
+        {
+          "id": "image_wake",
+          "label": "Image wake"
+        }
+      ]
+    },
+    "hiliftaeroml": {
+      "open": false,
+      "dev_candidate": false,
+      "guide": null,
+      "specification_sha256": "864c80b632c9b6c4ba21ffa92b0da64b09a30987a5b6eb1e8f75ea72768bbfee",
+      "scoring_release_id": null,
+      "open_splits": []
+    },
+    "airfrans": {
+      "open": true,
+      "dev_candidate": false,
+      "guide": "benchmark-specs/airfrans/QUICKSTART.md",
+      "specification_sha256": "a823213825c549bd08ba664a1440bf4093cec222e1bb6a356feac047ea2e00bf",
+      "scoring_release_id": "airfrans-native-support-v1",
+      "open_splits": [
+        {
+          "id": "full",
+          "label": "Full"
+        },
+        {
+          "id": "scarce",
+          "label": "Scarce"
+        },
+        {
+          "id": "aoa_extrapolation",
+          "label": "AoA extrapolation"
+        }
+      ]
+    },
+    "blendednet": {
+      "open": false,
+      "dev_candidate": false,
+      "guide": null,
+      "specification_sha256": "7fdbc1f205e290687d4a2fbef8620293ec3a29e7900196be642bd60fb6684545",
+      "scoring_release_id": null,
+      "open_splits": []
+    },
+    "rotor37": {
+      "open": false,
+      "dev_candidate": false,
+      "guide": null,
+      "specification_sha256": "edb83b0bfd53a227ed0af73704dd5ec48f4b74f89750d069fa8adb30d4f606c6",
+      "scoring_release_id": null,
+      "open_splits": []
+    },
+    "vki-ls59": {
+      "open": false,
+      "dev_candidate": false,
+      "guide": null,
+      "specification_sha256": "7b60689a619a094152b063fb4cdf2a716a0790f288ca140737f3355bbc53ef7e",
+      "scoring_release_id": null,
+      "open_splits": []
+    }
+  }
+}

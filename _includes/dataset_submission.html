@@ -1,0 +1,82 @@
+{% assign submission_source_ref = site.submission_source_ref | default: 'main' %} {% if site.launch.dev_intake %}{% assign submission_source_ref =
+'dev' %}{% endif %} {% assign availability = site.data.submission_status.datasets[include.slug] %}
+<details class="dataset-inline-disclosure dataset-submission-disclosure">
+  <summary>
+    <span>Open-reproducibility submission</span>
+    <small>Files, validation and optional artifacts</small>
+  </summary>
+  <div class="dataset-inline-disclosure-body">
+    <p>
+      <strong
+        ><a href="{{ '/run/' | relative_url }}#{{ include.slug }}">Check this dataset's submission availability</a> before preparing a result.</strong
+      >
+      {% if site.launch.dev_intake and availability.dev_candidate %} {{ include.dataset }} results are accepted for review and preview display.
+      Contributors propose one result directory {% else %} Contributions are accepted only while its exact scoring-support release is marked
+      <code>official</code> and open. For an open dataset, contributors propose one result directory {% endif %} at
+      <code>submissions/{{ include.slug }}/&lt;submission-id&gt;/</code> in the
+      <a href="{{ site.submission_repository_url }}">FluidsBench submission repository</a>. The planned result package contains:
+    </p>
+    {% if site.launch.dev_intake and availability.guide %}
+    <p>
+      <a href="{{ site.submission_repository_url }}/blob/dev/{{ availability.guide }}">{{ include.dataset }} participant quickstart ↗</a>
+    </p>
+    {% endif %}
+    <ul>
+      <li><code>submission.json</code> for model metadata and the required scalar metrics;</li>
+      <li>
+        <code>evaluation-evidence.json</code> linking those submitter-provided metrics to the declared evaluation revision and profile-index checksum;
+      </li>
+      <li>
+        <code>discretization.json</code> describing the training input and supervision supports, inference input, direct model outputs, and mapping to
+        the official scoring support;
+      </li>
+      <li><code>discretization/cases.jsonl</code> recording case-level counts, domains, mapping, and declared scoring coverage;</li>
+      <li>
+        <code>metrics/cases.json</code> recording the official-support errors, the unweighted and physical-measure-weighted sufficient statistics
+        required by that dataset's contract, and exact coverage for every declared evaluation case;
+      </li>
+      <li><code>profiles/index.json</code> listing the lightweight profile chunks; and</li>
+      <li><code>profiles/chunk-*.json</code> containing profile coordinates and predictions for the declared test cases.</li>
+    </ul>
+    <p>
+      FluidsBench uses an <strong>open reproducibility track</strong>. The declared evaluation partition, scored case lists, and ground truth are
+      public. Evaluation cases must not be used for fitting, hyperparameter selection, or preprocessing statistics. Contributors will calculate the
+      metrics and extract the profiles from their own predictions. Each dataset specification fixes the locations, IDs, weights, targets, and coverage
+      used for final scoring. A model may infer on a different point set, mesh, or grid, but its final predictions must be mapped onto every required
+      entity in the release-bound public field files before the reference evaluator calculates the errors. Large cases may be processed in chunks, but
+      contributors must sum the sufficient statistics across all chunks before calculating a case metric; chunk-level L2 values are never averaged.
+      Leaderboard field errors are calculated on the declared evaluation/test cases, not on the training cases. Full meshes and volume fields are not
+      committed to the submission repository. Contributors may optionally publish example cases or the complete scored predictions in a public,
+      immutable external repository and link that artifact from the submission. Use the
+      <a href="{{ site.submission_repository_url }}/tree/{{ submission_source_ref }}/benchmark-specs/{{ include.slug }}"
+        >{{ include.dataset }} benchmark specification</a
+      >
+      for the exact split, metric, case, panel, station, and quantity IDs. The
+      <a href="{{ site.submission_repository_url }}/tree/{{ submission_source_ref }}/reference">reference equations and code</a>
+      define how the scalar values must be calculated, and the
+      <a href="{{ site.submission_repository_url }}/tree/{{ submission_source_ref }}/examples">worked examples</a>
+      show the JSON structure.
+    </p>
+    <p>
+      Before opening a pull request, run
+      <code
+        >python scripts/validate_submission.py {% if site.launch.dev_intake %}--dev-intake {% endif %}--contributor-stage submissions/{{ include.slug
+        }}/&lt;submission-id&gt;</code
+      >. The validator checks the schema, split identity, scoring-support binding, derived-score arithmetic, profile coverage, reported
+      discretization, array lengths, ordering, finite values, and file hashes. It checks the submitted package's internal consistency; it does not run
+      the contributor's model or recalculate base metrics from full fields.
+    </p>
+    <p>
+      A passing validator or pull request will not make a result official. Official results require maintainer approval of the validated submission
+      package. Public code, model, and environment artifacts and their documentation are optional. If supplied, they must use stable links and include
+      the revisions, digests, and licences required by the submission schema; the leaderboard reports those details. Their absence does not change
+      accuracy rank, citation eligibility, or promotion eligibility. Prediction sharing is also optional. When prediction artifacts are shared, the
+      leaderboard separately reports their coverage, artifact-check status, and whether any metrics were recomputed; it does not collapse those
+      distinct checks into a generic “verified” badge. The public validation record states exactly what FluidsBench checked.
+    </p>
+    <p>
+      <strong>Prototype notice:</strong> any case IDs, ground truth, profile values, or leaderboard rows labelled prototype are illustrative dummy
+      data. Those materials must be replaced and finalized before the dataset opens; a prototype row is never an official result.
+    </p>
+  </div>
+</details>

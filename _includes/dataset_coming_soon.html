@@ -1,0 +1,10 @@
+{% assign dataset = site.data.dataset_catalog[include.slug] %}
+<div class="dataset-page">
+  <div class="ux-dataset-topline"><a href="{{ '/datasets/' | relative_url }}">← All datasets</a></div>
+  <section class="dataset-coming-soon dataset-coming-soon-page" data-dataset-id="{{ include.slug }}" data-dataset-status="coming-soon">
+    <span class="dataset-coming-soon-badge">Coming soon</span>
+    <p>{{ dataset.summary }}</p>
+    <p>The {{ dataset.name }} benchmark is in preparation. Its dataset guide and leaderboard will be available here when ready.</p>
+    <img src="{{ dataset.source.image.path | relative_url }}" alt="{{ dataset.source.image.alt }}" width="1200" height="675">
+  </section>
+</div>

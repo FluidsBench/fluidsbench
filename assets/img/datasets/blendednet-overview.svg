@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">Illustrative blended-wing-body aircraft and surface field</title>
+  <desc id="desc">A top-view blended-wing-body silhouette with streamlines and coloured surface-field contours.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071f3d"/>
+      <stop offset="1" stop-color="#123968"/>
+    </linearGradient>
+    <radialGradient id="field" cx="50%" cy="42%" r="62%">
+      <stop offset="0" stop-color="#f8e66c"/>
+      <stop offset="0.35" stop-color="#35c6c8"/>
+      <stop offset="0.72" stop-color="#3075bd"/>
+      <stop offset="1" stop-color="#243c88"/>
+    </radialGradient>
+    <clipPath id="aircraft-clip">
+      <path d="M600 104 C566 146 536 184 500 213 L166 392 C138 408 145 448 177 455 L490 485 C533 489 557 514 573 554 L600 598 L627 554 C643 514 667 489 710 485 L1023 455 C1055 448 1062 408 1034 392 L700 213 C664 184 634 146 600 104 Z"/>
+    </clipPath>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="14" flood-color="#020c17" flood-opacity="0.45"/>
+    </filter>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#9fdcff"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="620" rx="28" fill="url(#background)"/>
+  <g fill="none" stroke="#9fdcff" stroke-linecap="round" opacity="0.52" marker-end="url(#arrow)">
+    <path d="M35 106 C248 55 416 76 535 135"/>
+    <path d="M28 187 C244 139 400 151 506 204"/>
+    <path d="M25 274 C207 246 366 249 470 280"/>
+    <path d="M1175 106 C962 55 794 76 675 135"/>
+    <path d="M1172 187 C956 139 800 151 694 204"/>
+    <path d="M1175 274 C993 246 834 249 730 280"/>
+  </g>
+  <g filter="url(#shadow)">
+    <path d="M600 104 C566 146 536 184 500 213 L166 392 C138 408 145 448 177 455 L490 485 C533 489 557 514 573 554 L600 598 L627 554 C643 514 667 489 710 485 L1023 455 C1055 448 1062 408 1034 392 L700 213 C664 184 634 146 600 104 Z" fill="url(#field)" stroke="#d9f3ff" stroke-width="5"/>
+    <g clip-path="url(#aircraft-clip)" fill="none" stroke="#e8fbff" stroke-opacity="0.36" stroke-width="3">
+      <ellipse cx="600" cy="318" rx="385" ry="105"/>
+      <ellipse cx="600" cy="335" rx="315" ry="82"/>
+      <ellipse cx="600" cy="352" rx="237" ry="59"/>
+      <path d="M210 437 Q600 292 990 437"/>
+      <path d="M300 465 Q600 337 900 465"/>
+      <path d="M600 94 V604"/>
+    </g>
+  </g>
+  <g font-family="Inter, Arial, sans-serif" fill="#e8f7ff">
+    <text x="54" y="52" font-size="24" font-weight="700">Blended-wing-body configuration</text>
+    <text x="54" y="82" font-size="17" fill="#b8d7ea">Illustrative surface-field view — not to scale</text>
+  </g>
+</svg>

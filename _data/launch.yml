@@ -1,0 +1,9 @@
+# Announced -> collecting -> reviewing -> live. Publication is always an explicit build.
+phase: collecting
+dates_confirmed: true
+opens_at: "2026-10-06T15:00:00Z"
+# End of 5 December Anywhere on Earth (6 December 11:59:59 UTC).
+cutoff_at: "2026-12-05T23:59:59-12:00"
+reveal_at: "2026-12-05T23:59:59-12:00"
+# Set only after an official immutable release has passed the release checks.
+release_id: ""

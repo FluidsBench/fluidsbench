@@ -1,0 +1,16 @@
+**/*.min.css
+**/*.min.js
+assets/css/main.scss
+assets/plotly/demo.html
+lighthouse_results/**
+_posts/2015-10-20-math.md
+assets/data/profile-ground-truth/**
+
+# Preserve the byte-for-byte pinned dataset definition.
+assets/data/profile-locations/*.json
+
+# Lossless, checksum-bound native AirfRANS browser artifacts.
+assets/data/airfrans-native-profiles/**
+
+# Checksum-bound native DrivAerNet++ browser artifacts.
+assets/data/drivaernetplusplus-native-profiles/**

@@ -1,0 +1,264 @@
+{
+  "schema": "fluidsbench-profile-location-guide-v1",
+  "dataset_id": "hiliftaeroml",
+  "source_repository": "FluidsBench/fluidsbench-submission",
+  "source_ref": "83c9af8a49bc141ae32e1fb0aecd9b0759f4328d",
+  "source": {
+    "file": "leaderboard/manifest.json",
+    "sha256": "a3ff224f1efc550a72e1f54d24bdff7d488bf386c75ba7484dbcaf80ea3b882d"
+  },
+  "panels": [
+    {
+      "id": "pressure_profiles",
+      "title": "Pressure-coefficient profiles",
+      "description": "Reference and submitted pressure-coefficient traces at the selected station.",
+      "data_key": "cp_cuts",
+      "x_keys": [
+        "x",
+        "x_over_c",
+        "x_over_l"
+      ],
+      "quantities": [
+        {
+          "id": "cp",
+          "label": "Cp",
+          "y_label": "Pressure coefficient, Cp",
+          "y_keys": [
+            "cp"
+          ],
+          "unit": ""
+        }
+      ],
+      "stations": [
+        {
+          "id": "pressure_belt_a",
+          "label": "HLPW-5 pressure row A",
+          "x_label": "x (full-scale in) along HLPW-5 row A",
+          "dog_leg_x_in": 1126.61,
+          "elements": [
+            "slat",
+            "main_wing",
+            "flap"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row A. It is one of the four belts plotted in Figure 15 of the HiLiftAeroML paper.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "pressure_belt_b",
+          "label": "HLPW-5 pressure row B",
+          "x_label": "x (full-scale in) along HLPW-5 row B",
+          "dog_leg_x_in": 1199.86,
+          "elements": [
+            "slat",
+            "main_wing",
+            "flap"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row B.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "pressure_belt_c",
+          "label": "HLPW-5 pressure row C",
+          "x_label": "x (full-scale in) along HLPW-5 row C",
+          "dog_leg_x_in": 1266.16,
+          "elements": [
+            "main_wing",
+            "flap"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row C. Row C has no deployed-slat cut in HLPW-5 Case 2.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "pressure_belt_d",
+          "label": "HLPW-5 pressure row D",
+          "x_label": "x (full-scale in) along HLPW-5 row D",
+          "dog_leg_x_in": 1332.41,
+          "elements": [
+            "slat",
+            "main_wing",
+            "flap"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row D. It is one of the four belts plotted in Figure 15 of the HiLiftAeroML paper.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "pressure_belt_e",
+          "label": "HLPW-5 pressure row E",
+          "x_label": "x (full-scale in) along HLPW-5 row E",
+          "dog_leg_x_in": 1402.17,
+          "elements": [
+            "slat",
+            "main_wing",
+            "flap"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row E.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "pressure_belt_f",
+          "label": "HLPW-5 pressure row F",
+          "x_label": "x (full-scale in) along HLPW-5 row F",
+          "dog_leg_x_in": 1478.9,
+          "elements": [
+            "slat",
+            "main_wing",
+            "flap"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row F.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "pressure_belt_g",
+          "label": "HLPW-5 pressure row G",
+          "x_label": "x (full-scale in) along HLPW-5 row G",
+          "dog_leg_x_in": 1555.64,
+          "elements": [
+            "slat",
+            "main_wing",
+            "flap"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row G. It is one of the four belts plotted in Figure 15 of the HiLiftAeroML paper.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "pressure_belt_h",
+          "label": "HLPW-5 pressure row H",
+          "x_label": "x (full-scale in) along HLPW-5 row H",
+          "dog_leg_x_in": 1621.91,
+          "elements": [
+            "slat",
+            "main_wing"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row H.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "pressure_belt_i",
+          "label": "HLPW-5 pressure row I",
+          "x_label": "x (full-scale in) along HLPW-5 row I",
+          "dog_leg_x_in": 1709.11,
+          "elements": [
+            "slat",
+            "main_wing"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row I. It is one of the four belts plotted in Figure 15 of the HiLiftAeroML paper.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "pressure_belt_j",
+          "label": "HLPW-5 pressure row J",
+          "x_label": "x (full-scale in) along HLPW-5 row J",
+          "dog_leg_x_in": 1778.87,
+          "elements": [
+            "slat",
+            "main_wing"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row J.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        }
+      ],
+      "required": true,
+      "required_series_fields": [
+        "case_id",
+        "station_id"
+      ],
+      "reverse_y": true
+    },
+    {
+      "id": "velocity_profiles",
+      "title": "Velocity profiles",
+      "description": "Reference and submitted normalized velocity traces at the selected station.",
+      "data_key": "velocity_profiles",
+      "x_keys": [
+        "x",
+        "offset",
+        "distance"
+      ],
+      "quantities": [
+        {
+          "id": "velocity_ratio",
+          "label": "Velocity",
+          "y_label": "Normalized velocity",
+          "y_keys": [
+            "u_over_u_inf",
+            "velocity_ratio"
+          ],
+          "unit": ""
+        }
+      ],
+      "stations": [
+        {
+          "id": "hlpw5_b_2",
+          "label": "HLPW-5 B.2",
+          "x_label": "z - z_surface (in)",
+          "x_in": 1203.7442,
+          "y_in": 374.8077,
+          "surface_z_in": 208.4231,
+          "description": "HLPW-5 velocity-profile station B.2 at the published full-scale x/y location.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "hlpw5_b_3",
+          "label": "HLPW-5 B.3",
+          "x_label": "z - z_surface (in)",
+          "x_in": 1398.1731,
+          "y_in": 360.8769,
+          "surface_z_in": 205.5577,
+          "description": "HLPW-5 velocity-profile station B.3 at the published full-scale x/y location.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "hlpw5_c_1",
+          "label": "HLPW-5 C.1",
+          "x_label": "z - z_surface (in)",
+          "x_in": 1699.5212,
+          "y_in": 964.3962,
+          "surface_z_in": 258.4827,
+          "description": "HLPW-5 velocity-profile station C.1 at the published full-scale x/y location.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "hlpw5_c_2",
+          "label": "HLPW-5 C.2",
+          "x_label": "z - z_surface (in)",
+          "x_in": 1730.9519,
+          "y_in": 956.0558,
+          "surface_z_in": 258.5019,
+          "description": "HLPW-5 velocity-profile station C.2 at the published full-scale x/y location.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "hlpw5_c_3",
+          "label": "HLPW-5 C.3",
+          "x_label": "z - z_surface (in)",
+          "x_in": 1762.35,
+          "y_in": 949.1462,
+          "surface_z_in": 255.5058,
+          "description": "HLPW-5 velocity-profile station C.3 at the published full-scale x/y location.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        }
+      ],
+      "required": true,
+      "allow_unlisted_stations": false,
+      "required_series_fields": [
+        "case_id",
+        "station_id"
+      ]
+    }
+  ]
+}

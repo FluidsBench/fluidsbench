@@ -1,0 +1,59 @@
+{
+  "schema": "fluidsbench-hiliftaeroml-compact-profile-truth-provenance-v1",
+  "schema_version": "1.0",
+  "release_id": "hiliftaeroml-compact-profile-truth-all1355-v1",
+  "generated_at": "2026-09-06T22:58:11Z",
+  "generator": {
+    "file": "bin/export_hiliftaeroml_compact_profile_truth.py",
+    "sha256": "55cd569e29573498d788ca6029e59577d022fe60b3272b387af8121c9d97d65d"
+  },
+  "source_repository": "https://github.com/neilashton/fluidsbench-submission",
+  "source_revision": "84a17ffbc296a1ae6a47b738282d5badba3df9e8",
+  "source_implementation": {
+    "compact_profile_evaluator": {
+      "file": "reference/hiliftaeroml/compact_profile_evaluator.py",
+      "sha256": "705ba1c6d2866b502ff1760e6a2ad538bca4439659bff9bc4b93ac5c30a0659d"
+    },
+    "compact_profiles": {
+      "file": "reference/hiliftaeroml/compact_profiles.py",
+      "sha256": "8dc93c742d307b9e6f5f478bcf63e2f02fd4bc24de566e1229f71570fb62f48a"
+    },
+    "native_profile_truth": {
+      "file": "reference/hiliftaeroml/native_profile_truth.py",
+      "sha256": "f847e85d1574a90ccb39b6bb4f5fb54b4281f8b0866a5f90b74c8062a2c53928"
+    },
+    "native_profile_truth_materializer": {
+      "file": "reference/hiliftaeroml/native_profile_truth_materializer.py",
+      "sha256": "4034ac7c615dd8c17536dbc70021ecf68ca155e6ba229006c8fb774fd8071e5d"
+    }
+  },
+  "source_native_truth": {
+    "release_id": "hiliftaeroml-native-profile-truth-v1-candidate",
+    "manifest_sha256": "3e20b857e12055e16f1d248d125b8df62a3669c604411dc67322fe98d9ab4477",
+    "master_index_sha256": "b89979fa04dbb60e217171254ecf22ff1d89c655d25af6e758f31d88aca76b1b",
+    "case_count": 1355,
+    "case_set_count": 8
+  },
+  "source_prerequisite_authority": {
+    "sha256": "991988cba62214ee85e7066f53a8bc82f639baa76b92f07b4e375e0364986ea4",
+    "prediction_bearing_evaluator_outputs_used_as_source": false
+  },
+  "transformation": {
+    "scope": "plot_only_projection",
+    "cp": "apply the exact compact-v2 128-point physical-graph rule; preserve every resulting row and branch boundary; select streamwise x; cast coordinate and truth to float32",
+    "velocity": "preserve shared station coordinates and validity mask; cast valid truth speed values to float32",
+    "case_deduplication": "one artifact per unique physical case; case-set indexes and chunks reference the shared artifact",
+    "omitted": [
+      "quadrature_weights",
+      "native_mapping_arrays",
+      "nonplot_topology_codes",
+      "full_field_truth",
+      "native_lossless_profile_archive"
+    ],
+    "metric_recomputation_permitted": false
+  },
+  "observed_rounding_error": {
+    "maximum_absolute_cp": 4.7683405490772657e-07,
+    "maximum_absolute_velocity_speed_over_u_inf": 5.960463833609708e-08
+  }
+}

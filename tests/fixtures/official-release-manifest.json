@@ -1,0 +1,27 @@
+{
+  "all_file": "leaderboard/all.json",
+  "data_release": {
+    "id": "fluidsbench-2026-07",
+    "status": "official",
+    "source_repository": "https://github.com/neilashton/fluidsbench-submission",
+    "source_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "release_view_url": "https://fluidsbench.org/releases/fluidsbench-2026-07/",
+    "asset_base_url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/fluidsbench-2026-07/",
+    "feed_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "claims": {
+      "index_file": "leaderboard/claims/index.json",
+      "index_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "revision_history": {
+      "schema_version": "1.0",
+      "file": "leaderboard/revisions.json",
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "record_count": 3,
+      "series_count": 2
+    },
+    "profile_ground_truth": {
+      "manifest_url": "https://fluidsbench.org/releases/profile-ground-truth-2026-07/manifest.json",
+      "manifest_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    }
+  }
+}

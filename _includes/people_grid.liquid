@@ -1,0 +1,68 @@
+{% if include.variant == 'advisory' %}
+  <section class="advisory-section" aria-labelledby="{{ include.id }}">
+    <h2 id="{{ include.id }}">{{ include.heading }}</h2>
+    <p class="about-section-intro">The advisory board helps keep the benchmark scientifically useful and relevant across academia and industry.</p>
+    <div class="advisory-grid">
+      {% for person in include.people %}
+        <article class="advisory-person">
+          <h3>{{ person.name }}</h3>
+          <p>{{ person.affiliation }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+{% else %}
+  <section class="organizer-section" aria-labelledby="{{ include.id }}">
+    <h2 id="{{ include.id }}">{{ include.heading }}</h2>
+    <p class="about-section-intro">FluidsBench is developed by a committee spanning academia and industry.</p>
+    <div class="organizer-grid">
+      {% for person in include.people %}
+        <article class="organizer-card">
+          <div class="organizer-card__portrait">
+            {% if person.image %}
+              <img
+                class="organizer-card__photo{% if person.crop %} organizer-card__photo--{{ person.crop }}{% endif %}"
+                src="{{ person.image | relative_url }}"
+                alt="{{ person.name }}"
+                width="224"
+                height="224"
+                loading="lazy"
+                decoding="async"
+              >
+            {% else %}
+              <span class="organizer-card__initials" aria-hidden="true">{{ person.initials }}</span>
+            {% endif %}
+          </div>
+          <div class="organizer-card__info">
+            <h3>{{ person.name }}</h3>
+            <p class="organizer-card__affiliation">{{ person.affiliation }}</p>
+            {% if person.profile or person.email %}
+              <div class="organizer-card__links" role="group" aria-label="{{ person.name }} links">
+                {% if person.profile %}
+                  <a
+                    href="{{ person.profile }}"
+                    title="View {{ person.name }}'s profile"
+                    aria-label="View {{ person.name }}'s profile"
+                    rel="external noopener"
+                    target="_blank"
+                  >
+                    {% if person.profile_kind == 'orcid' %}
+                      <i class="fa-brands fa-orcid" aria-hidden="true"></i>
+                    {% else %}
+                      <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                    {% endif %}
+                  </a>
+                {% endif %}
+                {% if person.email %}
+                  <a href="mailto:{{ person.email }}" title="Email {{ person.name }}" aria-label="Email {{ person.name }}">
+                    <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                  </a>
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}

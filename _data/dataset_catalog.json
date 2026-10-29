@@ -1,0 +1,928 @@
+{
+  "ahmedml": {
+    "name": "AhmedML",
+    "category": "Automotive external aerodynamics",
+    "summary": "High-fidelity, time-averaged data from transient hybrid RANS–LES simulations of 500 parametrically varied Ahmed bodies, with native three-dimensional boundary and volume fields, geometry, force coefficients, slices, images, and deterministic data-efficiency and out-of-distribution splits.",
+    "source": {
+      "provider": "huggingface",
+      "repository_id": "neashton/ahmedml",
+      "url": "https://huggingface.co/datasets/neashton/ahmedml",
+      "revision": "02688c727cdb8dc8678e28abc6bbbb7e93c5fa15",
+      "revision_short": "02688c7",
+      "revision_url": "https://huggingface.co/datasets/neashton/ahmedml/tree/02688c727cdb8dc8678e28abc6bbbb7e93c5fa15",
+      "checked_on": "2026-08-22",
+      "release": "Hugging Face revision 02688c7",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "availability": "500 field-bearing cases; approximately 3.08 TB for the complete pinned repository",
+      "contents": "STL geometry, native boundary VTP and volume VTU fields, force and geometry tables, CFD slices and images, eight split families, and one native polygon-area sidecar per boundary mesh.",
+      "image": {
+        "path": "/assets/img/datasets/ahmedml-flow.png",
+        "alt": "Mean streamwise-velocity slice through an AhmedML body and its wake.",
+        "caption": "Mean streamwise-velocity slice from AhmedML run 1.",
+        "credit": "AhmedML source dataset",
+        "source_url": "https://huggingface.co/datasets/neashton/ahmedml/blob/02688c727cdb8dc8678e28abc6bbbb7e93c5fa15/run_1/images/UxMean/run_1-slice-UMean-0-X-16.png"
+      }
+    },
+    "design_space": {
+      "archetype_count": "1 parent shape",
+      "archetypes": [
+        {
+          "name": "Ahmed body",
+          "description": "A single simplified automotive bluff-body family; every case is a continuous variant of this parent geometry."
+        }
+      ],
+      "parameter_count": "6 continuous geometry parameters",
+      "parameter_summary": "The source varies the rear treatment and the main body dimensions while retaining the recognizable Ahmed-body topology.",
+      "parameters": [
+        {
+          "name": "Rear-window angle",
+          "range": "10°–60°"
+        },
+        {
+          "name": "Tilted-surface length",
+          "range": "150–250 mm"
+        },
+        {
+          "name": "Body length",
+          "range": "800–1,200 mm"
+        },
+        {
+          "name": "Body height",
+          "range": "250–315 mm"
+        },
+        {
+          "name": "Body width",
+          "range": "300–500 mm"
+        },
+        {
+          "name": "Front-body radius",
+          "range": "80–120 mm"
+        }
+      ],
+      "operating_conditions": "The operating setup is fixed across the dataset, so the intended breadth comes from geometry rather than a boundary-condition sweep.",
+      "sampling": "Latin hypercube sampling fills the six-dimensional parameter box with 500 geometry cases.",
+      "coverage": "The eight published source splits separate the random full-data task, nested data-efficiency tasks, and held-out geometry, force, and wake regimes. All eight benchmark bindings now use the exact pinned public case IDs; the four nested data-efficiency splits share the same 50-case test set.",
+      "source_url": "https://arxiv.org/abs/2407.20801",
+      "source_label": "AhmedML paper and design-space table"
+    },
+    "benchmark": {
+      "status": "official",
+      "status_label": "Open for submissions",
+      "submissions_open": true,
+      "source_pin": "neashton/ahmedml @ 02688c727cdb8dc8678e28abc6bbbb7e93c5fa15",
+      "summary": "The benchmark scores complete native boundary pMean and wallShearStressMean, complete native-volume UMean and pMean, reconstructed force coefficients, three 128-point surface Cp cuts, four 128-point wake-velocity profiles, and report-only near-body/wake/farfield diagnostics. All eight prescribed splits are open for submissions using the published support and resumable evaluator.",
+      "split_ids": [
+        "full",
+        "medium",
+        "scarce",
+        "super_scarce",
+        "geometry",
+        "high_drag",
+        "low_drag",
+        "image_wake"
+      ],
+      "case_id_status": "official",
+      "contract_digest": "c51243ac9395fa7a5e83e729f059c292fca98f019fbf964f71ce17ac71642120"
+    },
+    "visual": {
+      "inputs": "Ahmed geometry + flow conditions",
+      "support": "Native surface polygons and volume cells",
+      "metrics": "Area-weighted surface errors; equal-cell volume errors; forces and profiles"
+    }
+  },
+  "drivaerml": {
+    "name": "DrivAerML",
+    "category": "Automotive external aerodynamics",
+    "summary": "High-fidelity, time-averaged data from scale-resolving simulations of 500 designed DrivAer notchback variants. The public release currently provides 484 complete CFD cases, native surface and volume fields, geometry, forces, diagnostic images, and eight official split families.",
+    "source": {
+      "provider": "huggingface",
+      "repository_id": "neashton/drivaerml",
+      "url": "https://huggingface.co/datasets/neashton/drivaerml",
+      "revision": "7a5c0948ce27be709b1116a3a190f806e7a8f79f",
+      "revision_short": "7a5c094",
+      "revision_url": "https://huggingface.co/datasets/neashton/drivaerml/tree/7a5c0948ce27be709b1116a3a190f806e7a8f79f",
+      "checked_on": "2026-08-22",
+      "release": "Hugging Face revision 7a5c094",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "availability": "484 complete public cases from 500 designs; approximately 31 TB",
+      "contents": "STL geometry, native boundary VTP fields, multipart native volume VTUs, constant- and variable-reference force tables, slices, images, eight official splits, and one native polygon-area sidecar per public boundary mesh.",
+      "image": {
+        "path": "/assets/img/datasets/drivaerml-flow.png",
+        "alt": "DrivAerML car with a coloured Q-criterion wake showing streamwise velocity.",
+        "caption": "Q-criterion wake coloured by streamwise velocity for DrivAerML run 1.",
+        "credit": "DrivAerML source dataset",
+        "source_url": "https://huggingface.co/datasets/neashton/drivaerml/blob/7a5c0948ce27be709b1116a3a190f806e7a8f79f/run_1/images/fig_run1_SRS_iso-QNorm100_ySide_Ux.png"
+      }
+    },
+    "design_space": {
+      "archetype_count": "1 parent configuration",
+      "archetypes": [
+        {
+          "name": "Ford OCDA DrivAer notchback",
+          "description": "The AutoCFD reference configuration with static wheels, sealed cooling inlets, and a detailed underbody."
+        }
+      ],
+      "parameter_count": "16 continuous morphing parameters",
+      "parameter_summary": "ANSA morphing boxes introduce deliberately subtle, industry-like changes around one notchback parent while preserving component topology.",
+      "parameters": [
+        {
+          "name": "Vehicle length",
+          "range": "−150 to +200 mm"
+        },
+        {
+          "name": "Vehicle width",
+          "range": "−100 to +100 mm"
+        },
+        {
+          "name": "Vehicle height",
+          "range": "−100 to +100 mm"
+        },
+        {
+          "name": "Front overhang",
+          "range": "−150 to +100 mm"
+        },
+        {
+          "name": "Front plan-view",
+          "range": "−75 to +75 mm"
+        },
+        {
+          "name": "Hood angle morph",
+          "range": "−50 to +50 mm"
+        },
+        {
+          "name": "Approach angle morph",
+          "range": "−40 to +30 mm"
+        },
+        {
+          "name": "Windscreen-angle morph",
+          "range": "−150 to +150 mm"
+        },
+        {
+          "name": "Greenhouse tapering",
+          "range": "−100 to +100 mm"
+        },
+        {
+          "name": "Backlight-angle morph",
+          "range": "−100 to +200 mm"
+        },
+        {
+          "name": "Decklid height",
+          "range": "−50 to +50 mm"
+        },
+        {
+          "name": "Rear-end tapering",
+          "range": "−90 to +70 mm"
+        },
+        {
+          "name": "Rear overhang",
+          "range": "−150 to +100 mm"
+        },
+        {
+          "name": "Rear diffuser-angle morph",
+          "range": "−50 to +50 mm"
+        },
+        {
+          "name": "Vehicle ride height",
+          "range": "−50 to +50 mm"
+        },
+        {
+          "name": "Vehicle pitch",
+          "range": "−1° to +1°"
+        }
+      ],
+      "operating_conditions": "All designs use the same open-road setup at 38.889 m/s and wheelbase Reynolds number 7.19 × 10⁶; Reynolds number and incoming-flow angle are not sampled.",
+      "sampling": "A modified extensible lattice sequence distributes 500 designs through the 16-dimensional morphing space; 484 complete cases are public.",
+      "coverage": "Eight official source split families cover random and nested-data tasks plus held-out geometry, force, and rear-separation regimes over the 484 public cases. All eight prescribed splits are open for submissions.",
+      "source_url": "https://arxiv.org/abs/2408.11969",
+      "source_label": "DrivAerML paper and morphing-parameter table"
+    },
+    "benchmark": {
+      "status": "official",
+      "status_label": "Open for submissions",
+      "submissions_open": true,
+      "source_pin": "7a5c0948ce27be709b1116a3a190f806e7a8f79f",
+      "summary": "The benchmark binds all 484 public cases and eight official split lists, with pMeanTrim and wallShearStressMeanTrim on native surface polygons, UMeanTrim and pMeanTrim on native volume cells, constant-reference force truth, AutoCFD5 velocity profiles, and continuous Cp cuts. All eight splits accept surface-and-volume or surface-only submissions. Fixed-location profiles use normalized trapezoidal arc-length weighting; geometry-relative diagnostics are report-only with zero scoring weight. Surface-only results retain a maximum overall score of 60.",
+      "split_ids": [
+        "full",
+        "medium",
+        "scarce",
+        "super_scarce",
+        "geometry",
+        "high_drag",
+        "low_drag",
+        "rear_separation"
+      ],
+      "case_id_status": "official",
+      "contract_digest": "a207ff98cd1b532788657b00a0c227c79e174275dc09dab3d5704cec3efb30e0"
+    },
+    "visual": {
+      "inputs": "DrivAer geometry + flow conditions",
+      "support": "All native surface polygons and native volume cells",
+      "metrics": "Area-weighted surface errors; equal-cell volume errors; field-integrated forces and AutoCFD5 profiles"
+    }
+  },
+  "drivaernetplusplus": {
+    "name": "DrivAerNet++",
+    "category": "Automotive external aerodynamics",
+    "summary": "A large multimodal automotive-aerodynamics collection with 8,150 vehicle designs spanning fastback, notchback, and estateback categories, including surface and volume CFD, meshes, coefficients, annotations, point clouds, and rendered or sketched geometry representations.",
+    "source": {
+      "provider": "github",
+      "repository_id": "Mohamedelrefaie/DrivAerNet",
+      "url": "https://github.com/Mohamedelrefaie/DrivAerNet",
+      "revision": "8b8c053053aa0f27c30f73af00be070a20205858",
+      "revision_short": "8b8c053",
+      "revision_url": "https://github.com/Mohamedelrefaie/DrivAerNet/tree/8b8c053053aa0f27c30f73af00be070a20205858",
+      "checked_on": "2026-08-22",
+      "release": "Canonical index commit 8b8c053; pressure archive Dataverse v1.0",
+      "license": "CC BY-NC 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+      "availability": "8,150 designs; approximately 39 TB across the complete multimodal collection",
+      "contents": "Volume fields, surface pressure and wall-shear data, point clouds, meshes, aerodynamic coefficients, design annotations, and visual modalities. FluidsBench currently has a pressure-only task tied to Dataverse DOI 10.7910/DVN/K7PWNJ v1.0.",
+      "image": {
+        "path": "/assets/img/datasets/drivaernetplusplus-designs.png",
+        "alt": "Side and front views of a DrivAerNet++ vehicle showing its geometric design parameters.",
+        "caption": "Representative DrivAerNet++ vehicle parameters and body views.",
+        "credit": "DrivAerNet++ project",
+        "source_url": "https://github.com/Mohamedelrefaie/DrivAerNet/blob/8b8c053053aa0f27c30f73af00be070a20205858/README.md"
+      }
+    },
+    "design_space": {
+      "archetype_count": "3 body archetypes plus component choices",
+      "archetypes": [
+        {
+          "name": "Fastback",
+          "description": "DrivAer-derived fastback rear-body category."
+        },
+        {
+          "name": "Estateback",
+          "description": "DrivAer-derived estateback rear-body category."
+        },
+        {
+          "name": "Notchback",
+          "description": "DrivAer-derived notchback rear-body category."
+        }
+      ],
+      "parameter_count": "26 documented design parameters",
+      "parameter_summary": "Twenty-three bounded or stepped shape variables are combined with underbody, rear-body, and wheel choices. The discrete choices include two underbodies and three wheel treatments in addition to the three rear-body archetypes.",
+      "parameters": [
+        {
+          "name": "Car width",
+          "range": "−60 to +150 mm"
+        },
+        {
+          "name": "Car length",
+          "range": "−60 to +130 mm"
+        },
+        {
+          "name": "Car roof height",
+          "range": "−60 to +90 mm"
+        },
+        {
+          "name": "Car greenhouse angle",
+          "range": "source morph bounds −200 to +150"
+        },
+        {
+          "name": "Diffuser angle",
+          "range": "−8° to +15°"
+        },
+        {
+          "name": "Ramp angle",
+          "range": "−8° to +15°"
+        },
+        {
+          "name": "Trunklid angle",
+          "range": "−8° to +20°"
+        },
+        {
+          "name": "Side-mirror rotation",
+          "range": "−20° to +20°"
+        },
+        {
+          "name": "Side-mirror X translation",
+          "range": "−10 to +20 mm"
+        },
+        {
+          "name": "Side-mirror Z translation",
+          "range": "−5 to +10 mm"
+        },
+        {
+          "name": "Rear-window inclination",
+          "range": "−1.8° to +2.5°"
+        },
+        {
+          "name": "Rear-window length",
+          "range": "−95 to +150 mm"
+        },
+        {
+          "name": "Windscreen inclination",
+          "range": "−1.8° to +2.5°"
+        },
+        {
+          "name": "Windscreen length",
+          "range": "−50 to +50 mm"
+        },
+        {
+          "name": "A/B/C-pillar thickness",
+          "range": "−15% to +5%"
+        },
+        {
+          "name": "Fender-arch offset",
+          "range": "−25 to +55 mm"
+        },
+        {
+          "name": "Door-handle thickness",
+          "range": "−20 to +30 mm"
+        },
+        {
+          "name": "Door-handle X position",
+          "range": "−50 to +50 mm"
+        },
+        {
+          "name": "Door-handle Z position",
+          "range": "−30 to +30 mm"
+        },
+        {
+          "name": "Trunklid curvature",
+          "range": "−0.4% to +0.8%"
+        },
+        {
+          "name": "Trunklid length",
+          "range": "−40 to +40 mm"
+        },
+        {
+          "name": "Front-bumper curvature",
+          "range": "−0.4% to +1%"
+        },
+        {
+          "name": "Front-bumper length",
+          "range": "−25 to +60 mm"
+        },
+        {
+          "name": "Underbody",
+          "range": "smooth or detailed"
+        },
+        {
+          "name": "Car rear",
+          "range": "fastback, estateback, or notchback"
+        },
+        {
+          "name": "Wheels",
+          "range": "open detailed, open smooth, or closed smooth"
+        }
+      ],
+      "operating_conditions": "The CFD condition is fixed at 30 m/s. Geometry-dependent vehicle length gives a reported Reynolds-number range of 8.366 × 10⁶ to 1.006 × 10⁷ rather than a separately sampled flow sweep.",
+      "sampling": "Optimal Latin hypercube sampling with an enhanced stochastic evolutionary algorithm populates the mixed continuous/discrete design space; the current canonical collection lists 8,150 designs.",
+      "coverage": "The FluidsBench benchmark covers all 1,154 designs in the official test split, across the source body, underbody and wheel families. Every native surface pressure point is scored.",
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2024/file/013cf29a9e68e4411d0593040a8a1eb3-Paper-Datasets_and_Benchmarks_Track.pdf",
+      "source_label": "DrivAerNet++ paper and design-parameter table"
+    },
+    "benchmark": {
+      "status": "official",
+      "status_label": "Open for submissions",
+      "submissions_open": true,
+      "source_pin": "Dataverse DOI 10.7910/DVN/K7PWNJ, version 1.0",
+      "summary": "Open for pressure-only submissions covering every native VTK PointData location of all 1,154 official test designs. Area-weighted relative L2 is primary and equal-point relative L2 is secondary. Three frozen native Cp traces are report-only. Use the prepared scoring support and resumable evaluator to generate and validate the result package.",
+      "split_ids": [
+        "official_test"
+      ],
+      "case_id_status": "official",
+      "contract_digest": "9ed441c26d1ffc325dd030346395f2f5b92f98cc20df8fb5f6bcf06971ffd78f",
+      "support": "Native surface pressure points"
+    },
+    "visual": {
+      "inputs": "Vehicle mesh + body category",
+      "support": "Native surface pressure points",
+      "metrics": "Area-weighted and equal-point pressure errors"
+    }
+  },
+  "windsorml": {
+    "name": "WindsorML",
+    "category": "Automotive external aerodynamics",
+    "summary": "High-fidelity wall-modelled LES data for 355 designed Windsor-body variants, with approximately 300 million cells per simulation and time-averaged boundary, volume, geometry, force, slice, and image products.",
+    "source": {
+      "provider": "huggingface",
+      "repository_id": "neashton/windsorml",
+      "url": "https://huggingface.co/datasets/neashton/windsorml",
+      "revision": "8a6ca32ae22c94f54df2186d1b0ccf9662a294c2",
+      "revision_short": "8a6ca32",
+      "revision_url": "https://huggingface.co/datasets/neashton/windsorml/tree/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2",
+      "checked_on": "2026-09-17",
+      "release": "Hugging Face revision 8a6ca32",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "availability": "355 aggregate cases; 350 complete per-run field folders; approximately 8 TB",
+      "contents": "STL and STEP geometry, native boundary and volume VTUs, force and geometry tables, flow images, eight split families, and native point dual-area sidecars for all 350 available boundary meshes. Runs 350–354 remain in aggregate split metadata but lack complete per-run geometry and image assets.",
+      "image": {
+        "path": "/assets/img/datasets/windsorml-flow.png",
+        "alt": "Streamwise-velocity field around a Windsor body with its downstream wake.",
+        "caption": "Streamwise-velocity slice from WindsorML run 1.",
+        "credit": "WindsorML source dataset",
+        "source_url": "https://huggingface.co/datasets/neashton/windsorml/blob/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_1/images/velocityxavg/view1_constz_scan_0005.png"
+      }
+    },
+    "design_space": {
+      "archetype_count": "1 parent configuration",
+      "archetypes": [
+        {
+          "name": "Wheel-less squareback Windsor body",
+          "description": "The AutoCFD4 squareback reference is the common parent for all parameterized variants."
+        }
+      ],
+      "parameter_count": "7 continuous geometry parameters",
+      "parameter_summary": "The parametric CAD model changes front/rear proportions, fastback transition, taper, ground clearance, and underbody angle.",
+      "parameters": [
+        {
+          "name": "Front/rear length ratio",
+          "range": "0–0.8"
+        },
+        {
+          "name": "Back/fast length ratio",
+          "range": "0.08–0.5"
+        },
+        {
+          "name": "Nose/windscreen height ratio",
+          "range": "0.3–0.7"
+        },
+        {
+          "name": "Fastback height ratio",
+          "range": "0–0.9"
+        },
+        {
+          "name": "Side taper",
+          "range": "50–100 mm"
+        },
+        {
+          "name": "Ground clearance",
+          "range": "10–200 mm"
+        },
+        {
+          "name": "Bottom taper angle",
+          "range": "1°–50°"
+        }
+      ],
+      "operating_conditions": "All cases use the AutoCFD wind-tunnel-style setup at nominal 40 m/s, Reynolds number 2.9 × 10⁶, and 2.5° yaw; flow conditions are fixed.",
+      "sampling": "A deterministic, extendable Halton sequence samples 355 points in the seven-dimensional geometry space; complete per-run fields are available for 350.",
+      "coverage": "Eight source split families are bound to the publicly available fields: four nested data-efficiency splits and four held-out regimes, covering 233 distinct test cases across five case sets.",
+      "source_url": "https://arxiv.org/abs/2407.19320",
+      "source_label": "WindsorML paper and geometry-variant table"
+    },
+    "benchmark": {
+      "status": "official",
+      "status_label": "Open for submissions",
+      "submissions_open": true,
+      "source_pin": "Hugging Face revision 8a6ca32",
+      "summary": "All eight prescribed splits are open for surface-and-volume submissions and bound to available native field files. Ground-truth profiles cover all 233 distinct test cases, with fixed and body-height-relative families. Use the published scoring support and resumable evaluator for evaluation, validation and package generation.",
+      "split_ids": [
+        "full",
+        "medium",
+        "scarce",
+        "super_scarce",
+        "geometry",
+        "high_drag",
+        "low_drag",
+        "image_wake"
+      ],
+      "case_id_status": "official_intersected_with_published",
+      "contract_digest": "c430396116344f3940ec08b8bb6bfff04ff335d05b1326546691b0e0c2701a32"
+    },
+    "visual": {
+      "inputs": "Windsor geometry + WMLES conditions",
+      "support": "Native boundary points and native volume cells",
+      "metrics": "Area-weighted surface errors; equal-cell volume errors; forces and profiles"
+    }
+  },
+  "hiliftaeroml": {
+    "name": "HiLiftAeroML",
+    "category": "High-lift aircraft aerodynamics",
+    "summary": "A 1,800-case wall-modelled LES dataset formed by 180 NASA CRM-HL geometry variants at ten angles of attack from 4° to 22°, with 300–500 million-cell solution-adapted meshes and native boundary, volume, geometry, force, and visual products.",
+    "source": {
+      "provider": "huggingface",
+      "repository_id": "nvidia/HiLiftAeroML",
+      "url": "https://huggingface.co/datasets/nvidia/HiLiftAeroML",
+      "revision": "bbec30bcfc6103309c1375c5228b3ad0a586bfaf",
+      "revision_short": "bbec30b",
+      "revision_url": "https://huggingface.co/datasets/nvidia/HiLiftAeroML/tree/bbec30bcfc6103309c1375c5228b3ad0a586bfaf",
+      "checked_on": "2026-09-18",
+      "release": "Hugging Face revision bbec30b",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "availability": "1,800 cases; approximately 66.8 TB compressed on the Hub",
+      "contents": "Compressed native boundary and volume VTUs, STL and STEP geometry, force/reference tables, surface renders and convergence plots, fourteen deterministic split families, data-quality masks, a native-point boundary dual-area sidecar for every case, and a provenance manifest for six corrected mean force/moment records.",
+      "image": {
+        "path": "/assets/img/datasets/hiliftaeroml-wss.png",
+        "alt": "Wall-shear-stress rendering on the high-lift wing, slat, flap, and landing gear of a HiLiftAeroML case.",
+        "caption": "Surface wall-shear rendering for geometry LHC001 at 4° angle of attack.",
+        "credit": "HiLiftAeroML source dataset",
+        "source_url": "https://huggingface.co/datasets/nvidia/HiLiftAeroML/blob/bbec30bcfc6103309c1375c5228b3ad0a586bfaf/geo_LHC001_AoA_4/img_wss_LHC001_AoA_4.png"
+      }
+    },
+    "design_space": {
+      "archetype_count": "1 high-lift aircraft configuration",
+      "archetypes": [
+        {
+          "name": "NASA CRM-HL",
+          "description": "One semi-span high-lift aircraft parent with independently positioned inboard and outboard slats and flaps."
+        }
+      ],
+      "parameter_count": "8 continuous high-lift-device parameters",
+      "parameter_summary": "Inboard and outboard slat and flap deflections are varied independently, together with multipliers applied to their reference gap schedules.",
+      "parameters": [
+        {
+          "name": "Inboard slat deflection",
+          "range": "10°–35°"
+        },
+        {
+          "name": "Outboard slat deflection",
+          "range": "10°–35°"
+        },
+        {
+          "name": "Inboard flap deflection",
+          "range": "10°–45°"
+        },
+        {
+          "name": "Outboard flap deflection",
+          "range": "10°–45°"
+        },
+        {
+          "name": "Inboard slat-gap multiplier",
+          "range": "0.5–1.5"
+        },
+        {
+          "name": "Outboard slat-gap multiplier",
+          "range": "0.5–1.5"
+        },
+        {
+          "name": "Inboard flap-gap multiplier",
+          "range": "0.5–1.5"
+        },
+        {
+          "name": "Outboard flap-gap multiplier",
+          "range": "0.5–1.5"
+        }
+      ],
+      "operating_conditions": "Each geometry is simulated at ten angles of attack from 4° to 22° in 2° steps, at Mach 0.2 and chord Reynolds number 1.6 × 10⁶.",
+      "sampling": "Latin hypercube sampling supplies 180 geometry variants, crossed with the ten-angle sweep for 1,800 CFD cases.",
+      "coverage": "Fourteen official split labels distinguish data efficiency, unseen geometry, single-angle tasks, angle extrapolation, high-deflection geometry, and stall behaviour. FluidsBench binds eight exact ordered evaluation case sets covering 1,355 unique cases; public submissions remain closed.",
+      "source_url": "https://arxiv.org/abs/2605.19565",
+      "source_label": "HiLiftAeroML paper and parameter-range table"
+    },
+    "benchmark": {
+      "status": "owner_review_required",
+      "status_label": "Coming soon",
+      "submissions_open": false,
+      "source_pin": "nvidia/HiLiftAeroML @ bbec30b; closed-candidate evaluator @ 68899f7",
+      "summary": "Coming soon. The candidate evaluator binds fourteen official split labels, complete native surface and retained valid volume fields, integrated loads, ten Cp rows and five velocity stations. Public submissions remain closed while final scoring support and approval are prepared. Plot-only CFD truth cannot replace the scoring-truth release.",
+      "split_ids": [
+        "full",
+        "medium",
+        "scarce",
+        "super_scarce",
+        "geometry",
+        "geometry_medium",
+        "geometry_scarce",
+        "geometry_super_scarce",
+        "single_aoa_4",
+        "single_aoa_12",
+        "single_aoa_22",
+        "aoa",
+        "deflection",
+        "stall"
+      ],
+      "case_id_status": "official",
+      "contract_digest": "a622719206c50ed1d0c25c97295a34c927b9a99620a33173c4aa4e7ddc485561"
+    },
+    "visual": {
+      "inputs": "CRM-HL geometry + angle of attack",
+      "support": "Native aircraft boundary and retained valid volume points",
+      "metrics": "Native field errors, integrated loads, ten Cp rows and five velocity stations"
+    }
+  },
+  "airfrans": {
+    "name": "AirfRANS",
+    "category": "Two-dimensional airfoil aerodynamics",
+    "summary": "A 1,000-case steady incompressible RANS dataset over NACA 4- and 5-digit airfoils, spanning Reynolds numbers from 2 to 6 million and angles of attack from −5° to 15°, with official standard, scarce-data, and extrapolation tasks.",
+    "source": {
+      "provider": "github",
+      "repository_id": "Extrality/airfrans_lib",
+      "url": "https://github.com/Extrality/airfrans_lib",
+      "revision": "d35d4035d8ba6fa98c1a6662be925c2fc777610b",
+      "revision_short": "d35d403",
+      "revision_url": "https://github.com/Extrality/airfrans_lib/tree/d35d4035d8ba6fa98c1a6662be925c2fc777610b",
+      "checked_on": "2026-08-22",
+      "release": "airfrans 0.1.5.1; library commit d35d403",
+      "license": "ODbL 1.0 data; MIT library",
+      "license_url": "https://github.com/Extrality/airfrans_lib/blob/d35d4035d8ba6fa98c1a6662be925c2fc777610b/LICENSE",
+      "availability": "1,000 simulations with downloadable preprocessed VTK and raw OpenFOAM releases",
+      "contents": "Airfoil geometry and flow-node coordinates, inlet velocity, signed distance and normals, velocity U, kinematic pressure p, turbulent kinematic viscosity nut, surface quantities, and integrated aerodynamic coefficients. nut remains available in the source but is not a current FluidsBench target.",
+      "image": {
+        "path": "/assets/img/datasets/airfrans-fields.png",
+        "alt": "AirfRANS field plots showing velocity, pressure, turbulent viscosity, signed distance, and airfoil surface quantities.",
+        "caption": "Representative AirfRANS flow-domain and airfoil-surface fields.",
+        "credit": "Official AirfRANS documentation",
+        "source_url": "https://github.com/Extrality/airfrans_lib/blob/d35d4035d8ba6fa98c1a6662be925c2fc777610b/docs/source/_figures/fields.png"
+      }
+    },
+    "design_space": {
+      "archetype_count": "2 parametric airfoil families",
+      "archetypes": [
+        {
+          "name": "NACA 4-digit",
+          "description": "Single-camber-line family parameterized by maximum camber, its chordwise position, and thickness."
+        },
+        {
+          "name": "NACA 5-digit",
+          "description": "Family parameterized by design-lift/camber terms, a standard-or-reflex choice, and thickness."
+        }
+      ],
+      "parameter_count": "3 or 4 airfoil-code parameters, depending on family",
+      "parameter_summary": "Four-digit profiles use M, P, and XX; five-digit profiles use L, P, Q, and XX. The source applies explicit sampling restrictions to avoid unusable camber locations.",
+      "parameters": [
+        {
+          "name": "NACA 4-digit M",
+          "range": "0–7"
+        },
+        {
+          "name": "NACA 4-digit P",
+          "range": "0 or 1.5–7"
+        },
+        {
+          "name": "NACA 4-digit XX",
+          "range": "5–20"
+        },
+        {
+          "name": "NACA 5-digit L",
+          "range": "0–4"
+        },
+        {
+          "name": "NACA 5-digit P",
+          "range": "3–8"
+        },
+        {
+          "name": "NACA 5-digit Q",
+          "range": "0 or 1"
+        },
+        {
+          "name": "NACA 5-digit XX",
+          "range": "5–20"
+        }
+      ],
+      "operating_conditions": "The joint design space spans Reynolds numbers from 2 × 10⁶ to 6 × 10⁶ and angles of attack from −5° to 15°.",
+      "sampling": "The source draws 1,000 joint airfoil-and-condition simulations from the stated geometry and flight-condition distributions; it is not a full Cartesian sweep of every shape.",
+      "coverage": "The four official tasks provide a full-data reference, a scarce-data regime, Reynolds-number extrapolation, and angle-of-attack extrapolation. FluidsBench binds those official evaluation lists.",
+      "source_url": "https://arxiv.org/abs/2212.07564",
+      "source_label": "AirfRANS paper and airfoil-sampling table"
+    },
+    "benchmark": {
+      "status": "official",
+      "status_label": "Open for submissions",
+      "submissions_open": true,
+      "source_pin": "d35d4035d8ba6fa98c1a6662be925c2fc777610b",
+      "summary": "Submissions are open for Full, Scarce and AoA extrapolation; Reynolds remains closed. The current scored flow fields are U and p—not nut—and the boundary task scores pressure plus wall shear derived by the fixed evaluator. Required diagnostics are Ux/U∞ and Uy/U∞ on 1,001-point extrados-normal lines at x/c = 0.25, 0.50, 0.75, and 0.95. Pressure-profile Cp is not a current leaderboard metric. The approved overall score uses 50% fields, 25% drag/lift, and 25% balanced velocity profiles.",
+      "split_ids": [
+        "full",
+        "scarce",
+        "aoa_extrapolation"
+      ],
+      "case_id_status": "official",
+      "contract_digest": "b239d43f5b479efe5cbe23e595cd3aed9f6c5041c936837296c1e71b2eef51a8"
+    },
+    "visual": {
+      "inputs": "Airfoil geometry + Reynolds number + angle of attack",
+      "support": "Every native 2D flow node and ordered airfoil node",
+      "metrics": "Equal-node domain errors; length-weighted boundary errors; forces and four velocity profiles"
+    }
+  },
+  "blendednet": {
+    "name": "BlendedNet",
+    "category": "Blended-wing-body aerodynamics",
+    "summary": "A public surface-aerodynamics dataset with 999 unique blended-wing-body geometries and 8,830 converged steady RANS cases across geometry and flight-condition variation, using 9–14 million volume cells per simulation.",
+    "source": {
+      "provider": "dataverse",
+      "repository_id": "10.7910/DVN/VJT9EP",
+      "url": "https://doi.org/10.7910/DVN/VJT9EP",
+      "revision": "1.0",
+      "revision_short": "v1.0",
+      "revision_url": "https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/VJT9EP&version=1.0",
+      "checked_on": "2026-08-22",
+      "release": "Harvard Dataverse version 1.0",
+      "license": "MIT",
+      "license_url": "https://opensource.org/license/mit/",
+      "availability": "One 24.7 GB public archive containing 8,830 converged cases",
+      "contents": "Nine geometric design parameters, flight conditions, point coordinates and normals, surface pressure and skin-friction coefficients, and integrated drag, lift, and pitching-moment coefficients. The public reference model uses Cp, Cfx, and Cfz; the raw VTK conversion also exposes cf_y when present.",
+      "image": {
+        "path": "/assets/img/datasets/blendednet-overview.svg",
+        "alt": "Illustrative top view of a blended-wing-body aircraft with surface-field contours and streamlines.",
+        "caption": "Representative blended-wing-body configuration (FluidsBench illustration; not to scale).",
+        "credit": "Based on the BlendedNet dataset description",
+        "source_url": "https://github.com/nicksungg/clarc_blended_wing_body"
+      }
+    },
+    "design_space": {
+      "archetype_count": "1 blended-wing-body family",
+      "archetypes": [
+        {
+          "name": "OpenVSP blended wing body",
+          "description": "One integrated lifting-body planform family; the airfoil-section coefficients are held fixed in this release."
+        }
+      ],
+      "parameter_count": "9 continuous planform parameters",
+      "parameter_summary": "Six normalized chord/span dimensions and three sweep angles define the planform; airfoil cross-sections are not varied.",
+      "parameters": [
+        {
+          "name": "C2/C1",
+          "range": "0.55–0.85"
+        },
+        {
+          "name": "C3/C1",
+          "range": "0.18–0.28"
+        },
+        {
+          "name": "C4/C1",
+          "range": "0.06–0.09"
+        },
+        {
+          "name": "B1/C1",
+          "range": "0.10–0.20"
+        },
+        {
+          "name": "B2/C1",
+          "range": "0.05–0.20"
+        },
+        {
+          "name": "B3/C1",
+          "range": "0.20–0.70"
+        },
+        {
+          "name": "S1",
+          "range": "40°–60°"
+        },
+        {
+          "name": "S2",
+          "range": "40°–60°"
+        },
+        {
+          "name": "S3",
+          "range": "24°–40°"
+        }
+      ],
+      "operating_conditions": "Flight-condition sampling spans altitude 0–40 kft, Mach 0.05–0.5, Reynolds reference length 0.1–10 m, and angle of attack −10° to 20°.",
+      "sampling": "Latin hypercube sampling produces 999 planforms and approximately nine flight conditions per geometry, with 8,830 simulations converging successfully.",
+      "coverage": "The current candidate proposes a geometry-disjoint 870-case holdout, but that list is not a separately published official Dataverse evaluation set and is not active.",
+      "source_url": "https://arxiv.org/abs/2509.07209",
+      "source_label": "BlendedNet paper and design/flight-condition tables"
+    },
+    "benchmark": {
+      "status": "owner_review_required",
+      "status_label": "Coming soon",
+      "submissions_open": false,
+      "source_pin": "Dataverse DOI 10.7910/DVN/VJT9EP, version 1.0",
+      "summary": "The candidate task is surface-only and uses cp plus cf_x/cf_y/cf_z on every native legacy-VTK surface point, with area-weighted relative L2 as the primary physical metric. The current 870-case geometry-holdout list is provisional; the public Dataverse release does not separately identify it as an official evaluation release, so this mapping is not active for submissions.",
+      "split_ids": [
+        "geometry_holdout"
+      ],
+      "case_id_status": "prototype_generated",
+      "contract_digest": "10f9edf41794878eb79f51fb9025f253b1f58808c98fbf23620194970650bb0c"
+    },
+    "visual": {
+      "inputs": "BWB geometry + flight conditions",
+      "support": "Candidate complete native aircraft surface",
+      "metrics": "Area-weighted and equal-point Cp/Cf errors plus integrated coefficients"
+    }
+  },
+  "rotor37": {
+    "name": "Rotor37",
+    "category": "Compressor aerodynamics",
+    "summary": "A PLAID-formatted collection of 1,200 three-dimensional RANS simulations of the NASA Rotor 37 compressor blade, with geometry and operating-condition inputs and distributed and integrated compressor outputs.",
+    "source": {
+      "provider": "huggingface",
+      "repository_id": "PLAID-datasets/Rotor37",
+      "url": "https://huggingface.co/datasets/PLAID-datasets/Rotor37",
+      "revision": "bac06c0caa7254120eecc6711a5fb85c58dfbdbc",
+      "revision_short": "bac06c0",
+      "revision_url": "https://huggingface.co/datasets/PLAID-datasets/Rotor37/tree/bac06c0caa7254120eecc6711a5fb85c58dfbdbc",
+      "checked_on": "2026-08-22",
+      "release": "Hugging Face revision bac06c0",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "availability": "1,000 public training rows and 200 source-evaluation rows with hidden targets",
+      "contents": "Blade-surface geometry and normals, rotational speed and pressure inputs, Density, Pressure, and Temperature fields, plus Massflow, Compression_ratio, and Efficiency scalars in the public training population. The source evaluation rows intentionally omit outputs.",
+      "image": {
+        "path": "/assets/img/datasets/rotor37-preview.png",
+        "alt": "Rotor 37 blade surfaces showing a prediction, prediction variance, and relative error field.",
+        "caption": "Representative Rotor37 field prediction, uncertainty, and error views.",
+        "credit": "PLAID Rotor37 dataset card",
+        "source_url": "https://huggingface.co/datasets/PLAID-datasets/Rotor37/blob/bac06c0caa7254120eecc6711a5fb85c58dfbdbc/README.md"
+      }
+    },
+    "design_space": {
+      "archetype_count": "1 compressor-blade family",
+      "archetypes": [
+        {
+          "name": "NASA Rotor 37",
+          "description": "Geometrical variants remain within the Rotor 37 compressor-blade family."
+        }
+      ],
+      "parameter_count": "Mesh-native geometry; no published low-dimensional parameter vector",
+      "parameter_summary": "PLAID exposes each blade surface directly as a non-parameterized mesh. Shape variation is therefore an input geometry, not a fixed list of scalar design variables.",
+      "parameters": [],
+      "operating_conditions": "Two scalar inputs accompany the mesh: pressure P and rotational speed Ω. The public challenge description does not publish a compact range table for them.",
+      "sampling": "The source contains 1,200 rows: 1,000 with public targets and 200 source-evaluation rows whose outputs are hidden.",
+      "coverage": "Eight nested training-size tasks are published. Because the 200 source-test targets are hidden, FluidsBench still needs a separate public-ground-truth evaluation split before its design coverage can be scored openly.",
+      "source_url": "https://plaid-lib.readthedocs.io/en/0.1.5/source/data_challenges/rotor37.html",
+      "source_label": "PLAID Rotor37 challenge description"
+    },
+    "benchmark": {
+      "status": "owner_review_required",
+      "status_label": "Coming soon",
+      "submissions_open": false,
+      "source_pin": "Not yet frozen",
+      "summary": "The candidate scores Density, Pressure, and Temperature over every vertex of the native blade-surface CGNS zone, together with Massflow, Compression_ratio, and Efficiency. Because the source 200-case evaluation targets are hidden, FluidsBench must publish and approve a separate public-ground-truth evaluation split before submissions can open; the current eight case lists are prototypes.",
+      "split_ids": [
+        "train_1000",
+        "train_500",
+        "train_250",
+        "train_125",
+        "train_64",
+        "train_32",
+        "train_16",
+        "train_8"
+      ],
+      "case_id_status": "prototype_generated",
+      "contract_digest": "63d53dfbd8dc8d2d105a3543c887cc4701473f23b3bf13ddbf64d099b7b40824"
+    },
+    "visual": {
+      "inputs": "Blade surface + normals + Ω + inlet pressure",
+      "support": "Candidate complete native blade-surface vertices",
+      "metrics": "Area-weighted surface-field errors and three scalar compressor quantities"
+    }
+  },
+  "vki-ls59": {
+    "name": "VKI-LS59",
+    "category": "Turbine-cascade aerodynamics",
+    "summary": "A PLAID-formatted collection of 839 two-dimensional compressible RANS simulations of the LS59 turbine cascade, spanning inlet incidence and outlet Mach number with geometry, signed-distance, field, curve, and scalar quantities.",
+    "source": {
+      "provider": "huggingface",
+      "repository_id": "PLAID-datasets/VKI-LS59",
+      "url": "https://huggingface.co/datasets/PLAID-datasets/VKI-LS59",
+      "revision": "1aad0a69c26462c039305a931a300f80bdf34827",
+      "revision_short": "1aad0a6",
+      "revision_url": "https://huggingface.co/datasets/PLAID-datasets/VKI-LS59/tree/1aad0a69c26462c039305a931a300f80bdf34827",
+      "checked_on": "2026-08-22",
+      "release": "Hugging Face revision 1aad0a6",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "availability": "671 public training rows and 168 source-evaluation rows with hidden targets",
+      "contents": "Geometry, signed distance, inlet angle and outlet Mach inputs; two-dimensional ro, rou, rov, roe, nut, and mach fields; blade-curve M_iso; and Q, power, Pr, Tr, eth_is, and angle_out scalars in the training population. Source evaluation outputs are hidden.",
+      "image": {
+        "path": "/assets/img/datasets/vki-ls59-preview.png",
+        "alt": "Four VKI-LS59 turbine-cascade Mach fields showing no shock, shock, strong shock, and lambda-shock regimes.",
+        "caption": "Representative VKI-LS59 cascade regimes from no shock to lambda shock.",
+        "credit": "PLAID VKI-LS59 dataset card",
+        "source_url": "https://huggingface.co/datasets/PLAID-datasets/VKI-LS59/blob/1aad0a69c26462c039305a931a300f80bdf34827/README.md"
+      }
+    },
+    "design_space": {
+      "archetype_count": "1 turbine-blade family",
+      "archetypes": [
+        {
+          "name": "VKI LS59 cascade blade",
+          "description": "Every case is a geometrical variation based on the same two-dimensional turbine-cascade reference."
+        }
+      ],
+      "parameter_count": "Mesh-native geometry; no published low-dimensional parameter vector",
+      "parameter_summary": "The geometry and its signed-distance field are provided directly. The public record does not define a fixed scalar parameterization for the blade variations.",
+      "parameters": [],
+      "operating_conditions": "Two scalar inputs vary with geometry: inlet angle and outlet Mach number. The public record does not provide a compact range table for these inputs.",
+      "sampling": "The source contains 839 rows: 671 with public targets and 168 source-evaluation rows whose outputs are hidden.",
+      "coverage": "Eight nested training-size tasks are published. FluidsBench requires a public-ground-truth evaluation split because the source-test outputs are not released.",
+      "source_url": "https://zenodo.org/records/14840512",
+      "source_label": "VKI-LS59 dataset record"
+    },
+    "benchmark": {
+      "status": "owner_review_required",
+      "status_label": "Coming soon",
+      "submissions_open": false,
+      "source_pin": "Not yet frozen",
+      "summary": "The candidate scores mach and nut on every native two-dimensional CGNS vertex, M_iso along every blade-curve vertex, and the six public scalar targets. Because the source 168-case evaluation targets are hidden, FluidsBench must publish and approve a separate public-ground-truth evaluation split; all eight current case lists are prototypes.",
+      "split_ids": [
+        "train",
+        "train_500",
+        "train_250",
+        "train_125",
+        "train_64",
+        "train_32",
+        "train_16",
+        "train_8"
+      ],
+      "case_id_status": "prototype_generated",
+      "contract_digest": "60453c75f951f36febb879942bce09a1276f6e433914d9a5f860ed5b062dbb48"
+    },
+    "visual": {
+      "inputs": "Cascade geometry + signed distance + incidence + outlet Mach",
+      "support": "Candidate complete 2D domain and blade curve",
+      "metrics": "Equal-node domain errors; length-weighted M_iso; six scalar quantities"
+    }
+  }
+}

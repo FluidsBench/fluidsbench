@@ -1,0 +1,28 @@
+---
+layout: default
+---
+<div class="post">
+  {% unless page.hide_header %}
+    <header class="post-header{% if page.compact_masthead %} compact-page-masthead{% endif %}">
+      <h1 class="post-title">{{ page.page_title }}</h1>
+      {% if page.page_description %}
+        <p class="post-description">{{ page.page_description }}</p>
+      {% endif %}
+    </header>
+  {% endunless %}
+
+  <article>
+    {{ content }}
+  </article>
+
+  {% if page.related_publications %}
+    <h2>References</h2>
+    <div class="publications">
+      {% bibliography --cited_in_order %}
+    </div>
+  {% endif %}
+
+  {% if site.giscus and page.giscus_comments %}
+    {% include giscus.liquid %}
+  {% endif %}
+</div>

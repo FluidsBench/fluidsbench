@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "cases": [
+    {
+      "case_id": "drivaernetplusplus_default_test_0001",
+      "series": [
+        {
+          "panel_id": "pressure_profiles",
+          "station_id": "upper_body_centerline",
+          "quantity_id": "cp",
+          "coordinate": [
+            0.0,
+            0.17,
+            0.33,
+            0.5,
+            0.67,
+            0.83,
+            1.0
+          ],
+          "value": [
+            0.292379,
+            -0.138536,
+            -0.39695,
+            -0.317438,
+            -0.148475,
+            0.071037,
+            -0.088841
+          ]
+        },
+        {
+          "panel_id": "pressure_profiles",
+          "station_id": "underbody_centerline",
+          "quantity_id": "cp",
+          "coordinate": [
+            0.0,
+            0.17,
+            0.33,
+            0.5,
+            0.67,
+            0.83,
+            1.0
+          ],
+          "value": [
+            0.3870649,
+            0.1783228,
+            -0.0911381,
+            -0.2520965,
+            -0.1615574,
+            0.0391614,
+            0.2180832
+          ]
+        },
+        {
+          "panel_id": "pressure_profiles",
+          "station_id": "front_wheelhouse",
+          "quantity_id": "cp",
+          "coordinate": [
+            0.0,
+            0.17,
+            0.33,
+            0.5,
+            0.67,
+            0.83,
+            1.0
+          ],
+          "value": [
+            0.3288261,
+            -0.2108463,
+            -0.4815834,
+            -0.0905187,
+            0.199181,
+            -0.1406552,
+            0.0595632
+          ]
+        },
+        {
+          "panel_id": "pressure_profiles",
+          "station_id": "rear_body_centerline",
+          "quantity_id": "cp",
+          "coordinate": [
+            0.0,
+            0.17,
+            0.33,
+            0.5,
+            0.67,
+            0.83,
+            1.0
+          ],
+          "value": [
+            -0.0803222,
+            -0.2305907,
+            -0.4509845,
+            -0.5711993,
+            -0.3708413,
+            -0.1604654,
+            0.0098031
+          ]
+        }
+      ]
+    }
+  ]
+}

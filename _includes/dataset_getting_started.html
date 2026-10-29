@@ -1,0 +1,292 @@
+{% assign dataset = site.data.dataset_catalog[include.slug] %} {% if include.heading == 2 %}
+<h2>Getting started</h2>
+{% else %}
+<h3>Getting started</h3>
+{% endif %} {% include pressure_reference.html slug=include.slug %}
+
+<p>
+  Start with the source documentation and split metadata, then download one representative case before planning a full transfer. The commands below
+  pin the source snapshot audited for this page. For leaderboard work, always use the separate scoring source pin and case lists in the
+  <a href="{{ site.submission_repository_url }}/tree/{{ site.submission_source_ref | default: 'main' }}/benchmark-specs/{{ include.slug }}"
+    >FluidsBench benchmark specification</a
+  >.
+</p>
+
+{% case include.slug %} {% when "ahmedml" %}
+<div class="dataset-start-grid">
+  <div>
+    <h4>1. Inspect the metadata and splits</h4>
+    <pre><code>python3 -m pip install -U huggingface_hub hf_xet
+hf download neashton/ahmedml \
+  --repo-type dataset \
+  --revision {{ dataset.source.revision }} \
+  --include "README.md" \
+  --include "splits/**" \
+  --local-dir ./ahmedml</code></pre>
+  </div>
+  <div>
+    <h4>2. Download and inspect one surface case</h4>
+    <pre><code>hf download neashton/ahmedml \
+  --repo-type dataset \
+  --revision {{ dataset.source.revision }} \
+  --include "run_1/ahmed_1.stl" \
+  --include "run_1/boundary_1.vtp" \
+  --include "run_1/boundary_cell_area_1.npy" \
+  --include "run_1/force_mom_1.csv" \
+  --local-dir ./ahmedml</code></pre>
+  </div>
+</div>
+<pre><code>import numpy as np
+import pyvista as pv
+
+surface = pv.read("ahmedml/run_1/boundary_1.vtp")
+area = np.load("ahmedml/run_1/boundary_cell_area_1.npy", mmap_mode="r")
+assert area.shape == (surface.n_cells,)
+print(surface.cell_data.keys())</code></pre>
+<p class="dataset-download-note">
+  The boundary fields are cell-associated, so sidecar entry <code>i</code> weights native polygon <code>i</code>. Download
+  <code>run_1/volume_1.vtu</code> only when you are ready for the multi-gigabyte native volume; FluidsBench volume metrics cover every field-bearing
+  cell.
+</p>
+
+{% when "drivaerml" %}
+<div class="dataset-start-grid">
+  <div>
+    <h4>1. Inspect the official splits</h4>
+    <pre><code>python3 -m pip install -U huggingface_hub hf_xet
+hf download neashton/drivaerml \
+  --repo-type dataset \
+  --revision {{ dataset.source.revision }} \
+  --include "README.md" \
+  --include "splits/**" \
+  --include "force_mom_constref_all.csv" \
+  --local-dir ./drivaerml</code></pre>
+  </div>
+  <div>
+    <h4>2. Download one native surface case</h4>
+    <pre><code>hf download neashton/drivaerml \
+  --repo-type dataset \
+  --revision {{ dataset.source.revision }} \
+  --include "run_1/drivaer_1.stl" \
+  --include "run_1/boundary_1.vtp" \
+  --include "run_1/boundary_cell_area_1.npy" \
+  --include "run_1/force_mom_constref_1.csv" \
+  --local-dir ./drivaerml</code></pre>
+  </div>
+</div>
+<pre><code>import numpy as np
+import pyvista as pv
+
+surface = pv.read("drivaerml/run_1/boundary_1.vtp")
+area = np.load("drivaerml/run_1/boundary_cell_area_1.npy", mmap_mode="r")
+assert area.shape == (surface.n_cells,)
+print(surface.cell_data["pMeanTrim"].shape)
+print(surface.cell_data["wallShearStressMeanTrim"].shape)</code></pre>
+<p class="dataset-download-note">
+  Native volume files are transported as ordered <code>.00.part</code>, <code>.01.part</code>, and, for ten cases, <code>.02.part</code> segments.
+  Resolve the exact list from <code>proposal/native-source-pin.json</code>. The participant evaluator streams those ordered parts as one logical VTU
+  in bounded chunks; it does not require a second concatenated copy. Do not assume every case has two parts, resample the scoring support, or average
+  chunk-level errors; accumulate numerators, denominators, and counts before the case-level reduction. Use
+  <code>force_mom_constref_&lt;run&gt;.csv</code> for the benchmark force convention.
+</p>
+
+{% when "windsorml" %}
+<div class="dataset-start-grid">
+  <div>
+    <h4>1. Inspect the source coverage</h4>
+    <pre><code>python3 -m pip install -U huggingface_hub hf_xet
+hf download neashton/windsorml \
+  --repo-type dataset \
+  --revision {{ dataset.source.revision }} \
+  --include "README.md" \
+  --include "splits/**" \
+  --include "surface_dual_areas/**" \
+  --local-dir ./windsorml \
+  --dry-run</code></pre>
+  </div>
+  <div>
+    <h4>2. Download one complete field case</h4>
+    <pre><code>hf download neashton/windsorml \
+  --repo-type dataset \
+  --revision {{ dataset.source.revision }} \
+  --include "run_1/windsor_1.stl" \
+  --include "run_1/boundary_1.vtu" \
+  --include "run_1/boundary_dual_area_1.npy" \
+  --include "run_1/force_mom_1.csv" \
+  --local-dir ./windsorml</code></pre>
+  </div>
+</div>
+<pre><code>import numpy as np
+import pyvista as pv
+
+surface = pv.read("windsorml/run_1/boundary_1.vtu")
+area = np.load("windsorml/run_1/boundary_dual_area_1.npy", mmap_mode="r")
+assert area.shape == (surface.n_points,)
+print(surface.point_data.keys())</code></pre>
+<p class="dataset-download-note">
+  Remove <code>--dry-run</code> only after checking the transfer size. The dual areas apply to the exact raw VTU point order. The split metadata
+  covers 355 aggregate cases, but only runs 0–349 have complete per-run field folders and area sidecars. The scoring contract already intersects each
+  source split with these published runs: Full has 35 test cases and excludes <code>run_354</code>. Use its exact case lists without replacements.
+</p>
+
+{% when "hiliftaeroml" %}
+<div class="dataset-start-grid">
+  <div>
+    <h4>1. Download lightweight metadata first</h4>
+    <pre><code>python3 -m pip install -U huggingface_hub hf_xet
+hf download nvidia/HiLiftAeroML \
+  --repo-type dataset \
+  --revision {{ dataset.source.revision }} \
+  --include "README.md" \
+  --include "splits/**" \
+  --include "data_quality/**" \
+  --include "force_mom_all.csv" \
+  --include "force_mom_surface_overrides_v1.json" \
+  --include "geo_values_all.csv" \
+  --local-dir ./hiliftaeroml</code></pre>
+  </div>
+  <div>
+    <h4>2. Preview one large native case</h4>
+    <pre><code>hf download nvidia/HiLiftAeroML \
+  --repo-type dataset \
+  --revision {{ dataset.source.revision }} \
+  --include "geo_LHC001_AoA_4/boundary_geo_LHC001_AoA_4.vtu.tgz" \
+  --include "geo_LHC001_AoA_4/boundary_dual_area_geo_LHC001_AoA_4.npy" \
+  --include "geo_LHC001_AoA_4/force_mom_geo_LHC001_AoA_4.csv" \
+  --local-dir ./hiliftaeroml \
+  --dry-run</code></pre>
+  </div>
+</div>
+<p class="dataset-download-note">
+  The full repository is about 66.8 TB as stored and expands further after extraction. The example boundary archive alone is approximately 12 GB and
+  its area sidecar approximately 546 MB. Remove <code>--dry-run</code> only after checking local capacity. Each sidecar is little-endian float32 in
+  square inches and matches the exact native boundary-point order; a constant area-unit conversion cancels from normalized weighted metrics.
+</p>
+
+{% when "airfrans" %}
+<div class="dataset-start-grid">
+  <div>
+    <h4>1. Install and download with the official library</h4>
+    <pre><code>python3 -m pip install "airfrans==0.1.5.1"
+
+import airfrans as af
+af.dataset.download(root="./airfrans_data", unzip=True)</code></pre>
+  </div>
+  <div>
+    <h4>2. Load an official task</h4>
+    <pre><code>import airfrans as af
+
+train, train_names = af.dataset.load(
+    root="./airfrans_data",
+    task="full",
+    train=True,
+)
+print(train.shape, train_names[:3])</code></pre>
+  </div>
+</div>
+<p class="dataset-download-note">
+  The library task names are <code>full</code>, <code>scarce</code>, <code>reynolds</code>, and <code>aoa</code>. FluidsBench uses the corresponding
+  published case lists but evaluates predictions on the complete released VTK supports. The source loader exposes <code>nut</code>; the current
+  FluidsBench definition deliberately scores only <code>U</code> and <code>p</code> in the flow domain, plus derived boundary quantities and the four
+  fixed velocity profiles.
+</p>
+
+{% when "blendednet" %}
+<div class="dataset-start-grid">
+  <div>
+    <h4>1. Inspect the immutable Dataverse metadata</h4>
+    <pre><code>curl -L \
+  "https://dataverse.harvard.edu/api/datasets/:persistentId/?persistentId=doi:10.7910/DVN/VJT9EP" \
+  -o blendednet-dataverse.json</code></pre>
+  </div>
+  <div>
+    <h4>2. Download the version 1.0 archive</h4>
+    <pre><code>curl -L --continue-at - \
+  "https://dataverse.harvard.edu/api/access/datafile/11905766" \
+  -o "BlendedNet Dataset - Released.zip"</code></pre>
+  </div>
+</div>
+<p class="dataset-download-note">
+  The public release is one 24.7 GB archive, so there is no metadata-only per-case transfer. Inspect the companion
+  <a href="https://github.com/nicksungg/clarc_blended_wing_body">official loader and baseline repository</a> before extracting it. The current
+  FluidsBench geometry-holdout IDs are a proposal, not a separately published Dataverse split.
+</p>
+
+{% when "drivaernetplusplus" %}
+<div class="dataset-start-grid">
+  <div>
+    <h4>1. Get the public pressure data</h4>
+    <p>
+      Use the Dataverse / Globus transfer for the 15 <code>SurfacePressureVTK</code> family archives (about 210 GB), then verify the extracted test
+      files against the pinned release.
+    </p>
+    <pre><code>python scripts/drivaernetplusplus.py verify-data \
+  --dataset-root /data/dnpp/SurfacePressureVTK</code></pre>
+  </div>
+  <div>
+    <h4>2. Download the prepared scoring support</h4>
+    <pre><code>python scripts/drivaernetplusplus.py fetch-support \
+  --destination support/drivaernetplusplus</code></pre>
+    <p>
+      The 24 verified archives total about 5.5 GB and contain the reference pressure, dual-area weights and frozen profile points for all 1,154 test
+      designs.
+    </p>
+  </div>
+</div>
+<p class="dataset-download-note">
+  Follow the DrivAerNet++ participant quickstart for the pinned Linux environment or Docker commands, prediction layout, resumable evaluation and
+  packaging. Predict native PointData <code>p</code> in m²/s² for every test point. Check the submission guide for current availability.
+</p>
+
+{% when "rotor37" %}
+<div class="dataset-start-grid">
+  <div>
+    <h4>1. Install the Hub and PLAID readers</h4>
+    <pre><code>python3 -m pip install -U datasets pyplaid</code></pre>
+    <p>On macOS or Windows, the PLAID project recommends its conda-forge package because the PyPI wheel is Linux-only.</p>
+  </div>
+  <div>
+    <h4>2. Load one pinned training sample</h4>
+    <pre><code>from datasets import load_dataset
+from plaid.bridges.huggingface_bridge import huggingface_dataset_to_plaid
+
+rows = load_dataset(
+    "PLAID-datasets/Rotor37",
+    split="all_samples[:1]",
+    revision="{{ dataset.source.revision }}",
+)
+samples, problem = huggingface_dataset_to_plaid(rows, processes_number=1)
+print(problem)</code></pre>
+  </div>
+</div>
+<p class="dataset-download-note">
+  Use the published index sequences for the nested 8-to-1,000 training regimes. The source rows numbered 1,000–1,199 omit targets; they are useful for
+  the original hidden-target benchmark but cannot serve as FluidsBench's public-ground-truth evaluation set.
+</p>
+
+{% when "vki-ls59" %}
+<div class="dataset-start-grid">
+  <div>
+    <h4>1. Install the Hub and PLAID readers</h4>
+    <pre><code>python3 -m pip install -U datasets pyplaid</code></pre>
+    <p>On macOS or Windows, the PLAID project recommends its conda-forge package because the PyPI wheel is Linux-only.</p>
+  </div>
+  <div>
+    <h4>2. Load one pinned training sample</h4>
+    <pre><code>from datasets import load_dataset
+from plaid.bridges.huggingface_bridge import huggingface_dataset_to_plaid
+
+rows = load_dataset(
+    "PLAID-datasets/VKI-LS59",
+    split="all_samples[:1]",
+    revision="{{ dataset.source.revision }}",
+)
+samples, problem = huggingface_dataset_to_plaid(rows, processes_number=1)
+print(problem)</code></pre>
+  </div>
+</div>
+<p class="dataset-download-note">
+  The nested training regimes use the first 8–671 entries of the published training sequence. The 168 source-evaluation rows omit their output fields
+  and scalars, so FluidsBench needs a different public-ground-truth evaluation list before it can open submissions.
+</p>
+{% endcase %}

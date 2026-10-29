@@ -1,0 +1,226 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "drivaerml",
+  "case_set_id": "low_drag",
+  "case_count": 97,
+  "case_id_status": "official",
+  "chunks": [
+    {
+      "file": "chunk-000.json",
+      "case_ids": [
+        "run_3",
+        "run_5",
+        "run_10",
+        "run_17",
+        "run_27"
+      ],
+      "sha256": "d2c70637daab1bd535f92611ede47a2bf83ada048c028ee2c4d1b96c3175809f"
+    },
+    {
+      "file": "chunk-001.json",
+      "case_ids": [
+        "run_31",
+        "run_38",
+        "run_43",
+        "run_45",
+        "run_48"
+      ],
+      "sha256": "6f4a4b2f2a0e2ecce7613b4fb60d7e20fdad7df5153259f4c5ca31f1e0dd2ca6"
+    },
+    {
+      "file": "chunk-002.json",
+      "case_ids": [
+        "run_50",
+        "run_60",
+        "run_62",
+        "run_67",
+        "run_70"
+      ],
+      "sha256": "a75410d4b13f8c5e47e98779f1322370cd246325af543b993331d93192ec4bd3"
+    },
+    {
+      "file": "chunk-003.json",
+      "case_ids": [
+        "run_76",
+        "run_80",
+        "run_81",
+        "run_85",
+        "run_94"
+      ],
+      "sha256": "fdfc766702a17aade6965cd9602d6b46f92ae21ac341104c45147511df0a2164"
+    },
+    {
+      "file": "chunk-004.json",
+      "case_ids": [
+        "run_102",
+        "run_106",
+        "run_107",
+        "run_109",
+        "run_114"
+      ],
+      "sha256": "aa9c215d8707d11034bb30891df219298659eefbb2c9ae0419386de843765b19"
+    },
+    {
+      "file": "chunk-005.json",
+      "case_ids": [
+        "run_116",
+        "run_124",
+        "run_128",
+        "run_131",
+        "run_144"
+      ],
+      "sha256": "399924382b155e8bebfc82479e991e41077dceed3405f0ea9e18912e95aac46c"
+    },
+    {
+      "file": "chunk-006.json",
+      "case_ids": [
+        "run_158",
+        "run_159",
+        "run_162",
+        "run_166",
+        "run_178"
+      ],
+      "sha256": "f533280f130ba66e57bf4f87b34cea1d7d7388b83f91c936b498b35e73a84bcb"
+    },
+    {
+      "file": "chunk-007.json",
+      "case_ids": [
+        "run_179",
+        "run_183",
+        "run_188",
+        "run_194",
+        "run_198"
+      ],
+      "sha256": "5d6f9662d2ea767f841c3651da2999fe84fd3253e59dcc0a2d9df6111d71a9d9"
+    },
+    {
+      "file": "chunk-008.json",
+      "case_ids": [
+        "run_213",
+        "run_220",
+        "run_222",
+        "run_225",
+        "run_228"
+      ],
+      "sha256": "5d1f6c2c3a86b85ec8aa421cf643c1c1a28963f63856dca1f3f22146edbd67ea"
+    },
+    {
+      "file": "chunk-009.json",
+      "case_ids": [
+        "run_235",
+        "run_237",
+        "run_242",
+        "run_244",
+        "run_246"
+      ],
+      "sha256": "85aea5c35a93647809c6fc0e6b897d34dab05648d97b225d3835da92805711d1"
+    },
+    {
+      "file": "chunk-010.json",
+      "case_ids": [
+        "run_253",
+        "run_262",
+        "run_267",
+        "run_269",
+        "run_279"
+      ],
+      "sha256": "28d289965c6f3907c210b98d6bffe66d1a4cc5ca17350161ae8c9e621ab2d1f2"
+    },
+    {
+      "file": "chunk-011.json",
+      "case_ids": [
+        "run_281",
+        "run_284",
+        "run_288",
+        "run_289",
+        "run_298"
+      ],
+      "sha256": "0f5edb4d4eb66212aaded037528bd319e62ea60572f5d385d5206ec1fcc84d5d"
+    },
+    {
+      "file": "chunk-012.json",
+      "case_ids": [
+        "run_302",
+        "run_308",
+        "run_309",
+        "run_319",
+        "run_321"
+      ],
+      "sha256": "99765d29d2924d34c5e8f708bd891de0620c10296a98da0dbd84f992732ba3dc"
+    },
+    {
+      "file": "chunk-013.json",
+      "case_ids": [
+        "run_330",
+        "run_331",
+        "run_340",
+        "run_345",
+        "run_349"
+      ],
+      "sha256": "e7ce78dd851b76fbddaacf7023c6dec4ae50808c8d18003acb82f2e44e23d2df"
+    },
+    {
+      "file": "chunk-014.json",
+      "case_ids": [
+        "run_355",
+        "run_359",
+        "run_366",
+        "run_369",
+        "run_373"
+      ],
+      "sha256": "b175cd03b86917fa2764459bd37b618e6def9d9634af0da202c9f25e769a45b7"
+    },
+    {
+      "file": "chunk-015.json",
+      "case_ids": [
+        "run_383",
+        "run_388",
+        "run_389",
+        "run_392",
+        "run_409"
+      ],
+      "sha256": "a9ea79efd522528689daee2f202b3f8ff9022fb451b849e4c3a3322ea3d45fdd"
+    },
+    {
+      "file": "chunk-016.json",
+      "case_ids": [
+        "run_415",
+        "run_416",
+        "run_419",
+        "run_426",
+        "run_430"
+      ],
+      "sha256": "c3e27910ce7cc70325d279b9acb5c2b0861973d29b63e41cbd2ab4e209100fe2"
+    },
+    {
+      "file": "chunk-017.json",
+      "case_ids": [
+        "run_437",
+        "run_440",
+        "run_449",
+        "run_456",
+        "run_462"
+      ],
+      "sha256": "69bd09bf14abe58f4ec710e57ebd61ff7a8b497f3a6b0e6e06e1ad85b4b11346"
+    },
+    {
+      "file": "chunk-018.json",
+      "case_ids": [
+        "run_468",
+        "run_470",
+        "run_472",
+        "run_483",
+        "run_489"
+      ],
+      "sha256": "51a3bcca547085a634d380d873714938893e96aab1aba3a0657e92490ac5ce50"
+    },
+    {
+      "file": "chunk-019.json",
+      "case_ids": [
+        "run_492",
+        "run_496"
+      ],
+      "sha256": "fc4fd050281b66f8fd609f7f71f715c1239f3dea9f4d96635ffe183bb3940727"
+    }
+  ]
+}

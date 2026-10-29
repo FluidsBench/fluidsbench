@@ -1,0 +1,23 @@
+---
+layout: default
+---
+<div class="post">
+  <header class="post-header{% if page.compact_masthead %} compact-page-masthead{% endif %}">
+    <h1 class="post-title">{{ page.page_title }}</h1>
+    {% if page.page_subtitle %}
+      <p class="post-description">{{ page.page_subtitle }}</p>
+    {% endif %}
+  </header>
+
+  <article>
+    <!-- News -->
+    {% if page.news and site.announcements.enabled %}
+      <h3>Announcements</h3>
+      {% include news.liquid limit=true %}
+    {% endif %}
+
+    <div class="clearfix">
+      {{ content }}
+    </div>
+  </article>
+</div>

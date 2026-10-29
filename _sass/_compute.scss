@@ -1,0 +1,326 @@
+.ux-compute {
+  padding: 30px 0 8px;
+  color: var(--ux-ink);
+}
+.ux-compute-heading,
+.ux-compute-controls,
+.ux-compute-chart-heading,
+.ux-compute-table-heading,
+.ux-compute-details-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.ux-compute-heading h2 {
+  font-size: clamp(23px, 3vw, 30px);
+  letter-spacing: -0.8px;
+  font-weight: 650;
+  margin: 0 0 8px;
+}
+.ux-compute-heading p {
+  color: var(--ux-muted);
+  font-size: 14px;
+  margin: 0;
+}
+.ux-compute-heading .ux-eyebrow {
+  margin-bottom: 8px;
+  font-size: 10px;
+}
+.ux-compute-modes {
+  display: flex;
+  padding: 4px;
+  background: var(--ux-surface);
+  border: 1px solid var(--ux-border);
+  border-radius: 9px;
+  flex-shrink: 0;
+}
+.ux-compute-modes button {
+  padding: 9px 20px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ux-muted);
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.ux-compute-modes button[aria-pressed="true"] {
+  color: var(--ux-accent);
+  background: var(--ux-tint);
+}
+.ux-compute-controls {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  margin: 24px 0 18px;
+  font-size: 12px;
+  color: var(--ux-muted);
+}
+.ux-compute label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.ux-compute select {
+  background: var(--ux-surface);
+  color: var(--ux-ink);
+  border: 1px solid var(--ux-border);
+  border-radius: 6px;
+  padding: 8px 26px 8px 10px;
+  max-width: 250px;
+  min-height: 36px;
+}
+#compute-coverage {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+.ux-compute-chart-card {
+  padding: 22px 24px 16px;
+  border: 1px solid var(--ux-border);
+  background: var(--ux-surface);
+  border-radius: 12px;
+}
+.ux-compute-chart-heading h3,
+.ux-compute-table-heading h3 {
+  margin: 0;
+  font-size: 16px;
+  letter-spacing: -0.2px;
+  font-weight: 650;
+}
+.ux-compute-chart-heading span {
+  font-size: 11px;
+  color: var(--ux-accent);
+}
+.ux-compute-caption {
+  color: var(--ux-muted);
+  font-size: 11px;
+  line-height: 1.6;
+  margin: 7px 0 0;
+}
+.ux-compute-chart-frame {
+  height: 300px;
+  margin-top: 12px;
+  position: relative;
+}
+.ux-compute-chart-frame canvas {
+  max-width: 100%;
+  max-height: 100%;
+}
+.ux-compute-empty {
+  padding: 55px 16px;
+  text-align: center;
+  color: var(--ux-muted);
+}
+.ux-compute-empty strong {
+  font-size: 17px;
+  color: var(--ux-ink);
+}
+.ux-compute-empty p {
+  margin: 8px 0 0;
+  font-size: 13px;
+}
+.ux-compute-table-heading {
+  margin: 28px 0 12px;
+}
+.ux-compute-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--ux-border);
+  border-radius: 10px;
+  background: var(--ux-surface);
+}
+.ux-compute-table {
+  width: 100%;
+  min-width: 960px;
+  font-size: 12px;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.ux-leaderboard .ux-compute-table th,
+.ux-leaderboard .ux-compute-table td {
+  text-align: left;
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--ux-border);
+  vertical-align: top;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.ux-leaderboard .ux-compute-table thead th {
+  font-size: 10px;
+  color: var(--ux-muted);
+  font-weight: 600;
+  background: var(--ux-background);
+}
+.ux-leaderboard .ux-compute-table tbody tr {
+  background: var(--ux-surface);
+}
+.ux-compute-table tbody td:nth-child(n + 2):nth-child(-n + 5) {
+  white-space: nowrap;
+}
+.ux-compute-table tbody th {
+  min-width: 165px;
+  font-weight: 500;
+}
+.ux-compute-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+.ux-compute-table tr.is-selected th {
+  box-shadow: inset 3px 0 var(--ux-accent);
+}
+.ux-compute-model,
+.ux-compute-notes-link {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--ux-accent);
+  cursor: pointer;
+  text-align: left;
+  line-height: 1.5;
+}
+.ux-compute-model {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-weight: 650;
+  font-size: 12px;
+}
+.ux-compute-model:hover,
+.ux-compute-notes-link:hover {
+  text-decoration: underline;
+}
+.ux-compute-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--model-color);
+}
+.ux-compute-table small {
+  display: block;
+  color: var(--ux-muted);
+  margin-top: 5px;
+  font-size: 10px;
+  line-height: 1.5;
+}
+.ux-compute-hardware {
+  min-width: 130px;
+  max-width: 180px;
+}
+.ux-compute-device-count {
+  min-width: 105px;
+  white-space: nowrap;
+}
+.ux-compute-no-rows {
+  text-align: center !important;
+  color: var(--ux-muted);
+}
+.ux-compute-footnote,
+.ux-compute-guide {
+  font-size: 12px;
+  color: var(--ux-muted);
+  line-height: 1.7;
+}
+.ux-compute-footnote {
+  margin: 12px 0 20px;
+}
+.ux-compute-guide summary,
+.ux-compute-measurements summary {
+  color: var(--ux-accent);
+  cursor: pointer;
+  font-size: 12px;
+}
+.ux-compute-guide > div {
+  max-width: 800px;
+  padding: 12px 0 0;
+}
+.ux-compute-details {
+  border: 1px solid var(--ux-border);
+  border-radius: 10px;
+  padding: 18px;
+  margin: 16px 0;
+}
+.ux-compute-details-heading h4 {
+  margin: 0;
+}
+.details-dialog-body .ux-compute-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 7px 14px;
+  margin: 18px 0;
+}
+.details-dialog-body .ux-compute-summary dt {
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: none;
+}
+.details-dialog-body .ux-compute-summary > div {
+  border: 0;
+  padding: 0;
+}
+.details-dialog-body .ux-compute-summary dd {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+.ux-compute-measurements > div {
+  margin-top: 20px;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.ux-compute-stage {
+  margin: 14px 0;
+  padding: 14px;
+  border: 1px solid var(--ux-border);
+  border-radius: 8px;
+}
+.ux-compute-measurement-note {
+  padding-left: 12px;
+  border-left: 2px solid var(--ux-border);
+  white-space: pre-line;
+}
+@media (max-width: 700px) {
+  .ux-compute-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .ux-compute-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .ux-compute-controls label {
+    justify-content: space-between;
+  }
+  .ux-compute select {
+    max-width: 210px;
+  }
+  #compute-coverage {
+    margin-left: 0;
+  }
+  .ux-compute-chart-card {
+    padding: 18px 12px 12px;
+  }
+  .ux-compute-chart-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .ux-compute-chart-frame {
+    height: 270px;
+  }
+  .ux-compute-table-heading {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .ux-compute-details {
+    padding: 14px;
+  }
+  .details-dialog-body .ux-compute-summary {
+    grid-template-columns: 1fr;
+  }
+}

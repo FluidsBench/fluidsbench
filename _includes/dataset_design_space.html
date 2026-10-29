@@ -1,0 +1,64 @@
+{% assign dataset = site.data.dataset_catalog[include.slug] %} {% assign design = dataset.design_space %}
+<section class="dataset-design-space" aria-labelledby="{{ include.slug }}-design-space-title">
+  <div class="dataset-design-heading">
+    <div>
+      <p class="dataset-kicker">Design-space coverage</p>
+      <h2 id="{{ include.slug }}-design-space-title">What changes across the dataset</h2>
+    </div>
+    <p>
+      Parent shape or archetype means the source geometry family, not an ML baseline model. The cards distinguish shape breadth from
+      operating-condition breadth.
+    </p>
+  </div>
+
+  <div class="dataset-design-grid">
+    <article class="dataset-design-card dataset-design-archetypes">
+      <p class="dataset-design-label">Parent shapes / archetypes</p>
+      <p class="dataset-design-count">{{ design.archetype_count }}</p>
+      <ul>
+        {% for archetype in design.archetypes %}
+        <li>
+          <strong>{{ archetype.name }}</strong>
+          <span>{{ archetype.description }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </article>
+
+    <article class="dataset-design-card dataset-design-parameters">
+      <p class="dataset-design-label">Geometry parameterization</p>
+      <p class="dataset-design-count">{{ design.parameter_count }}</p>
+      <p>{{ design.parameter_summary }}</p>
+      {% if design.parameters.size > 0 %}
+      <details>
+        <summary>View {{ design.parameters.size }} documented variables and ranges</summary>
+        <dl>
+          {% for parameter in design.parameters %}
+          <div>
+            <dt>{{ parameter.name }}</dt>
+            <dd>{{ parameter.range }}</dd>
+          </div>
+          {% endfor %}
+        </dl>
+      </details>
+      {% endif %}
+    </article>
+
+    <article class="dataset-design-card">
+      <p class="dataset-design-label">Conditions and sampling</p>
+      <h3>Operating conditions</h3>
+      <p>{{ design.operating_conditions }}</p>
+      <h3>Sampling</h3>
+      <p>{{ design.sampling }}</p>
+    </article>
+
+    <article class="dataset-design-card">
+      <p class="dataset-design-label">Benchmark coverage</p>
+      <h3>What the current splits test</h3>
+      <p>{{ design.coverage }}</p>
+      <p class="dataset-design-source">
+        <a href="{{ design.source_url }}">{{ design.source_label }}</a>
+      </p>
+    </article>
+  </div>
+</section>

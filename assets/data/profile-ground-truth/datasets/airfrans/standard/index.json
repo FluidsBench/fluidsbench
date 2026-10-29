@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "airfrans",
+  "case_set_id": "standard",
+  "case_count": 1,
+  "coverage": "representative_subset",
+  "case_id_status": "official_split_member_fixture",
+  "chunks": [
+    {
+      "file": "chunk-000.json",
+      "case_ids": [
+        "airFoil2D_SST_31.812_1.334_0.371_3.287_0.0_19.548"
+      ],
+      "sha256": "01e1cbf567f4916a5c1403f6255e81ac84ff1a55fa75e0ba9df17507c0ef04d2"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{% capture configured_copyright_owner %}{{ site.first_name }} {{ site.middle_name }} {{ site.last_name }}{% endcapture %}
+{% assign copyright_owner = configured_copyright_owner | strip %}
+{% if copyright_owner == '' %}{% assign copyright_owner = site.title %}{% endif %}
+<footer class="ux-site-footer{% if site.footer_fixed %} fixed-bottom{% else %} sticky-bottom mt-5{% endif %}" role="contentinfo">
+  <div class="container">
+    <div class="ux-footer-main">
+      <span
+        >&copy; {{ site.time | date: '%Y' }}
+        {{ copyright_owner -}}
+      </span>
+      <nav aria-label="Footer navigation">
+        <a
+          href="{{ '/about/' | relative_url }}"
+          {% if page.permalink == '/about/' %}
+            aria-current="page"
+          {% endif %}
+          >About</a
+        >
+        <a href="{{ '/contributors/' | relative_url }}#contribute">How to contribute</a>
+        <a href="{{ site.submission_repository_url }}">GitHub <span aria-hidden="true">↗</span></a>
+        <a href="mailto:{{ site.email }}">Contact</a>
+        {% if site.impressum_path -%}
+          <a href="{{ site.impressum_path | relative_url }}">Impressum</a>
+        {%- endif %}
+      </nav>
+    </div>
+    <div class="ux-footer-credits">{{ site.footer_text }}</div>
+  </div>
+</footer>

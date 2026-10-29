@@ -1,0 +1,65 @@
+name: Deploy site
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-production
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2.2"
+          bundler-cache: true
+      - name: Build production website
+        run: |
+          pip3 install --upgrade jupyter
+          JEKYLL_ENV=production bundle exec jekyll build --lsi
+      - name: Verify native scientific assets
+        run: python3 bin/check_native_profile_build.py _site
+      - name: Finish styles and check production launch
+        run: |
+          npm install -g purgecss
+          purgecss -c purgecss.config.js
+          python3 bin/refresh_css_hashes.py _site
+          python3 bin/refresh_css_hashes.py _site --check
+          LAUNCH_PHASE=$(ruby -ryaml -e 'puts YAML.load_file("_data/launch.yml")["phase"]')
+          python3 bin/check_launch_build.py _site --phase "$LAUNCH_PHASE"
+      - name: Preserve published immutable release snapshots
+        run: |
+          if git ls-remote --exit-code --heads origin gh-pages >/dev/null; then
+            git fetch --no-tags --depth=1 origin gh-pages:refs/remotes/origin/gh-pages
+            if git cat-file -e origin/gh-pages:releases 2>/dev/null; then
+              git archive origin/gh-pages releases | tar -x -C _site
+            fi
+          fi
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    if: github.event_name != 'pull_request' && vars.PUBLISH_SITE == 'true'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish verified build
+        id: deployment
+        uses: actions/deploy-pages@v4

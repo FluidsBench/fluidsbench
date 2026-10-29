@@ -1,0 +1,323 @@
+name: Publish immutable leaderboard release snapshot
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_id:
+        description: Official lowercase release slug (letters, digits, dots, and hyphens)
+        required: true
+        type: string
+      submission_commit:
+        description: Full 40-character fluidsbench-submission commit containing the release artifacts
+        required: true
+        type: string
+      confirmation:
+        description: Type publish:<release_id> to confirm this one-time publication
+        required: true
+        type: string
+
+permissions:
+  actions: write
+  contents: write
+
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: false
+
+env:
+  SUBMISSION_REPOSITORY: FluidsBench/fluidsbench-submission
+
+jobs:
+  publish-release-snapshot:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout website source
+        uses: actions/checkout@v4
+
+      - name: Validate manual inputs
+        env:
+          RELEASE_ID: ${{ inputs.release_id }}
+          SUBMISSION_COMMIT: ${{ inputs.submission_commit }}
+          CONFIRMATION: ${{ inputs.confirmation }}
+          WEBSITE_REF: ${{ github.ref }}
+        run: |
+          if [[ ! "$RELEASE_ID" =~ ^[a-z0-9]([a-z0-9.-]{0,158}[a-z0-9])?$ ]]; then
+            echo "release_id must be at most 160 characters, start and end with a lowercase letter or digit, and otherwise use only lowercase letters, digits, dots, and hyphens" >&2
+            exit 1
+          fi
+          if [[ ! "$SUBMISSION_COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "submission_commit must be a full lowercase 40-character Git SHA" >&2
+            exit 1
+          fi
+          if [[ "$CONFIRMATION" != "publish:$RELEASE_ID" ]]; then
+            echo "confirmation must exactly equal publish:$RELEASE_ID" >&2
+            exit 1
+          fi
+          if [[ "$WEBSITE_REF" != "refs/heads/main" ]]; then
+            echo "immutable snapshots may only be published from the production main branch" >&2
+            exit 1
+          fi
+
+      - name: Refuse to overwrite an existing release snapshot
+        env:
+          RELEASE_ID: ${{ inputs.release_id }}
+        run: |
+          if git ls-remote --exit-code --heads origin gh-pages >/dev/null; then
+            git fetch --no-tags --depth=1 origin gh-pages:refs/remotes/origin/gh-pages
+          fi
+          if git cat-file -e "origin/gh-pages:releases/$RELEASE_ID" 2>/dev/null; then
+            echo "releases/$RELEASE_ID already exists on gh-pages; immutable snapshots cannot be overwritten" >&2
+            exit 1
+          fi
+
+      - name: Checkout exact submission release artifacts
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SUBMISSION_REPOSITORY }}
+          ref: ${{ inputs.submission_commit }}
+          fetch-depth: 0
+          path: _submission_release
+
+      - name: Validate official release manifest and prepare build configuration
+        id: release
+        env:
+          REQUESTED_SUBMISSION_COMMIT: ${{ inputs.submission_commit }}
+          RELEASE_ID: ${{ inputs.release_id }}
+          WEBSITE_COMMIT: ${{ github.sha }}
+        run: |
+          RESOLVED_SUBMISSION_COMMIT=$(git -C _submission_release rev-parse HEAD)
+          if [[ "$RESOLVED_SUBMISSION_COMMIT" != "$REQUESTED_SUBMISSION_COMMIT" ]]; then
+            echo "submission checkout did not resolve to the requested exact commit" >&2
+            exit 1
+          fi
+          python3 bin/check_release_snapshot.py prepare \
+            --manifest _submission_release/leaderboard/manifest.json \
+            --release-id "$RELEASE_ID" \
+            --artifact-commit "$RESOLVED_SUBMISSION_COMMIT" \
+            --website-commit "$WEBSITE_COMMIT" \
+            --config-out _config_release.yml \
+            --github-output "$GITHUB_OUTPUT"
+
+      - name: Verify source provenance commit
+        env:
+          SOURCE_COMMIT: ${{ steps.release.outputs.source_commit }}
+          ARTIFACT_COMMIT: ${{ steps.release.outputs.artifact_commit }}
+        run: |
+          git -C _submission_release fetch --force --no-tags origin main:refs/remotes/origin/main
+          if ! git -C _submission_release merge-base --is-ancestor "$ARTIFACT_COMMIT" origin/main; then
+            echo "release-artifact commit is not reachable from fluidsbench-submission origin/main" >&2
+            exit 1
+          fi
+          git -C _submission_release cat-file -e "$SOURCE_COMMIT^{commit}"
+          if ! git -C _submission_release merge-base --is-ancestor "$SOURCE_COMMIT" "$ARTIFACT_COMMIT"; then
+            echo "manifest source_commit is not an ancestor of the release-artifact commit" >&2
+            exit 1
+          fi
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate selected submission release artifacts
+        working-directory: _submission_release
+        run: |
+          python -m pip install -r requirements.txt
+          python scripts/manage_leaderboard.py check
+
+      - name: Prepare submission availability for this exact release
+        run: python3 bin/prepare_submission_status.py --submission-root _submission_release
+
+      - name: Verify website and release contract schemas match
+        run: |
+          for SCHEMA in \
+            schemas/v2/submission.schema.json \
+            schemas/v2/evaluation-evidence.schema.json \
+            schemas/v2/maintainer-validation.schema.json \
+            schemas/v3/submission.schema.json \
+            schemas/v3/evaluation-evidence.schema.json \
+            schemas/v3/discretization.schema.json \
+            schemas/v3/discretization-case.schema.json \
+            schemas/v3/case-metrics.schema.json \
+            schemas/v3/maintainer-validation.schema.json \
+            schemas/v3/prediction-artifact.schema.json \
+            schemas/v3/prediction-artifact-checks.schema.json \
+            schemas/scoring-support/v1/manifest.schema.json \
+            schemas/scoring-support/v1/case-index.schema.json \
+            schemas/scoring-support/v1/case-chunk.schema.json \
+            schemas/releases/claim-index.schema.json \
+            schemas/releases/revision-history.schema.json \
+            schemas/releases/result-claim.schema.json
+          do
+            cmp --silent "$SCHEMA" "_submission_release/$SCHEMA" || {
+              echo "$SCHEMA differs between the website and selected submission release" >&2
+              exit 1
+            }
+          done
+
+      - name: Validate website leaderboard runtime against selected release
+        env:
+          FLUIDSBENCH_SUBMISSION_ROOT: ${{ github.workspace }}/_submission_release
+        run: |
+          node --check assets/js/leaderboard.js
+          node bin/check_leaderboard_claim_ui.js
+
+      - name: Verify immutable published release bytes
+        env:
+          ASSET_BASE_URL: ${{ steps.release.outputs.asset_base_url }}
+          FEED_FILE: ${{ steps.release.outputs.feed_file }}
+          FEED_SHA256: ${{ steps.release.outputs.feed_sha256 }}
+          CLAIMS_INDEX_FILE: ${{ steps.release.outputs.claims_index_file }}
+          CLAIMS_INDEX_SHA256: ${{ steps.release.outputs.claims_index_sha256 }}
+          REVISION_HISTORY_FILE: ${{ steps.release.outputs.revision_history_file }}
+          REVISION_HISTORY_SHA256: ${{ steps.release.outputs.revision_history_sha256 }}
+          GROUND_TRUTH_MANIFEST_URL: ${{ steps.release.outputs.ground_truth_manifest_url }}
+          GROUND_TRUTH_MANIFEST_SHA256: ${{ steps.release.outputs.ground_truth_manifest_sha256 }}
+        run: |
+          python3 bin/check_release_snapshot.py list-claim-assets \
+            --manifest _submission_release/leaderboard/manifest.json \
+            --repository-root _submission_release \
+            --output "$RUNNER_TEMP/claim-assets.tsv"
+          python3 bin/check_release_snapshot.py list-scoring-support-manifests \
+            --manifest _submission_release/leaderboard/manifest.json \
+            --output "$RUNNER_TEMP/scoring-support-manifests.tsv"
+          curl --proto '=https' --proto-redir '=https' --tlsv1.2 --fail --location --silent --show-error \
+            --output "$RUNNER_TEMP/published-manifest.json" \
+            "${ASSET_BASE_URL}leaderboard/manifest.json"
+          cmp --silent _submission_release/leaderboard/manifest.json "$RUNNER_TEMP/published-manifest.json" || {
+            echo "asset_base_url does not serve the exact checked-out official manifest bytes" >&2
+            exit 1
+          }
+          curl --proto '=https' --proto-redir '=https' --tlsv1.2 --fail --location --silent --show-error \
+            --output "$RUNNER_TEMP/published-feed.json" \
+            "${ASSET_BASE_URL}${FEED_FILE}"
+          PUBLISHED_FEED_SHA256=$(sha256sum "$RUNNER_TEMP/published-feed.json")
+          if [[ "${PUBLISHED_FEED_SHA256%% *}" != "$FEED_SHA256" ]]; then
+            echo "published feed does not match data_release.feed_sha256" >&2
+            exit 1
+          fi
+          cmp --silent "_submission_release/$FEED_FILE" "$RUNNER_TEMP/published-feed.json" || {
+            echo "asset_base_url does not serve the exact checked-out feed bytes" >&2
+            exit 1
+          }
+          curl --proto '=https' --proto-redir '=https' --tlsv1.2 --fail --location --silent --show-error \
+            --output "$RUNNER_TEMP/published-claims-index.json" \
+            "${ASSET_BASE_URL}${CLAIMS_INDEX_FILE}"
+          PUBLISHED_CLAIMS_SHA256=$(sha256sum "$RUNNER_TEMP/published-claims-index.json")
+          if [[ "${PUBLISHED_CLAIMS_SHA256%% *}" != "$CLAIMS_INDEX_SHA256" ]]; then
+            echo "published claim index does not match data_release.claims.index_sha256" >&2
+            exit 1
+          fi
+          cmp --silent "_submission_release/$CLAIMS_INDEX_FILE" "$RUNNER_TEMP/published-claims-index.json" || {
+            echo "asset_base_url does not serve the exact checked-out claim-index bytes" >&2
+            exit 1
+          }
+          curl --proto '=https' --proto-redir '=https' --tlsv1.2 --fail --location --silent --show-error \
+            --output "$RUNNER_TEMP/published-revision-history.json" \
+            "${ASSET_BASE_URL}${REVISION_HISTORY_FILE}"
+          PUBLISHED_REVISION_HISTORY_SHA256=$(sha256sum "$RUNNER_TEMP/published-revision-history.json")
+          if [[ "${PUBLISHED_REVISION_HISTORY_SHA256%% *}" != "$REVISION_HISTORY_SHA256" ]]; then
+            echo "published revision history does not match data_release.revision_history.sha256" >&2
+            exit 1
+          fi
+          cmp --silent "_submission_release/$REVISION_HISTORY_FILE" "$RUNNER_TEMP/published-revision-history.json" || {
+            echo "asset_base_url does not serve the exact checked-out revision-history bytes" >&2
+            exit 1
+          }
+          CLAIM_COUNTER=0
+          while IFS=$'\t' read -r CLAIM_FILE CLAIM_SHA256
+          do
+            CLAIM_COUNTER=$((CLAIM_COUNTER + 1))
+            PUBLISHED_CLAIM="$RUNNER_TEMP/published-claim-$CLAIM_COUNTER.json"
+            curl --proto '=https' --proto-redir '=https' --tlsv1.2 --fail --location --silent --show-error \
+              --output "$PUBLISHED_CLAIM" \
+              "${ASSET_BASE_URL}${CLAIM_FILE}"
+            PUBLISHED_CLAIM_SHA256=$(sha256sum "$PUBLISHED_CLAIM")
+            if [[ "${PUBLISHED_CLAIM_SHA256%% *}" != "$CLAIM_SHA256" ]]; then
+              echo "published claim record does not match its index SHA-256: $CLAIM_FILE" >&2
+              exit 1
+            fi
+            cmp --silent "_submission_release/$CLAIM_FILE" "$PUBLISHED_CLAIM" || {
+              echo "asset_base_url does not serve the exact checked-out claim bytes: $CLAIM_FILE" >&2
+              exit 1
+            }
+          done < "$RUNNER_TEMP/claim-assets.tsv"
+          curl --proto '=https' --proto-redir '=https' --tlsv1.2 --fail --location --silent --show-error \
+            --output "$RUNNER_TEMP/published-ground-truth-manifest.json" \
+            "$GROUND_TRUTH_MANIFEST_URL"
+          PUBLISHED_GROUND_TRUTH_SHA256=$(sha256sum "$RUNNER_TEMP/published-ground-truth-manifest.json")
+          if [[ "${PUBLISHED_GROUND_TRUTH_SHA256%% *}" != "$GROUND_TRUTH_MANIFEST_SHA256" ]]; then
+            echo "published profile ground-truth manifest does not match its declared SHA-256" >&2
+            exit 1
+          fi
+          SUPPORT_COUNTER=0
+          while IFS=$'\t' read -r DATASET_ID SUPPORT_URL SUPPORT_SHA256
+          do
+            SUPPORT_COUNTER=$((SUPPORT_COUNTER + 1))
+            PUBLISHED_SUPPORT="$RUNNER_TEMP/published-scoring-support-$SUPPORT_COUNTER.json"
+            curl --proto '=https' --proto-redir '=https' --tlsv1.2 --fail --location --silent --show-error \
+              --output "$PUBLISHED_SUPPORT" \
+              "$SUPPORT_URL"
+            PUBLISHED_SUPPORT_SHA256=$(sha256sum "$PUBLISHED_SUPPORT")
+            if [[ "${PUBLISHED_SUPPORT_SHA256%% *}" != "$SUPPORT_SHA256" ]]; then
+              echo "$DATASET_ID scoring-support manifest does not match its declared SHA-256" >&2
+              exit 1
+            fi
+          done < "$RUNNER_TEMP/scoring-support-manifests.tsv"
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2.2"
+          bundler-cache: true
+
+      - name: Install and build immutable snapshot
+        run: |
+          pip3 install --upgrade jupyter
+          export JEKYLL_ENV=production
+          bundle exec jekyll build --lsi --config _config.yml,_config_release.yml
+
+      - name: Purge unused CSS
+        run: |
+          npm install -g purgecss
+          purgecss -c purgecss.config.js
+          python3 bin/refresh_css_hashes.py _site
+          python3 bin/refresh_css_hashes.py _site --check
+
+      - name: Remove standalone HTML outside the snapshot layout
+        run: |
+          rm -rf _site/assets/html _site/assets/jupyter _site/assets/plotly _site/leaderboards
+
+      - name: Validate generated snapshot
+        run: |
+          python3 bin/check_release_snapshot.py check-build \
+            --root _site \
+            --config _config_release.yml \
+            --manifest _submission_release/leaderboard/manifest.json \
+            --release-id "${{ steps.release.outputs.release_id }}" \
+            --artifact-commit "${{ steps.release.outputs.artifact_commit }}" \
+            --website-commit "${{ steps.release.outputs.website_commit }}"
+
+      - name: Recheck immutable target immediately before deployment
+        env:
+          RELEASE_ID: ${{ steps.release.outputs.release_id }}
+        run: |
+          if git ls-remote --exit-code --heads origin gh-pages >/dev/null; then
+            git fetch --no-tags --depth=1 origin gh-pages:refs/remotes/origin/gh-pages
+          fi
+          if git cat-file -e "origin/gh-pages:releases/$RELEASE_ID" 2>/dev/null; then
+            echo "releases/$RELEASE_ID appeared before deployment; refusing to overwrite it" >&2
+            exit 1
+          fi
+
+      - name: Deploy immutable release snapshot
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: _site
+          target-folder: releases/${{ steps.release.outputs.release_id }}
+          clean: true
+
+      - name: Deploy website with the immutable release archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --repo "$GITHUB_REPOSITORY" --ref main

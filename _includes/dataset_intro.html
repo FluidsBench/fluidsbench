@@ -1,0 +1,93 @@
+{% assign dataset = site.data.dataset_catalog[include.slug] %}
+<div class="ux-dataset-topline">
+  <a href="{{ '/datasets/' | relative_url }}">← All datasets</a>{% if site.launch.leaderboard_visible %}<a
+    class="ux-primary-link"
+    href="{{ '/' | relative_url }}?dataset={{ dataset.name | slugify }}"
+    >View {{ dataset.name }} leaderboard →</a
+  >{% else %}<a class="ux-primary-link" href="{{ '/run/' | relative_url }}#{{ include.slug }}">Submission guide →</a>{% endif %}
+</div>
+{% assign availability = site.data.submission_status.datasets[include.slug] %}
+<p class="launch-dataset-status">
+  {% if availability.open and site.launch.accepting_submissions %}Open for submissions{% elsif availability.open %}Ready for submission opening{% else
+  %}Submissions in preparation{% endif %} · <a href="{{ '/run/' | relative_url }}#{{ include.slug }}">Check submission availability</a>
+</p>
+<nav class="ux-dataset-sections" aria-label="Dataset guide sections">
+  <a href="#dataset-overview">Overview</a><a href="#dataset-start">Get the data</a><a href="#dataset-evaluation">Evaluation</a>
+</nav>
+<section id="dataset-overview" class="dataset-overview" data-dataset-id="{{ include.slug }}">
+  <div class="dataset-overview-copy">
+    <p class="dataset-kicker">{{ dataset.category }}</p>
+    <h2>Overview</h2>
+    <p class="dataset-intro">{{ dataset.summary }}</p>
+  </div>
+
+  <div class="dataset-hero-grid">
+    <figure class="dataset-source-figure">
+      <a href="{{ dataset.source.image.source_url }}">
+        <img src="{{ dataset.source.image.path | relative_url }}" alt="{{ dataset.source.image.alt }}" width="1200" height="675" decoding="async" />
+      </a>
+      <figcaption>
+        {{ dataset.source.image.caption }}
+        <a href="{{ dataset.source.image.source_url }}">{{ dataset.source.image.credit }}</a>.
+      </figcaption>
+    </figure>
+
+    <div class="dataset-evaluation-map" aria-label="{{ dataset.name }} FluidsBench evaluation schematic">
+      <p class="dataset-evaluation-title">FluidsBench evaluation schematic</p>
+      <ol>
+        <li>
+          <span>Model inputs</span>
+          <strong>{{ dataset.visual.inputs }}</strong>
+        </li>
+        <li>
+          <span>Scoring support</span>
+          <strong>{{ dataset.visual.support }}</strong>
+        </li>
+        <li>
+          <span>Reported evaluation</span>
+          <strong>{{ dataset.visual.metrics }}</strong>
+        </li>
+      </ol>
+      <p class="dataset-schematic-note">Schematic only; the benchmark specification fixes the exact files, entities, arrays, and equations.</p>
+    </div>
+  </div>
+
+  <div class="dataset-release-grid">
+    <article>
+      <p class="dataset-release-label">Source release</p>
+      <p>
+        <a href="{{ dataset.source.revision_url }}"><strong>{{ dataset.source.release }}</strong></a>
+      </p>
+      <p>Use this immutable revision when following the download example below.</p>
+    </article>
+    <article>
+      <p class="dataset-release-label">Availability and licence</p>
+      <p><strong>{{ dataset.source.availability }}</strong></p>
+      <p><a href="{{ dataset.source.license_url }}">{{ dataset.source.license }}</a>. Check the source release for its complete terms.</p>
+    </article>
+    <article>
+      <p class="dataset-release-label">Benchmark definition</p>
+      <p><strong>Contract pinned</strong></p>
+      <details class="dataset-technical-pin">
+        <summary>Technical details</summary>
+        <p>
+          Scoring source pin: <code>{{ dataset.benchmark.source_pin }}</code>.
+          <a href="{{ site.submission_repository_url }}/tree/{{ site.submission_source_ref | default: 'main' }}/benchmark-specs/{{ include.slug }}"
+            >Open contract</a
+          >.
+        </p>
+      </details>
+    </article>
+  </div>
+
+  <div class="dataset-source-contract">
+    <div>
+      <h3>What the source contains</h3>
+      <p>{{ dataset.source.contents }}</p>
+    </div>
+    <div>
+      <h3>What FluidsBench currently evaluates</h3>
+      <p>{{ dataset.benchmark.summary }}</p>
+    </div>
+  </div>
+</section>
