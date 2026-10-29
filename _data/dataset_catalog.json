@@ -72,16 +72,7 @@
       "submissions_open": true,
       "source_pin": "neashton/ahmedml @ 02688c727cdb8dc8678e28abc6bbbb7e93c5fa15",
       "summary": "The benchmark scores complete native boundary pMean and wallShearStressMean, complete native-volume UMean and pMean, reconstructed force coefficients, three 128-point surface Cp cuts, four 128-point wake-velocity profiles, and report-only near-body/wake/farfield diagnostics. All eight prescribed splits are open for submissions using the published support and resumable evaluator.",
-      "split_ids": [
-        "full",
-        "medium",
-        "scarce",
-        "super_scarce",
-        "geometry",
-        "high_drag",
-        "low_drag",
-        "image_wake"
-      ],
+      "split_ids": ["full", "medium", "scarce", "super_scarce", "geometry", "high_drag", "low_drag", "image_wake"],
       "case_id_status": "official",
       "contract_digest": "c51243ac9395fa7a5e83e729f059c292fca98f019fbf964f71ce17ac71642120"
     },
@@ -204,16 +195,7 @@
       "submissions_open": true,
       "source_pin": "7a5c0948ce27be709b1116a3a190f806e7a8f79f",
       "summary": "The benchmark binds all 484 public cases and eight official split lists, with pMeanTrim and wallShearStressMeanTrim on native surface polygons, UMeanTrim and pMeanTrim on native volume cells, constant-reference force truth, AutoCFD5 velocity profiles, and continuous Cp cuts. All eight splits accept surface-and-volume or surface-only submissions. Fixed-location profiles use normalized trapezoidal arc-length weighting; geometry-relative diagnostics are report-only with zero scoring weight. Surface-only results retain a maximum overall score of 60.",
-      "split_ids": [
-        "full",
-        "medium",
-        "scarce",
-        "super_scarce",
-        "geometry",
-        "high_drag",
-        "low_drag",
-        "rear_separation"
-      ],
+      "split_ids": ["full", "medium", "scarce", "super_scarce", "geometry", "high_drag", "low_drag", "rear_separation"],
       "case_id_status": "official",
       "contract_digest": "a207ff98cd1b532788657b00a0c227c79e174275dc09dab3d5704cec3efb30e0"
     },
@@ -384,9 +366,7 @@
       "submissions_open": true,
       "source_pin": "Dataverse DOI 10.7910/DVN/K7PWNJ, version 1.0",
       "summary": "Open for pressure-only submissions covering every native VTK PointData location of all 1,154 official test designs. Area-weighted relative L2 is primary and equal-point relative L2 is secondary. Three frozen native Cp traces are report-only. Use the prepared scoring support and resumable evaluator to generate and validate the result package.",
-      "split_ids": [
-        "official_test"
-      ],
+      "split_ids": ["official_test"],
       "case_id_status": "official",
       "contract_digest": "9ed441c26d1ffc325dd030346395f2f5b92f98cc20df8fb5f6bcf06971ffd78f",
       "support": "Native surface pressure points"
@@ -474,16 +454,7 @@
       "submissions_open": true,
       "source_pin": "Hugging Face revision 8a6ca32",
       "summary": "All eight prescribed splits are open for surface-and-volume submissions and bound to available native field files. Ground-truth profiles cover all 233 distinct test cases, with fixed and body-height-relative families. Use the published scoring support and resumable evaluator for evaluation, validation and package generation.",
-      "split_ids": [
-        "full",
-        "medium",
-        "scarce",
-        "super_scarce",
-        "geometry",
-        "high_drag",
-        "low_drag",
-        "image_wake"
-      ],
+      "split_ids": ["full", "medium", "scarce", "super_scarce", "geometry", "high_drag", "low_drag", "image_wake"],
       "case_id_status": "official_intersected_with_published",
       "contract_digest": "c430396116344f3940ec08b8bb6bfff04ff335d05b1326546691b0e0c2701a32"
     },
@@ -680,11 +651,7 @@
       "submissions_open": true,
       "source_pin": "d35d4035d8ba6fa98c1a6662be925c2fc777610b",
       "summary": "Submissions are open for Full, Scarce and AoA extrapolation; Reynolds remains closed. The current scored flow fields are U and p—not nut—and the boundary task scores pressure plus wall shear derived by the fixed evaluator. Required diagnostics are Ux/U∞ and Uy/U∞ on 1,001-point extrados-normal lines at x/c = 0.25, 0.50, 0.75, and 0.95. Pressure-profile Cp is not a current leaderboard metric. The approved overall score uses 50% fields, 25% drag/lift, and 25% balanced velocity profiles.",
-      "split_ids": [
-        "full",
-        "scarce",
-        "aoa_extrapolation"
-      ],
+      "split_ids": ["full", "scarce", "aoa_extrapolation"],
       "case_id_status": "official",
       "contract_digest": "b239d43f5b479efe5cbe23e595cd3aed9f6c5041c936837296c1e71b2eef51a8"
     },
@@ -779,9 +746,7 @@
       "submissions_open": false,
       "source_pin": "Dataverse DOI 10.7910/DVN/VJT9EP, version 1.0",
       "summary": "The candidate task is surface-only and uses cp plus cf_x/cf_y/cf_z on every native legacy-VTK surface point, with area-weighted relative L2 as the primary physical metric. The current 870-case geometry-holdout list is provisional; the public Dataverse release does not separately identify it as an official evaluation release, so this mapping is not active for submissions.",
-      "split_ids": [
-        "geometry_holdout"
-      ],
+      "split_ids": ["geometry_holdout"],
       "case_id_status": "prototype_generated",
       "contract_digest": "10f9edf41794878eb79f51fb9025f253b1f58808c98fbf23620194970650bb0c"
     },
@@ -839,16 +804,7 @@
       "submissions_open": false,
       "source_pin": "Not yet frozen",
       "summary": "The candidate scores Density, Pressure, and Temperature over every vertex of the native blade-surface CGNS zone, together with Massflow, Compression_ratio, and Efficiency. Because the source 200-case evaluation targets are hidden, FluidsBench must publish and approve a separate public-ground-truth evaluation split before submissions can open; the current eight case lists are prototypes.",
-      "split_ids": [
-        "train_1000",
-        "train_500",
-        "train_250",
-        "train_125",
-        "train_64",
-        "train_32",
-        "train_16",
-        "train_8"
-      ],
+      "split_ids": ["train_1000", "train_500", "train_250", "train_125", "train_64", "train_32", "train_16", "train_8"],
       "case_id_status": "prototype_generated",
       "contract_digest": "63d53dfbd8dc8d2d105a3543c887cc4701473f23b3bf13ddbf64d099b7b40824"
     },
@@ -906,16 +862,7 @@
       "submissions_open": false,
       "source_pin": "Not yet frozen",
       "summary": "The candidate scores mach and nut on every native two-dimensional CGNS vertex, M_iso along every blade-curve vertex, and the six public scalar targets. Because the source 168-case evaluation targets are hidden, FluidsBench must publish and approve a separate public-ground-truth evaluation split; all eight current case lists are prototypes.",
-      "split_ids": [
-        "train",
-        "train_500",
-        "train_250",
-        "train_125",
-        "train_64",
-        "train_32",
-        "train_16",
-        "train_8"
-      ],
+      "split_ids": ["train", "train_500", "train_250", "train_125", "train_64", "train_32", "train_16", "train_8"],
       "case_id_status": "prototype_generated",
       "contract_digest": "60453c75f951f36febb879942bce09a1276f6e433914d9a5f860ed5b062dbb48"
     },

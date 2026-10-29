@@ -1,6 +1,6 @@
 {
-  "source_commit": "83c9af8a49bc141ae32e1fb0aecd9b0759f4328d",
-  "manifest_sha256": "a3ff224f1efc550a72e1f54d24bdff7d488bf386c75ba7484dbcaf80ea3b882d",
+  "source_commit": "d45eb286f1c3fa73c02832c064d675e36ffedae5",
+  "manifest_sha256": "4c56b408be1e225fd7659dd8a4aafd4834b9f7624f6d32bbd08daf5b7251195b",
   "release": {
     "id": "fluidsbench-2026-unreleased",
     "status": "unreleased",

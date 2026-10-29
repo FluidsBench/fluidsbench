@@ -150,6 +150,7 @@ ${source.slice(markerIndex)}`;
 
 const elements = new Map();
 const fetchedUrls = [];
+const syntheticResponses = new Map();
 const context = {
   ArrayBuffer,
   Blob,
@@ -185,6 +186,7 @@ const context = {
   async fetch(value) {
     const url = new URL(value);
     fetchedUrls.push(url.href);
+    if (syntheticResponses.has(url.href)) return new TestResponse(syntheticResponses.get(url.href));
     const groundTruthMarker = "/profile-ground-truth/";
     const groundTruthOffset = decodeURIComponent(url.pathname).lastIndexOf(groundTruthMarker);
     if (groundTruthOffset >= 0) {
@@ -262,11 +264,15 @@ assert.equal(api.decimalHalfUp(-91.4564999999999, 3), -91.456);
   const manifest = JSON.parse(fs.readFileSync(path.join(submissionRoot, "leaderboard/manifest.json"), "utf8"));
   api.state.manifest = manifest;
   api.state.metrics = new Map(manifest.metric_definitions.map((definition) => [definition.id, definition]));
-  // Exercise historical component rendering without opening the dataset in the site.
+  // Exercise component rendering with an in-memory fixture, keeping the public feed empty.
   displayConfig.hiliftaeroml.coming_soon = false;
   api.state.dataset = "HiLiftAeroML";
   const dataset = manifest.datasets.find((item) => item.name === api.state.dataset);
-  const entry = JSON.parse(fs.readFileSync(path.join(submissionRoot, dataset.file), "utf8"))[0];
+  const entry = { model: "Synthetic UI fixture", dataset: "HiLiftAeroML", metric_values: {} };
+  for (const component of dataset.overall_score_composite.components) {
+    entry.metric_values[component.metric_id] = component.transform === "bounded_quality" ? 1 : 0;
+  }
+  entry.metric_values.overall_score = 100;
   const html = api.scoreBreakdownHtml(api.normalizeRow(entry, 0));
   assert.match(html, /<summary>Score breakdown<\/summary>/);
   assert.doesNotMatch(html, /ux-score-breakdown" open/);
@@ -2457,49 +2463,6 @@ function verifyDatasetSubmissionAvailability() {
   );
 }
 
-async function verifyHiLiftRegionalReport() {
-  api.state.manifest = manifest;
-  api.state.regionalReports.clear();
-  api.state.regionalReportPromises.clear();
-  const feedIndex = feed.findIndex((entry) => entry.submission_id === "hiliftaeroml-transolver-full360-candidate-v1");
-  assert.notEqual(feedIndex, -1, "the retained HiLiftAeroML Full360 result must be present");
-  const row = api.normalizeRow(feed[feedIndex], feedIndex);
-  const binding = api.regionalBinding(row);
-  assert.ok(binding, "the retained HiLiftAeroML regional binding must be accepted");
-  const report = await api.ensureRegionalReport(row);
-  assert.equal(report.case_count, 360);
-  assert.equal(report.reconstruction.status, "pass");
-  assert.equal(report.reconstruction.checked_field_count, 12);
-
-  const surfacePressure = api.regionalFieldsForDataset("hiliftaeroml").surface_pressure;
-  const surfaceReport = api.regionalFieldReport(report, surfacePressure);
-  assert.equal(surfaceReport.regions.length, 4);
-  assert.equal(api.regionalRules(report, surfacePressure)[0].region_id, "nacelle_installation_envelope_proxy");
-  assert.ok(surfaceReport.regions.every((region) => Number.isFinite(api.regionalPooled(region, "physical").relative_l2_percent)));
-  assert.ok(Math.abs(surfaceReport.regions.reduce((sum, region) => sum + api.regionalErrorShare(region, "physical"), 0) - 100) < 1e-6);
-
-  const volumeVelocity = api.regionalFieldsForDataset("hiliftaeroml").volume_velocity;
-  const volumeReport = api.regionalFieldReport(report, volumeVelocity);
-  assert.equal(volumeReport.regions.length, 4);
-  assert.equal(api.regionalPrimaryWeighting(volumeReport, volumeVelocity), "equal_entity");
-  assert.ok(volumeReport.regions.every((region) => Number.isFinite(api.regionalPrimaryMetricValue(region, "equal_entity", volumeVelocity))));
-  assert.ok(volumeReport.regions.every((region) => Number.isFinite(api.regionalPooled(region, "equal_entity").r2)));
-
-  const volumePressure = api.regionalFieldsForDataset("hiliftaeroml").volume_pressure;
-  const pressureReport = api.regionalFieldReport(report, volumePressure);
-  const farfieldPressure = pressureReport.regions.find((region) => region.region_id === "farfield_and_remaining");
-  assert.ok(farfieldPressure.relative_l2_percent > 100);
-  assert.ok(api.regionalPrimaryMetricValue(farfieldPressure, "equal_entity", volumePressure) < 4);
-  assert.ok(farfieldPressure.r2 < 0);
-
-  const wrongHashRow = {
-    ...row,
-    id: `${row.id}-wrong-hash`,
-    regional_diagnostics: { ...binding, sha256: "c".repeat(64) },
-  };
-  await assert.rejects(api.ensureRegionalReport(wrongHashRow), /checksum does not match/);
-}
-
 async function verifyHiLiftCompactProfileOverlay() {
   const groundTruthManifestPath = path.join(root, "assets/data/profile-ground-truth/manifest.json");
   const groundTruthManifest = JSON.parse(fs.readFileSync(groundTruthManifestPath, "utf8"));
@@ -2548,86 +2511,54 @@ async function verifyHiLiftCompactProfileOverlay() {
     ["deflection", ["Deflection", "caseset-c0ecb14de138", 360]],
     ["stall", ["Stall", "caseset-804491c8956e", 723]],
   ]);
-  const expectedRowsPerSplit = new Map([...expectedPreviewSplits].map(([splitId]) => [splitId, splitId === "scarce" ? 1 : 2]));
-  const previewRows = feed.filter((entry) => entry.dataset_id === "hiliftaeroml");
-  assert.equal(
-    previewRows.length,
-    [...expectedRowsPerSplit.values()].reduce((sum, count) => sum + count, 0),
-    "all 23 retained Transolver and GeoTransolver HiLiftAeroML previews must be present"
+  // Validate every current scientific split independently of submitted results.
+  for (const [splitLabel, caseSetId, caseCount] of expectedPreviewSplits.values()) {
+    const splitContext = await api.groundTruthIndex("HiLiftAeroML", splitLabel);
+    assert.equal(splitContext.caseSetId, caseSetId);
+    assert.equal(splitContext.index.case_count, caseCount);
+    const metadata = await api.indexedProfileCase(splitContext, splitContext.index.case_ids[0], api.state.groundTruthChunks, splitLabel);
+    const materialized = await api.materializeHiLiftCompactTruth(metadata, splitLabel);
+    assert.equal(materialized.series.length, 15);
+  }
+
+  // Make zero-valued compact predictions in memory: no historical submission is needed.
+  const predictionBytes = require("node:child_process").execFileSync(
+    process.env.PYTHON || "python3",
+    [
+      "-c",
+      `
+import io, json, struct, sys, zipfile
+sizes = json.load(sys.stdin)
+out = io.BytesIO()
+with zipfile.ZipFile(out, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+    for name, dtype, count, width in sizes:
+        header = ("{'descr': '%s', 'fortran_order': False, 'shape': (%d,), }" % (dtype, count)).encode()
+        header += b' ' * ((-10 - len(header) - 1) % 64) + b'\\n'
+        archive.writestr(name + '.npy', b'\\x93NUMPY\\x01\\x00' + struct.pack('<H', len(header)) + header + bytes(count * width))
+sys.stdout.buffer.write(out.getvalue())
+`,
+    ],
+    {
+      input: JSON.stringify([
+        ["cp_q_delta", "<i2", truth.surface_cp.retained_point_count, 2],
+        ["velocity_speed_over_u_inf", "|u1", truth.volume_velocity.stored_byte_count, 1],
+      ]),
+    }
   );
-  for (const [splitId, expectedCount] of expectedRowsPerSplit) {
-    assert.equal(previewRows.filter((row) => row.split_id === splitId).length, expectedCount, `unexpected HiLiftAeroML preview count for ${splitId}`);
-  }
-  for (const row of previewRows) {
-    const expected = expectedPreviewSplits.get(row.split_id);
-    assert.ok(expected, `unexpected HiLiftAeroML preview split ${row.split_id}`);
-    const [splitLabel, caseSetId, caseCount] = expected;
-    assert.equal(row.split, splitLabel);
-    assert.equal(row.case_set_id, caseSetId);
-    assert.equal(row.profile_data?.case_count, caseCount);
-
-    const splitTruthContext = await api.groundTruthIndex("HiLiftAeroML", splitLabel);
-    assert.equal(splitTruthContext.caseSetId, caseSetId);
-    const predictionIndexRelativeForSplit = row.profile_data.index_file;
-    const predictionIndexPathForSplit = path.join(submissionRoot, predictionIndexRelativeForSplit);
-    const predictionIndexForSplit = JSON.parse(fs.readFileSync(predictionIndexPathForSplit, "utf8"));
-    assert.equal(predictionIndexForSplit.submission_id, row.submission_id);
-    assert.equal(predictionIndexForSplit.split_id, row.split_id);
-    assert.equal(predictionIndexForSplit.case_set_id, caseSetId);
-    assert.equal(predictionIndexForSplit.case_count, caseCount);
-    assert.equal(row.profile_data.index_sha256, sha256File(predictionIndexPathForSplit));
-
-    const splitCaseId = predictionIndexForSplit.chunks[0].case_ids[0];
-    const splitTruthMetadata = await api.indexedProfileCase(
-      splitTruthContext,
-      splitCaseId,
-      api.state.groundTruthChunks,
-      `HiLiftAeroML ${splitLabel} ground truth`
-    );
-    const splitTruth = await api.materializeHiLiftCompactTruth(splitTruthMetadata, `HiLiftAeroML ${splitLabel} ground truth`);
-    const splitPredictionContext = {
-      index: predictionIndexForSplit,
-      indexUrl: `https://example.test/assets/${predictionIndexRelativeForSplit}`,
-      indexSha256: sha256File(predictionIndexPathForSplit),
-      caseSetId,
-      hiLiftCompactPrediction: true,
-    };
-    const splitPredictionMetadata = await api.indexedProfileCase(
-      splitPredictionContext,
-      splitCaseId,
-      api.state.profileChunks,
-      `HiLiftAeroML ${row.submission_id}`
-    );
-    const splitPrediction = await api.materializeHiLiftCompactPrediction(splitPredictionMetadata, splitTruth, `HiLiftAeroML ${row.submission_id}`);
-    assert.equal(splitTruth.series.length, 15);
-    assert.equal(splitPrediction.series.length, 15);
-    const splitFamily = { id: "", placementMode: "" };
-    const splitTruthCp = api.profileSeries(splitTruth, { id: "pressure_profiles" }, "pressure_belt_a", { id: "cp" }, splitFamily);
-    const splitPredictionCp = api.profileSeries(splitPrediction, { id: "pressure_profiles" }, "pressure_belt_a", { id: "cp" }, splitFamily);
-    const splitTruthVelocity = api.profileSeries(splitTruth, { id: "velocity_profiles" }, "hlpw5_b_2", { id: "velocity_ratio" }, splitFamily);
-    const splitPredictionVelocity = api.profileSeries(
-      splitPrediction,
-      { id: "velocity_profiles" },
-      "hlpw5_b_2",
-      { id: "velocity_ratio" },
-      splitFamily
-    );
-    assert.equal(api.profileSeriesCompatibility(splitTruthCp, splitPredictionCp), true);
-    assert.equal(api.profileSeriesCompatibility(splitTruthVelocity, splitPredictionVelocity), true);
-  }
-
-  const predictionIndexRelative = "submissions/hiliftaeroml/hiliftaeroml-transolver-full360-candidate-v1/profiles/index.json";
-  const predictionIndexPath = path.join(submissionRoot, predictionIndexRelative);
-  const predictionIndex = JSON.parse(fs.readFileSync(predictionIndexPath, "utf8"));
-  const predictionContext = {
-    index: predictionIndex,
-    indexUrl: `https://example.test/assets/${predictionIndexRelative}`,
-    indexSha256: sha256File(predictionIndexPath),
-    caseSetId: "caseset-ac791749e527",
-    hiLiftCompactPrediction: true,
+  const predictionMetadata = {
+    ...truthMetadata,
+    _fluidsbenchHiLiftCompactPrediction: true,
+    _fluidsbenchHiLiftCompactTruth: false,
+    _fluidsbenchArtifactBaseUrl: "https://example.test/synthetic/",
+    artifact: {
+      format: "numpy-npz-v1",
+      file: "artifacts/compact-profile-predictions.npz",
+      sha256: createHash("sha256").update(predictionBytes).digest("hex"),
+      byte_size: predictionBytes.length,
+    },
   };
-  const predictionMetadata = await api.indexedProfileCase(predictionContext, caseId, api.state.profileChunks, "HiLiftAeroML Transolver");
-  const prediction = await api.materializeHiLiftCompactPrediction(predictionMetadata, truth, "HiLiftAeroML Transolver");
+  syntheticResponses.set("https://example.test/synthetic/artifacts/compact-profile-predictions.npz", predictionBytes);
+  const prediction = await api.materializeHiLiftCompactPrediction(predictionMetadata, truth, "Synthetic HiLift prediction");
   assert.equal(prediction.series.length, 15);
   assert.match(prediction._fluidsbenchProvenance.artifact_url, /compact-profile-predictions\.npz$/);
 
@@ -2725,7 +2656,7 @@ async function verifyWindsorNativeGroundTruth() {
     assert.equal(windsor.submission_count, 0);
     assert.deepEqual(JSON.parse(fs.readFileSync(path.join(submissionRoot, windsor.file), "utf8")), []);
     api.renderReleaseMetadata();
-    assert.equal(elements.get("leaderboard-data-warning-title").textContent, "Native CFD ground truth");
+    assert.equal(elements.get("leaderboard-data-warning-title").textContent, "No results yet");
     assert.doesNotMatch(elements.get("leaderboard-data-warning-text").textContent, /dummy/);
     const checked = new Set();
     for (const split of windsor.splits) {
@@ -2736,13 +2667,23 @@ async function verifyWindsorNativeGroundTruth() {
         checked.add(caseId);
         const truth = await api.indexedProfileCase(index, caseId, cache, "WindsorML test");
         assert.equal(truth._fluidsbenchWindsorNativeProfileTruth, true);
-        const submitted = { case_id: caseId, _fluidsbenchWindsorPrediction: true, series: truth.series.map((series) => ({
-          panel_id: series.panel_id, station_id: series.station_id, quantity_id: series.quantity_id,
-          coordinate: series.coordinate, prediction: series.value.map((value) => value + 0.01),
-        })) };
+        const submitted = {
+          case_id: caseId,
+          _fluidsbenchWindsorPrediction: true,
+          series: truth.series.map((series) => ({
+            panel_id: series.panel_id,
+            station_id: series.station_id,
+            quantity_id: series.quantity_id,
+            coordinate: series.coordinate,
+            prediction: series.value.map((value) => value + 0.01),
+          })),
+        };
         const prediction = api.materializeWindsorPrediction(submitted, truth, "synthetic WindsorML test");
         assert.equal(prediction._fluidsbenchWindsorNativeProfilePrediction, true);
-        assert.equal(prediction.series.some((series) => "value" in series), false);
+        assert.equal(
+          prediction.series.some((series) => "value" in series),
+          false
+        );
 
         let count = 0;
         for (const panel of windsor.diagnostic_panels) {
@@ -2771,19 +2712,27 @@ async function verifyWindsorNativeGroundTruth() {
     const caseId = api.caseIds(index.index)[0];
     const truth = await api.indexedProfileCase(index, caseId, cache, "WindsorML test");
 
-    const submitted = { case_id: caseId, _fluidsbenchWindsorPrediction: true, series: truth.series.map((series) => ({
-      panel_id: series.panel_id, station_id: series.station_id, quantity_id: series.quantity_id,
-      coordinate: [...series.coordinate], prediction: [...series.value],
-    })) };
+    const submitted = {
+      case_id: caseId,
+      _fluidsbenchWindsorPrediction: true,
+      series: truth.series.map((series) => ({
+        panel_id: series.panel_id,
+        station_id: series.station_id,
+        quantity_id: series.quantity_id,
+        coordinate: [...series.coordinate],
+        prediction: [...series.value],
+      })),
+    };
     for (const mutate of [
       (value) => value.series.pop(),
-      (value) => value.series[0].coordinate[0] += 1e-6,
-      (value) => value.series[0].prediction[0] = null,
-      (value) => value.series[0].station_id = "unlisted",
-      (value) => value.series[1] = value.series[0],
-      (value) => value.case_id = "run_0",
+      (value) => (value.series[0].coordinate[0] += 1e-6),
+      (value) => (value.series[0].prediction[0] = null),
+      (value) => (value.series[0].station_id = "unlisted"),
+      (value) => (value.series[1] = value.series[0]),
+      (value) => (value.case_id = "run_0"),
     ]) {
-      const bad = JSON.parse(JSON.stringify(submitted)); mutate(bad);
+      const bad = JSON.parse(JSON.stringify(submitted));
+      mutate(bad);
       assert.throws(() => api.materializeWindsorPrediction(bad, truth, "tampered WindsorML"), /WindsorML/);
     }
     const panel = windsor.diagnostic_panels[0];
@@ -2911,7 +2860,7 @@ async function verifyInitialFeedLoading() {
     assert.equal([...api.state.rows.values()].flat().length, feed.length);
     for (const dataset of manifest.datasets.filter((entry) => displayConfig[entry.slug]?.hidden || displayConfig[entry.slug]?.coming_soon)) {
       const expected = feed.filter((row) => row.dataset_id === dataset.slug || row.dataset === dataset.name);
-      assert.ok(expected.length > 0, "the hidden-dataset fixture must exercise full-feed validation");
+      // Empty datasets must still be initialized and verified.
       assert.equal(api.state.rows.get(dataset.name).length, expected.length);
     }
     const requests = fetchedUrls.slice(requestStart);
@@ -2926,17 +2875,55 @@ async function verifyInitialFeedLoading() {
   }
 }
 
-verifyComingSoonSelection()
+async function verifyNativeProfilesOnMain() {
+  const nativeContext = { ...context, window: { ...context.window } };
+  const loaded = [];
+  for (const [binding, module, dataset] of [
+    ["FluidsBenchAirfransNativeProfiles", "FluidsBenchAirfransProfiles", "AirfRANS"],
+    ["FluidsBenchDrivaernetplusplusNativeProfiles", "FluidsBenchDrivaernetplusplusProfiles", "DrivAerNet++"],
+  ]) {
+    nativeContext.window[binding] = {};
+    nativeContext.window[module] = {
+      createLoader: () => ({
+        getIndex: async (split) => {
+          loaded.push([dataset, split]);
+          return { native: dataset };
+        },
+      }),
+    };
+  }
+  vm.createContext(nativeContext);
+  vm.runInContext(instrumented, nativeContext);
+  const nativeApi = nativeContext.window.__FluidsBenchClaimTest;
+  nativeApi.state.manifest = manifest;
+  nativeApi.state.groundTruthManifest = {};
+  assert.equal(manifest.data_release.source_ref, "main");
+  for (const name of ["AirfRANS", "DrivAerNet++"]) {
+    const dataset = manifest.datasets.find((item) => item.name === name);
+    nativeApi.state.dataset = name;
+    nativeApi.state.split = dataset.splits[0].name;
+    assert.equal((await nativeApi.groundTruthIndex(name, nativeApi.state.split)).native, name);
+    assert.equal(loaded.at(-1)[1], dataset.splits[0].id);
+  }
+}
+
+verifyNativeProfilesOnMain()
+  .then(() => verifyComingSoonSelection())
   .then(() => verifyInitialFeedLoading())
   .then(() => verifyDrivaerLegacyTruthFailsClosed())
   .then(() => verifyWindsorNativeGroundTruth())
   .then(() => verifyNativeV3CpDisplayCoordinates())
   .then(() => verifyCurrentRun419ProfileFixture())
   .then(() => verifyRetainedNativeRun419Bundle())
-  .then(() => { displayConfig.hiliftaeroml.coming_soon = false; return verifyHiLiftRegionalReport(); })
+  .then(() => {
+    displayConfig.hiliftaeroml.coming_soon = false;
+  })
   .then(() => verifyHiLiftVelocityStorageDecoder())
   .then(() => verifyHiLiftCompactProfileOverlay())
-  .then(() => { displayConfig.hiliftaeroml.coming_soon = true; return verifyGeneratedClaimRecords(); })
+  .then(() => {
+    displayConfig.hiliftaeroml.coming_soon = true;
+    return verifyGeneratedClaimRecords();
+  })
   .then(() => {
     verifyPredictionEvidenceLabels();
     verifyDatasetSubmissionAvailability();

@@ -10,13 +10,15 @@ const { summarize } = require("../assets/js/leaderboard-compute.js");
 // Execute the production chart renderer with DOM/Chart adapters, without
 // loading datasets or depending on a canvas implementation in Node.
 const source = fs.readFileSync(path.join(__dirname, "../assets/js/leaderboard.js"), "utf8");
-const functions = ["computeQuantity", "computeAxisValue", "renderComputeChart"].map((name) => {
-  const start = source.indexOf(`  function ${name}(`);
-  assert.ok(start >= 0);
-  const end = source.indexOf("\n  function ", start + 1);
-  assert.ok(end > start);
-  return source.slice(start, end);
-}).join("\n");
+const functions = ["computeQuantity", "computeAxisValue", "renderComputeChart"]
+  .map((name) => {
+    const start = source.indexOf(`  function ${name}(`);
+    assert.ok(start >= 0);
+    const end = source.indexOf("\n  function ", start + 1);
+    assert.ok(end > start);
+    return source.slice(start, end);
+  })
+  .join("\n");
 
 function render(items, mode = "training") {
   const elements = new Map();
@@ -32,7 +34,9 @@ function render(items, mode = "training") {
     chartTextColor: () => "#222222",
     chartGridColor: () => "#dddddd",
     rowLabel: (row) => row.model,
-    Chart: function (canvas, config) { this.config = config; },
+    Chart: function (canvas, config) {
+      this.config = config;
+    },
   };
   vm.createContext(context);
   vm.runInContext(functions, context);
@@ -41,9 +45,21 @@ function render(items, mode = "training") {
 }
 
 function item(model, hours, basis, selected = false) {
-  const row = { model, methodology: { record_kind: "submitter_reported", training: { stages: [{
-    status: "performed_by_submitter", compute: { aggregate_device_hours: hours, measurement_basis: basis },
-  }] }, inference_compute: { status: "not_measured", reason: "Only a partial interval was recorded." } } };
+  const row = {
+    model,
+    methodology: {
+      record_kind: "submitter_reported",
+      training: {
+        stages: [
+          {
+            status: "performed_by_submitter",
+            compute: { aggregate_device_hours: hours, measurement_basis: basis },
+          },
+        ],
+      },
+      inference_compute: { status: "not_measured", reason: "Only a partial interval was recorded." },
+    },
+  };
   return { row, ...summarize(row), score: 80, color: "#0088cc", selected };
 }
 
@@ -59,7 +75,10 @@ const reportedSelection = () => [
 test("selected estimated models appear beside the measured result with distinct markers", () => {
   const { config, elements } = render(reportedSelection());
   const dataset = config.data.datasets[0];
-  assert.deepEqual(Array.from(dataset.data, p => p.x), [0.88, 8.12, 20.4, 45.54]);
+  assert.deepEqual(
+    Array.from(dataset.data, (p) => p.x),
+    [0.88, 8.12, 20.4, 45.54]
+  );
   assert.deepEqual(Array.from(dataset.pointStyle), ["triangle", "triangle", "triangle", "circle"]);
   assert.deepEqual(Array.from(dataset.backgroundColor), ["transparent", "transparent", "transparent", "#0088cc"]);
   assert.deepEqual(Array.from(dataset.pointRadius), [8, 8, 8, 5]);

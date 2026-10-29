@@ -54,18 +54,18 @@ assets retain their own licences or permissions; the repository licence does not
 
 ## Organising committee
 
-| Name | Affiliation |
-| --- | --- |
-| Neil Ashton | Mistral |
-| Paola Cinnella | Sorbonne University |
-| Astrid Walle | Pasteur Labs |
-| Mohamed Elrefaie | MIT |
-| Jean Kossaifi | NVIDIA |
-| Ricardo Vinuesa | University of Michigan |
-| Daniel Leibovici | NVIDIA |
-| Faez Ahmed | MIT |
-| Emanuele Tamburini | Sorbonne University |
-| Tyler Buchanan | TU Delft |
+| Name               | Affiliation            |
+| ------------------ | ---------------------- |
+| Neil Ashton        | Mistral                |
+| Paola Cinnella     | Sorbonne University    |
+| Astrid Walle       | Pasteur Labs           |
+| Mohamed Elrefaie   | MIT                    |
+| Jean Kossaifi      | NVIDIA                 |
+| Ricardo Vinuesa    | University of Michigan |
+| Daniel Leibovici   | NVIDIA                 |
+| Faez Ahmed         | MIT                    |
+| Emanuele Tamburini | Sorbonne University    |
+| Tyler Buchanan     | TU Delft               |
 
 Meet the [organisers and contributors](https://fluidsbench.org/contributors/) and the
 [scientific and industrial advisory board](https://fluidsbench.org/contributors/#advisory-board).

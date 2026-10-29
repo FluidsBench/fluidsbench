@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """Export lossless browser profiles from the hash-pinned public AirfRANS release.
 
-The global historical fixture manifest stays unchanged. This separate dev bundle
-preserves all 1001 samples of all eight series; gzip only reduces transfer size.
+Preserves all 1001 samples of all eight native series; gzip only reduces transfer size.
 """
 import argparse
 import gzip

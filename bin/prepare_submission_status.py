@@ -62,14 +62,14 @@ def main() -> int:
     parser.add_argument("--submission-root", required=True, type=Path)
     parser.add_argument("--output", type=Path, default=ROOT / "_data/submission_status.json")
     parser.add_argument("--check", action="store_true")
-    parser.add_argument("--check-contracts", action="store_true", help="compare dataset availability with current dev, ignoring feed/commit changes")
+    parser.add_argument("--check-contracts", action="store_true", help="compare dataset availability with current main, ignoring feed/commit changes")
     args = parser.parse_args()
     result = snapshot(args.submission_root, json.loads((ROOT / "_data/dataset_catalog.json").read_text()),
                       json.loads((ROOT / "_data/leaderboard_display.json").read_text()))
     if args.check_contracts:
         if not args.output.is_file() or json.loads(args.output.read_text()).get("datasets") != result["datasets"]:
-            parser.error("dataset availability differs from current dev; update the website snapshot")
-        print("Dataset availability matches current dev contracts.")
+            parser.error("dataset availability differs from current main; update the website snapshot")
+        print("Dataset availability matches current main contracts.")
     elif args.check:
         if not args.output.is_file() or json.loads(args.output.read_text()) != result:
             parser.error("submission availability is stale; regenerate it from the configured source commit")
