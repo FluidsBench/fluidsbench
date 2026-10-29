@@ -11,6 +11,7 @@ from check_preview_build import PreviewLinkParser
 
 
 COMMITTEE_REVIEW = Path("committee-leaderboard/index.html")
+PUBLIC_PREVIEW = Path("leaderboard-preview/index.html")
 SOURCE = Path(__file__).resolve().parents[1]
 DISPLAY = json.loads((SOURCE / "_data/leaderboard_display.json").read_text())
 CATALOG = json.loads((SOURCE / "_data/dataset_catalog.json").read_text())
@@ -67,6 +68,20 @@ def validate_coming_soon(root):
 def validate(root: Path, phase: str, committee_review: bool = False, dev_intake: bool = False) -> list[str]:
     errors = validate_coming_soon(root)
     index = (root / "index.html").read_text()
+    preview_path = root / PUBLIC_PREVIEW
+    if preview_path.exists():
+        preview = preview_path.read_text()
+        binding = json.loads((SOURCE / "_data/leaderboard_preview.json").read_text())
+        if 'id="leaderboard-preview-notice"' not in preview or "Preview — results will be published" not in preview:
+            errors.append("public preview must explain its release status")
+        if not re.search(r"window\.FluidsBenchLeaderboardEmptyPreview\s*=\s*(?:true|!0)\b", preview):
+            errors.append("public preview must reject nonempty result feeds")
+        if not re.search(r"window\.FluidsBenchLeaderboardPreviewMode\s*=\s*(?:true|!0)\b", preview):
+            errors.append("public preview must use preview data mode")
+        if binding["base_url"] not in preview or binding["manifest_sha256"] not in preview:
+            errors.append("public preview must retain its separately pinned empty snapshot")
+        if 'id="leaderboard-table"' not in preview or '/assets/js/leaderboard.js' not in preview:
+            errors.append("public preview must use the actual leaderboard interface")
     review_path = root / COMMITTEE_REVIEW
     if committee_review:
         if not review_path.is_file():
@@ -121,7 +136,7 @@ def validate(root: Path, phase: str, committee_review: bool = False, dev_intake:
         elif f'data-launch-phase="{phase}"' not in index or 'data-countdown' not in index:
             errors.append("prelaunch homepage has the wrong phase or no countdown")
         for path in root.rglob("*.html"):
-            if committee_review and path == review_path:
+            if (committee_review and path == review_path) or path == preview_path:
                 continue
             html = path.read_text()
             if re.search(r'(?:class="leaderboard-page|id="leaderboard-table"|/assets/js/leaderboard\.js|FluidsBenchLeaderboardBaseUrl)', html):

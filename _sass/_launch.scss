@@ -930,3 +930,49 @@
     display: grid;
   }
 }
+
+.tour-preview-action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 24px;
+  margin: 26px 0 0;
+}
+.tour-preview-action > span {
+  font-size: 13px;
+  color: var(--ux-muted);
+}
+.leaderboard-preview-notice {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  border-left: 3px solid var(--ux-accent);
+  background: var(--ux-tint);
+  padding: 20px 24px;
+  margin: 10px 0 24px;
+  border-radius: 0 8px 8px 0;
+}
+.leaderboard-preview-notice strong {
+  color: var(--ux-ink);
+  font-size: 15px;
+}
+.leaderboard-preview-notice p {
+  color: var(--ux-muted);
+  font-size: 13px;
+  line-height: 1.75;
+  margin: 6px 0 0;
+  max-width: 750px;
+}
+.leaderboard-preview-notice > a {
+  flex-shrink: 0;
+  font-size: 12px;
+}
+@media (max-width: 740px) {
+  .leaderboard-preview-notice {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 18px;
+  }
+}

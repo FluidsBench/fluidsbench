@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 import tempfile
 import unittest
@@ -32,6 +33,25 @@ class LaunchBuildTests(unittest.TestCase):
 
     def errors(self, enabled=True):
         return check_launch_build.validate(self.root, "announced", enabled)
+
+    def test_public_preview_retains_its_empty_snapshot_boundary(self):
+        binding = json.loads((check_launch_build.SOURCE / "_data/leaderboard_preview.json").read_text())
+        preview = (
+            '<p id="leaderboard-preview-notice">Preview — results will be published on 5 December</p>'
+            '<table id="leaderboard-table"></table><script src="/assets/js/leaderboard.js"></script>'
+            '<script>window.FluidsBenchLeaderboardEmptyPreview = true;'
+            'window.FluidsBenchLeaderboardPreviewMode = true;'
+            + json.dumps(binding) + '</script>'
+        )
+        self.write(check_launch_build.PUBLIC_PREVIEW, preview)
+        self.assertEqual(self.errors(False), [])
+        self.write(check_launch_build.PUBLIC_PREVIEW, preview.replace('EmptyPreview = true', 'EmptyPreview = false'))
+        self.assertIn("public preview must reject nonempty result feeds", self.errors(False))
+        self.write(check_launch_build.PUBLIC_PREVIEW, preview.replace(binding['base_url'], 'https://example.com/latest/'))
+        self.assertIn("public preview must retain its separately pinned empty snapshot", self.errors(False))
+        self.write(check_launch_build.PUBLIC_PREVIEW, preview)
+        self.write('unexpected-results/index.html', preview)
+        self.assertTrue(any('unexpected-results' in error for error in self.errors(False)))
 
     def test_only_explicit_dev_build_allows_the_committee_page(self):
         self.assertEqual(self.errors(False), [])

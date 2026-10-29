@@ -167,3 +167,16 @@ check(site.config["launch"]["deadline_passed"] && site.config["launch"]["reveal_
 check(!site.config["launch"]["leaderboard_visible"], "dev countdown expiry published the board")
 
 puts "Launch phases, publication gates, dataset independence, local and committee review checks passed."
+
+# A public interface preview is separate from publication and must use immutable data.
+site = site_for("collecting")
+site.config["leaderboard_preview_enabled"] = true
+site.data["leaderboard_preview"] = JSON.parse(File.read(File.join(ROOT, "_data/leaderboard_preview.json")))
+FluidsBench::Launch.new.generate(site)
+preview = site.pages.find { |page| page.data["permalink"] == "/leaderboard-preview/" }
+check(preview && preview.data["leaderboard_preview"], "missing public interface preview")
+check(preview.data["chart"]["chartjs"] && !site.config["launch"]["leaderboard_visible"], "preview changed the homepage publication state")
+site = site_for("collecting")
+site.config["leaderboard_preview_enabled"] = true
+site.data["leaderboard_preview"] = { "base_url" => "https://example.com/latest/", "manifest_sha256" => "a" * 64 }
+rejected(site, "public preview accepted a moving source")

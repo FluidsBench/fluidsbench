@@ -23,6 +23,7 @@ submission_target_branch: main
 submission_source_ref: d45eb286f1c3fa73c02832c064d675e36ffedae5
 # Public community invite: no expiry or use limit; opens the start-here channel.
 community_discord_url: "https://discord.gg/zVZsXAeVKp"
+leaderboard_preview_enabled: true
 last_updated: true # set to true if you want to display last updated in the footer
 impressum_path: # set to path to include impressum link in the footer, use the same path as permalink in a page, helps to conform with EU GDPR
 
