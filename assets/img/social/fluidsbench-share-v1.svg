@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630">
+  <title>FluidsBench — open benchmarks for physics AI</title>
+  <desc>The FluidsBench logo with existing AirfRANS, DrivAerML and WindsorML dataset figures.</desc>
+  <!-- Editable layout. Figures retain their original colours and proportions.
+       Render from the repository root with CairoSVG:
+       python3 bin/render_social_banner.py -->
+  <defs>
+    <clipPath id="air"><rect x="56" y="270" width="352" height="210" rx="12"/></clipPath>
+    <clipPath id="car"><rect x="424" y="270" width="352" height="210" rx="12"/></clipPath>
+    <clipPath id="windsor"><rect x="792" y="270" width="352" height="210" rx="12"/></clipPath>
+  </defs>
+  <rect width="1200" height="630" fill="#173b40"/>
+  <path d="M875 0 C940 90 1070 105 1200 80 M930 0 C1000 70 1100 65 1200 45 M820 0 C900 145 1070 155 1200 125" fill="none" stroke="#245156" stroke-width="2"/>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <rect x="56" y="48" width="66" height="66" rx="16" fill="#087c76"/>
+    <text x="89" y="96" text-anchor="middle" font-size="59" fill="#ffffff">≈</text>
+    <text x="140" y="101" font-size="62" font-weight="700" letter-spacing="-2" fill="#ffffff">FluidsBench</text>
+    <text x="56" y="185" font-size="44" font-weight="700" letter-spacing="-1" fill="#ffffff">Open benchmarks for physics AI</text>
+    <text x="56" y="226" font-size="25" fill="#c1d8d6">Realistic fluid dynamics. Comparable model results.</text>
+
+    <rect x="56" y="270" width="352" height="210" rx="12" fill="#ffffff"/>
+    <g clip-path="url(#air)">
+      <svg x="56" y="270" width="352" height="210" viewBox="30 16 460 235" preserveAspectRatio="xMidYMid slice">
+        <image xlink:href="../datasets/airfrans-fields.png" width="1600" height="554"/>
+      </svg>
+    </g>
+    <rect x="424" y="270" width="352" height="210" rx="12" fill="#ffffff"/>
+    <g clip-path="url(#car)">
+      <svg x="424" y="270" width="352" height="210" viewBox="40 300 1320 500" preserveAspectRatio="xMidYMid meet">
+        <image xlink:href="../datasets/drivaerml-flow.png" width="1400" height="800"/>
+      </svg>
+    </g>
+    <rect x="792" y="270" width="352" height="210" rx="12" fill="#bd824b"/>
+    <g clip-path="url(#windsor)">
+      <svg x="792" y="270" width="352" height="210" viewBox="0 300 1600 700" preserveAspectRatio="xMidYMid meet">
+        <image xlink:href="../datasets/windsorml-flow.png" width="1600" height="900"/>
+      </svg>
+    </g>
+    <g font-size="20" font-weight="700" fill="#ffffff">
+      <text x="56" y="512">AirfRANS</text>
+      <text x="424" y="512">DrivAerML</text>
+      <text x="792" y="512">WindsorML</text>
+    </g>
+    <path d="M56 542 H1144" stroke="#426268"/>
+    <text x="56" y="586" font-size="23" fill="#c1d8d6">Evaluate. Compare. Share.</text>
+    <text x="1144" y="586" text-anchor="end" font-size="26" font-weight="700" fill="#ffffff">fluidsbench.org</text>
+  </g>
+</svg>
