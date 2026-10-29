@@ -3,7 +3,6 @@ layout: page
 permalink: /
 title: Fluidsbench leaderboard
 description: Assess physics AI surrogate models across realistic fluid dynamics datasets.
-og_image: /assets/img/datasets/drivaerml-flow.png
 nav: false
 hide_header: true
 hide_header_background: true

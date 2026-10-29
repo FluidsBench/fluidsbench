@@ -65,7 +65,10 @@ max_width: 1100px
 # see https://schema.org/docs/faq.html for more information
 serve_og_meta: true # Include Open Graph meta tags in the HTML head
 serve_schema_org: false # Include Schema.org in the HTML head
-og_image: # The site-wide (default for all links) Open Graph preview image
+og_image: /assets/img/social/fluidsbench-share-v1.png
+og_image_width: 1200
+og_image_height: 630
+og_image_alt: FluidsBench — open benchmarks for physics AI, featuring AirfRANS, DrivAerML and WindsorML flow visualisations.
 
 # -----------------------------------------------------------------------------
 # Social integration

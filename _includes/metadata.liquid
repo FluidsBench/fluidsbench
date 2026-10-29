@@ -53,6 +53,15 @@
 
 {% if site.serve_og_meta %}
   {% assign social_image = page.og_image | default: site.og_image %}
+  {% if page.og_image %}
+    {% assign social_image_width = page.og_image_width %}
+    {% assign social_image_height = page.og_image_height %}
+    {% assign social_image_alt = page.og_image_alt %}
+  {% else %}
+    {% assign social_image_width = site.og_image_width %}
+    {% assign social_image_height = site.og_image_height %}
+    {% assign social_image_alt = site.og_image_alt %}
+  {% endif %}
   {% if social_image and social_image != '' -%}
     {%- unless social_image contains '://' %}{% assign social_image = social_image | absolute_url %}{% endunless -%}
   {%- endif %}
@@ -64,6 +73,9 @@
   <meta property="og:description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
   {% if page.og_image or site.og_image %}
     <meta property="og:image" content="{{ social_image }}">
+    {% if social_image_width %}<meta property="og:image:width" content="{{ social_image_width }}">{% endif %}
+    {% if social_image_height %}<meta property="og:image:height" content="{{ social_image_height }}">{% endif %}
+    {% if social_image_alt %}<meta property="og:image:alt" content="{{ social_image_alt | escape }}">{% endif %}
   {% endif %}
   <meta property="og:locale" content="{{ site.lang }}">
 
@@ -73,6 +85,7 @@
   <meta name="twitter:description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
   {% if page.og_image or site.og_image %}
     <meta name="twitter:image" content="{{ social_image }}">
+    {% if social_image_alt %}<meta name="twitter:image:alt" content="{{ social_image_alt | escape }}">{% endif %}
   {% endif %}
   {% if site.x_username %}
     <meta name="twitter:site" content="@{{ site.x_username }}">
