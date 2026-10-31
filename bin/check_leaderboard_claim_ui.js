@@ -60,6 +60,9 @@ window.__FluidsBenchClaimTest = {
   datasetFromUrl,
   datasetOptions,
   populateSelect,
+  splitIsClosed,
+  syncSplitSelects,
+  refreshProfileContext,
   redirectComingSoonDataset,
   initialize,
   decimalHalfUp,
@@ -2883,6 +2886,67 @@ async function verifyInitialFeedLoading() {
   }
 }
 
+async function verifyOpenDatasetAndClosedSplitStates() {
+  const previous = { ...api.state };
+  const previousAvailability = context.window.FluidsBenchSubmissionAvailability;
+  const previousQuery = context.document.querySelectorAll;
+  const previousCreate = context.document.createElement;
+  const select = {
+    value: "",
+    options: [],
+    replaceChildren() {
+      this.options = [];
+    },
+    appendChild(item) {
+      this.options.push(item);
+    },
+  };
+  try {
+    api.state.manifest = JSON.parse(fs.readFileSync(path.join(submissionRoot, "leaderboard/manifest.json"), "utf8"));
+    context.window.FluidsBenchSubmissionAvailability = JSON.parse(fs.readFileSync(path.join(root, "_data/submission_status.json"), "utf8")).datasets;
+    context.document.querySelectorAll = (selector) => (selector === "[data-leaderboard-split-select]" ? [select] : []);
+    context.document.createElement = () => ({});
+    api.state.dataset = "AirfRANS";
+    api.state.split = "Reynolds extrapolation";
+    api.state.figureSpecs = new Map();
+    api.state.figureCaptions = new Map();
+    const airfrans = api.state.manifest.datasets.find((dataset) => dataset.slug === "airfrans");
+    api.syncSplitSelects();
+    assert.equal(select.value, "Reynolds extrapolation", "direct closed-split selections remain visible");
+    assert.match(select.options.find((option) => option.value === select.value).textContent, /Closed/);
+    api.renderSubmissionAvailability();
+    assert.equal(elements.get("submission-status").textContent, "Submissions closed");
+    assert.equal(elements.get("open-submission-repo").hidden, true);
+    const requestsBefore = fetchedUrls.length;
+    await api.refreshProfileContext();
+    assert.equal(fetchedUrls.length, requestsBefore, "closed Reynolds must not request missing reference profiles");
+    assert.equal(api.state.profileCaseIds.length, 0);
+    assert.equal(api.state.groundTruthComparisonHealthy, false);
+    assert.equal(elements.get("leaderboard-profile-warning").hidden, true);
+    assert.match(elements.get("profile-0-status").textContent, /Reynolds extrapolation is closed/);
+    for (const split of airfrans.splits.filter((split) => split.id !== "reynolds_extrapolation")) {
+      api.state.split = split.name;
+      assert.equal(api.splitIsClosed(split), false);
+      api.renderSubmissionAvailability();
+      assert.equal(elements.get("submission-status").textContent, "Submissions open");
+    }
+    api.state.manifest.datasets.find((dataset) => dataset.slug === "ahmedml").submission_count = 1;
+    api.state.manifest.data_release.status = "official";
+    api.state.dataset = "WindsorML";
+    api.state.split = "Full";
+    api.renderReleaseMetadata();
+    assert.equal(elements.get("submission-status").textContent, "Submissions open");
+    assert.equal(elements.get("leaderboard-data-warning-title").textContent, "Native CFD ground truth");
+    assert.match(elements.get("leaderboard-data-warning-text").textContent, /No model results have been published/);
+    assert.doesNotMatch(elements.get("leaderboard-data-warning-text").textContent, /awaiting owner review/);
+  } finally {
+    Object.assign(api.state, previous);
+    context.window.FluidsBenchSubmissionAvailability = previousAvailability;
+    context.document.querySelectorAll = previousQuery;
+    context.document.createElement = previousCreate;
+  }
+}
+
 async function verifyNativeProfilesOnMain() {
   const nativeContext = { ...context, window: { ...context.window } };
   const loaded = [];
@@ -2916,6 +2980,7 @@ async function verifyNativeProfilesOnMain() {
 }
 
 verifyNativeProfilesOnMain()
+  .then(() => verifyOpenDatasetAndClosedSplitStates())
   .then(() => verifyComingSoonSelection())
   .then(() => verifyInitialFeedLoading())
   .then(() => verifyDrivaerLegacyTruthFailsClosed())

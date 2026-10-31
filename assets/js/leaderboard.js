@@ -1876,6 +1876,11 @@
     return Array.isArray(dataset?.splits) ? dataset.splits : [];
   }
 
+  function splitIsClosed(split, dataset = activeDataset()) {
+    const availability = window.FluidsBenchSubmissionAvailability?.[dataset?.slug];
+    return Array.isArray(availability?.open_splits) && !availability.open_splits.some((open) => open.id === split?.id);
+  }
+
   function populateSelect(select, options, selectedValue) {
     if (!select) return "";
     const current = selectedValue ?? select.value;
@@ -1903,7 +1908,7 @@
   function syncSplitSelects() {
     const options = splitOptions().map((split) => ({
       value: split.name,
-      label: split.label || split.name,
+      label: `${split.label || split.name}${splitIsClosed(split) ? " — Closed" : ""}`,
       title: split.description || "",
     }));
     if (!options.some((option) => option.value === state.split)) {
@@ -3785,7 +3790,7 @@
       dataWarningText.textContent = emptyRelease
         ? " — the leaderboard is ready for its first reviewed model submissions."
         : windsorTruthOnly
-          ? " — all eight WindsorML splits are available below. No model results have been submitted; the benchmark is awaiting owner review."
+          ? " — reference profiles for all eight WindsorML splits are available below. No model results have been published for this dataset yet."
           : officialRelease
             ? " — submitted packages are validated and maintainer-approved."
             : " — dev preview containing retained examples and reviewed results; not citable or suitable for official leaderboard claims.";
@@ -8178,14 +8183,27 @@
 
   async function refreshProfileContext() {
     const version = ++state.profileLoadVersion;
+    const warning = element("leaderboard-profile-warning");
+    if (warning) warning.hidden = true;
     invalidateProfileFigures();
     const dataset = activeDataset();
     if (!dataset || !state.split) {
       setProfileStatus("No profile data are available for this selection.");
       return;
     }
-    const rows = figureRows();
     setGroundTruthComparisonHealth(false);
+    if (activeDatasetSlug() === "airfrans" && activeSplitDefinition()?.id === "reynolds_extrapolation" && splitIsClosed(activeSplitDefinition())) {
+      state.profileCaseIds = [];
+      state.profileCase = "";
+      state.groundTruthCase = null;
+      state.profileCases = new Map();
+      state.profileCaseErrors = new Map();
+      syncProfileCaseSelects();
+      setProfileStatus("Reynolds extrapolation is closed. Reference profiles are available for Full, Scarce and AoA extrapolation.");
+      syncProfileActionAvailability();
+      return;
+    }
+    const rows = figureRows();
     setProfileStatus("Loading profile data...");
     try {
       let groundTruthContext = null;
@@ -8195,6 +8213,7 @@
         groundTruthContext = await groundTruthIndex(state.dataset, state.split);
         availableCaseIds = caseIds(groundTruthContext.index);
       } catch (error) {
+        if (version !== state.profileLoadVersion) return;
         groundTruthError = error;
         showProfileWarning(error);
       }

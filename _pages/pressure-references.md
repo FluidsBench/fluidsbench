@@ -11,7 +11,7 @@ compact_masthead: true
 
 <div class="dataset-page pressure-reference-page">
   <p>Pressure does not mean the same quantity in every dataset. These definitions distinguish the stored field, its reference and the quantity used for evaluation.</p>
-  <p class="dataset-download-note">Reviewed {{ site.data.pressure_references.audited_on }} against the dev specifications. This documentation audit does not change scores or open submissions. Evidence gaps are marked below.</p>
+  <p class="dataset-download-note">Pressure definitions checked {{ site.data.pressure_references.audited_on }} against the published benchmark specifications. Unresolved source evidence is identified below.</p>
 
   <nav class="pressure-reference-index" aria-label="Dataset pressure definitions">
     {% for entry in site.data.dataset_catalog %}{% assign slug = entry[0] %}
