@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urljoin, urlsplit
 
+from profile_truth_publication import binding_errors as publication_binding_errors, publication_errors
+
 
 SITE_ORIGIN = "https://fluidsbench.org"
 SUBMISSION_REPOSITORY = "https://github.com/neilashton/fluidsbench-submission"
@@ -207,6 +209,8 @@ def validate_manifest(manifest: object, release_id: str, artifact_commit: str) -
             errors.append("manifest data_release.profile_ground_truth.manifest_url must be a clean HTTPS URL")
         if not isinstance(ground_truth.get("manifest_sha256"), str) or not SHA256.fullmatch(ground_truth["manifest_sha256"]):
             errors.append("manifest data_release.profile_ground_truth.manifest_sha256 must be a lowercase SHA-256 digest")
+    if release.get("profile_ground_truth_publication") is not None:
+        errors.extend(publication_binding_errors(release["profile_ground_truth_publication"]))
 
     support_bindings = scoring_support_bindings(manifest)
     if support_bindings:
@@ -250,6 +254,37 @@ def validate_manifest(manifest: object, release_id: str, artifact_commit: str) -
             ):
                 errors.append(f"manifest {dataset_id} official scoring support must record complete dataset-owner approval")
     return errors
+
+
+def validate_profile_truth(manifest: dict, truth_bytes: bytes, publication_bytes: bytes | None = None) -> list[str]:
+    """Exercise the same official-reference checks as the browser before publishing."""
+    release = manifest.get("data_release", {})
+    binding = release.get("profile_ground_truth", {})
+    truth = json.loads(truth_bytes)
+    if (hashlib.sha256(truth_bytes).hexdigest() != binding.get("manifest_sha256")
+        or truth.get("data_release", {}).get("id") != binding.get("release_id")):
+        return ["profile ground-truth catalog bytes or release ID differ from the selected release"]
+    publication_binding = release.get("profile_ground_truth_publication")
+    if publication_binding:
+        if publication_bytes is None:
+            return ["the official profile truth publication manifest is required"]
+        return publication_errors(publication_bytes, publication_binding, manifest, catalog=truth)
+    if release.get("status") == "official":
+        header = truth.get("data_release", {})
+        if header.get("status") != "official" or not FULL_GIT_SHA.fullmatch(str(header.get("source_commit", ""))):
+            return ["official results require profile ground truth pinned to an immutable source commit"]
+    return []
+
+
+def check_profile_truth(args: argparse.Namespace) -> int:
+    errors = validate_profile_truth(
+        load_json(args.manifest), args.ground_truth.read_bytes(),
+        args.publication.read_bytes() if args.publication else None,
+    )
+    if errors:
+        return print_errors(errors)
+    print("Verified official profile truth publication and evaluated reference bindings.")
+    return 0
 
 
 def release_config(
@@ -532,6 +567,8 @@ def prepare(args: argparse.Namespace) -> int:
         "revision_history_sha256": release["revision_history"]["sha256"],
         "ground_truth_manifest_url": release["profile_ground_truth"]["manifest_url"],
         "ground_truth_manifest_sha256": release["profile_ground_truth"]["manifest_sha256"],
+        "truth_publication_url": release.get("profile_ground_truth_publication", {}).get("manifest_url", ""),
+        "truth_publication_sha256": release.get("profile_ground_truth_publication", {}).get("manifest_sha256", ""),
     }
     if args.github_output:
         write_github_outputs(args.github_output, outputs)
@@ -605,6 +642,11 @@ def build_parser() -> argparse.ArgumentParser:
     supports_parser.add_argument("--manifest", type=Path, required=True)
     supports_parser.add_argument("--output", type=Path, required=True)
     supports_parser.set_defaults(func=scoring_support_manifests)
+    truth_parser = subparsers.add_parser("check-profile-truth", help="verify downloaded official reference metadata before publication")
+    truth_parser.add_argument("--manifest", type=Path, required=True)
+    truth_parser.add_argument("--ground-truth", type=Path, required=True)
+    truth_parser.add_argument("--publication", type=Path)
+    truth_parser.set_defaults(func=check_profile_truth)
     return parser
 
 

@@ -29,6 +29,32 @@ def official_manifest() -> dict[str, object]:
 
 
 class ReleaseSnapshotTests(unittest.TestCase):
+    def test_reference_publication_preserves_package_bindings_and_rejects_changed_cfd(self) -> None:
+        truth_bytes = (ROOT / "assets/data/profile-ground-truth/manifest.json").read_bytes()
+        publication_bytes = (ROOT / "assets/data/profile-ground-truth/profile-truth-publication-v1/manifest.json").read_bytes()
+        publication = json.loads(publication_bytes)
+        manifest = {
+            "data_release": {
+                "status": "official",
+                "profile_ground_truth": publication["catalog"],
+                "profile_ground_truth_publication": {
+                    "release_id": publication["data_release"]["id"],
+                    "manifest_sha256": hashlib.sha256(publication_bytes).hexdigest(),
+                    "manifest_url": "https://example.test/profile-truth-publication-v1/manifest.json",
+                },
+            },
+            "datasets": [{"slug": d["id"], "scoring_support": {**d["scoring_support"], "status": "official", "submissions_open": True}}
+                         for d in publication["datasets"]],
+        }
+        self.assertEqual(check_release_snapshot.validate_profile_truth(manifest, truth_bytes, publication_bytes), [])
+        self.assertTrue(check_release_snapshot.validate_profile_truth(manifest, truth_bytes))
+        publication["datasets"][0]["browser_profile_truth"]["dataset"]["case_sets"][0]["index_sha256"] = "f" * 64
+        changed = json.dumps(publication).encode()
+        manifest["data_release"]["profile_ground_truth_publication"]["manifest_sha256"] = hashlib.sha256(changed).hexdigest()
+        self.assertTrue(check_release_snapshot.validate_profile_truth(manifest, truth_bytes, changed))
+        del manifest["data_release"]["profile_ground_truth_publication"]
+        self.assertIn("official results require", check_release_snapshot.validate_profile_truth(manifest, truth_bytes)[0])
+
     def test_official_manifest_and_config_are_accepted(self) -> None:
         manifest = official_manifest()
         self.assertEqual(check_release_snapshot.validate_manifest(manifest, RELEASE_ID, ARTIFACT_COMMIT), [])

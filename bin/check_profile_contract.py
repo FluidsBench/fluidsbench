@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from export_windsorml_native_profile_truth import bundle_errors as windsorml_native_bundle_errors
+from profile_truth_publication import publication_errors
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -3935,7 +3936,25 @@ def check(submission_root: Path, *, schema_root: Path | None = None) -> list[str
         errors.append(
             "scalar release does not pin the current profile-ground-truth manifest SHA-256"
         )
-    if scalar_release.get("status") == "official":
+    publication_binding = scalar_release.get("profile_ground_truth_publication")
+    if publication_binding:
+        publication_path = GROUND_TRUTH_ROOT / publication_binding["release_id"] / "manifest.json"
+        try:
+            payload = publication_path.read_bytes()
+            errors.extend(publication_errors(payload, publication_binding, submission_manifest, catalog=ground_truth_manifest))
+            if payload != (submission_root / "benchmark-specs" / f"{publication_binding['release_id']}.json").read_bytes():
+                errors.append("website and submission profile truth publication manifests differ")
+            if (ROOT / "bin/profile_truth_publication.py").read_bytes() != (submission_root / "scripts/profile_truth_publication.py").read_bytes():
+                errors.append("website and submission profile truth publication validators differ")
+            for dataset in json.loads(payload)["datasets"]:
+                browser = dataset["browser_profile_truth"]
+                if browser["kind"] == "native_manifest":
+                    path = ROOT / "assets/data" / f"{dataset['id']}-native-profiles/manifest.json"
+                    if sha256_file(path) != browser["manifest_sha256"] or load_json(path)["source_release"] != browser["source_release"]:
+                        errors.append(f"{dataset['id']}: native browser reference differs from the official publication")
+        except (OSError, ValueError, KeyError) as error:
+            errors.append(f"cannot verify official profile truth publication: {error}")
+    elif scalar_release.get("status") == "official":
         source_commit = ground_truth_release.get("source_commit", "")
         if ground_truth_release.get("status") != "official" or len(
             source_commit

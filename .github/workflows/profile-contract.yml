@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: FluidsBench/fluidsbench-submission
-          ref: bc1cc8e81f5e97a73dc174b9c268ab6ab368b0f1
+          ref: 9bb9b1b8a8229bbd333df24a8be7b94219a8b98f
           path: fluidsbench-submission
       - uses: actions/setup-python@v5
         with:
@@ -31,6 +31,7 @@ jobs:
       - run: ruby fluidsbench/bin/check_launch_contract.rb
       - run: node --test fluidsbench/tests/test_display_replacements.js fluidsbench/tests/test_launch.js fluidsbench/tests/test_leaderboard_compute.js fluidsbench/tests/test_compute_chart.js fluidsbench/tests/test_leaderboard_scores.js fluidsbench/tests/test_leaderboard_verification.js fluidsbench/tests/test_profile_locations.js fluidsbench/tests/test_drivaernetplusplus_profiles.js
       - run: node fluidsbench/bin/check_leaderboard_claim_ui.js
+      - run: node --test fluidsbench/tests/test_official_profile_publication.js
       - run: python -m unittest discover -s fluidsbench/tests -p "test_*.py"
       - name: Checkout current main leaderboard data
         if: github.base_ref == 'main' || github.ref_name == 'main'
@@ -52,7 +53,7 @@ jobs:
         env:
           FLUIDSBENCH_SUBMISSION_ROOT: ${{ github.workspace }}/fluidsbench-submission-current
         run: |
-          node --test fluidsbench/tests/test_leaderboard_scores.js fluidsbench/tests/test_airfrans_profiles.js fluidsbench/tests/test_drivaernetplusplus_profiles.js
+          node --test fluidsbench/tests/test_leaderboard_scores.js fluidsbench/tests/test_airfrans_profiles.js fluidsbench/tests/test_drivaernetplusplus_profiles.js fluidsbench/tests/test_official_profile_publication.js
           python fluidsbench/bin/check_dataset_pages.py --submission-root fluidsbench-submission-current
           python fluidsbench/bin/check_pressure_references.py --submission-root fluidsbench-submission-current
           python fluidsbench/bin/prepare_submission_status.py --submission-root fluidsbench-submission-current --check-contracts

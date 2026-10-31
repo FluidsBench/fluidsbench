@@ -324,6 +324,8 @@
     loadedManifestSha256: null,
     manifestPinVerified: false,
     groundTruthManifest: null,
+    groundTruthPublication: null,
+    groundTruthPublicationProvenance: null,
     groundTruthIndexes: new Map(),
     groundTruthChunks: new Map(),
     profileIndexes: new Map(),
@@ -506,7 +508,7 @@
           id: "drivaerml-autocfd5-constant-v1",
           placementMode: "constant",
           label: "Fixed locations",
-          description: "Pinned AutoCFD5 locations used by the current candidate diagnostic.",
+          description: "Fixed AutoCFD5 velocity profiles contribute 15% of the overall score for surface-and-volume submissions.",
           stations: constantStations,
         },
         {
@@ -706,7 +708,13 @@
     const expected = dataRelease().profile_ground_truth || {};
     const loaded = state.groundTruthManifestProvenance || {};
     return Boolean(
-      expected.release_id && expected.manifest_sha256 && loaded.release_id === expected.release_id && loaded.sha256 === expected.manifest_sha256
+      expected.release_id &&
+        expected.manifest_sha256 &&
+        loaded.release_id === expected.release_id &&
+        loaded.sha256 === expected.manifest_sha256 &&
+        (!dataRelease().profile_ground_truth_publication ||
+          (state.groundTruthPublicationProvenance?.sha256 === dataRelease().profile_ground_truth_publication.manifest_sha256 &&
+            state.groundTruthPublicationProvenance?.release_id === dataRelease().profile_ground_truth_publication.release_id))
     );
   }
 
@@ -2582,6 +2590,113 @@
     return state.rows.get(dataset.name) || [];
   }
 
+  function sameTruthBinding(left, right) {
+    return Boolean(
+      left?.release_id &&
+        left.release_id === right?.release_id &&
+        validSha256(left.manifest_sha256) &&
+        left.manifest_sha256 === right?.manifest_sha256
+    );
+  }
+
+  function publicationDataset(row) {
+    return state.groundTruthPublication?.datasets?.find((dataset) => dataset.id === (row?.dataset_id || activeDatasetSlug()));
+  }
+
+  function truthPublicationProvenance() {
+    return dataRelease().profile_ground_truth_publication
+      ? {
+          ...dataRelease().profile_ground_truth_publication,
+          loaded_manifest_sha256: state.groundTruthPublicationProvenance?.sha256 || null,
+          source_commit: state.groundTruthPublication?.data_release?.source_commit || null,
+          dataset_submission_binding: publicationDataset()?.submission_profile_ground_truth || null,
+        }
+      : null;
+  }
+
+  function validateTruthPublication(publication, catalog, binding) {
+    const release = publication?.data_release || {};
+    if (
+      publication?.schema_version !== "1.0" ||
+      release.id !== binding.release_id ||
+      release.status !== "official" ||
+      !/^[a-f0-9]{40}$/.test(release.source_commit || "") ||
+      release.source_ref !== release.source_commit ||
+      release.source_repository !== "https://github.com/FluidsBench/fluidsbench"
+    ) {
+      throw new Error("profile truth publication must be official and pinned to an immutable website source commit");
+    }
+    const sourceBase = `https://raw.githubusercontent.com/FluidsBench/fluidsbench/${release.source_commit}/`;
+    if (
+      !sameTruthBinding(publication.catalog, dataRelease().profile_ground_truth) ||
+      publication.catalog.manifest_url !== `${sourceBase}assets/data/profile-ground-truth/manifest.json` ||
+      publication.catalog.asset_base_url !== `${sourceBase}assets/data/profile-ground-truth/`
+    ) {
+      throw new Error("profile truth publication does not bind the evaluated reference catalog");
+    }
+    const officialDatasets = allDatasetEntries().filter((dataset) => dataset.scoring_support?.status === "official");
+    const published = publication.datasets;
+    if (
+      !Array.isArray(published) ||
+      published.length !== officialDatasets.length ||
+      new Set(published.map((dataset) => dataset?.id)).size !== published.length ||
+      officialDatasets.some((dataset) => !published.some((entry) => entry?.id === dataset.slug))
+    ) {
+      throw new Error("profile truth publication must cover each official dataset exactly once and exclude unapproved datasets");
+    }
+    for (const dataset of officialDatasets) {
+      const entry = published.find((candidate) => candidate.id === dataset.slug);
+      const browser = entry.browser_profile_truth || {};
+      if (
+        entry.status !== "official" ||
+        dataset.scoring_support.status !== "official" ||
+        !sameTruthBinding(entry.scoring_support, dataset.scoring_support)
+      ) {
+        throw new Error(`${dataset.name} publication scoring-support binding differs`);
+      }
+      let expectedSubmission = dataRelease().profile_ground_truth;
+      if (browser.kind === "catalog_dataset") {
+        const native = browser.dataset?.native_profile_truth;
+        if (
+          browser.dataset?.id !== dataset.slug ||
+          native?.source_kind !== "native_cfd" ||
+          native.analytical_dummy !== false ||
+          !jsonStructuresEqual(
+            browser.dataset,
+            catalog.datasets?.find((candidate) => candidate.id === dataset.slug)
+          )
+        ) {
+          throw new Error(`${dataset.name} publication native CFD catalog entry differs`);
+        }
+      } else if (browser.kind === "native_manifest" && ["airfrans", "drivaernetplusplus"].includes(dataset.slug)) {
+        const configured =
+          dataset.slug === "airfrans" ? window.FluidsBenchAirfransNativeProfiles : window.FluidsBenchDrivaernetplusplusNativeProfiles;
+        if (
+          browser.source_kind !== "native_cfd" ||
+          browser.analytical_dummy !== false ||
+          browser.manifest_url !== `${sourceBase}assets/data/${dataset.slug}-native-profiles/manifest.json` ||
+          !validSha256(browser.manifest_sha256) ||
+          browser.manifest_sha256 !== configured?.manifest_sha256
+        ) {
+          throw new Error(`${dataset.name} publication browser reference binding differs`);
+        }
+        if (dataset.slug === "airfrans") {
+          if (browser.source_release?.manifest_sha256 !== configured.source_manifest_sha256) {
+            throw new Error("AirfRANS publication evaluator reference differs");
+          }
+          expectedSubmission = browser.source_release;
+        } else if (!jsonStructuresEqual(browser.source_release, configured.source_release)) {
+          throw new Error("DrivAerNet++ publication evaluator reference differs");
+        }
+      } else {
+        throw new Error(`${dataset.name} publication requires native CFD references`);
+      }
+      if (!sameTruthBinding(entry.submission_profile_ground_truth, expectedSubmission)) {
+        throw new Error(`${dataset.name} publication submission reference binding differs`);
+      }
+    }
+  }
+
   async function ensureGroundTruthManifest() {
     if (state.groundTruthManifest) return state.groundTruthManifest;
     const expected = dataRelease().profile_ground_truth;
@@ -2595,7 +2710,30 @@
     if (!expected.release_id || loaded.data?.data_release?.id !== expected.release_id) {
       throw new Error("profile ground-truth release ID does not match the selected data release");
     }
-    if (dataRelease().status === "official") {
+    const publicationBinding = dataRelease().profile_ground_truth_publication;
+    let publication = null;
+    let publicationProvenance = null;
+    if (publicationBinding) {
+      const declaredUrl = safeHttpUrl(publicationBinding.manifest_url);
+      const identifier = publicationBinding.release_id;
+      if (
+        !/^[a-z0-9][a-z0-9.-]*$/.test(identifier || "") ||
+        !declaredUrl.startsWith("https://") ||
+        !new URL(declaredUrl).pathname.split("/").includes(identifier) ||
+        new URL(declaredUrl).search ||
+        new URL(declaredUrl).hash
+      ) {
+        throw new Error("profile truth publication requires a clean immutable HTTPS release URL");
+      }
+      const publicationUrl = isLocalUrl(groundTruthBaseUrl) ? fileUrl(`${identifier}/manifest.json`, groundTruthBaseUrl) : declaredUrl;
+      const result = await fetchJsonWithProvenance(publicationUrl, "profile truth publication");
+      if (!validSha256(result.sha256) || result.sha256 !== publicationBinding.manifest_sha256) {
+        throw new Error("profile truth publication manifest checksum differs from the selected release");
+      }
+      validateTruthPublication(result.data, loaded.data, publicationBinding);
+      publication = result.data;
+      publicationProvenance = { url: publicationUrl, sha256: result.sha256, release_id: publicationBinding.release_id };
+    } else if (dataRelease().status === "official") {
       const groundTruthRelease = loaded.data?.data_release || {};
       if (groundTruthRelease.status !== "official" || !/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/.test(groundTruthRelease.source_commit || "")) {
         throw new Error("official results require profile ground truth pinned to an immutable source commit");
@@ -2603,11 +2741,13 @@
     }
     state.groundTruthManifestProvenance = {
       url: selectedManifestUrl,
-      base_url: new URL(".", selectedManifestUrl).href,
+      base_url: publication && !isLocalUrl(groundTruthBaseUrl) ? publication.catalog.asset_base_url : new URL(".", selectedManifestUrl).href,
       sha256: loaded.sha256,
       release_id: loaded.data?.data_release?.id || null,
     };
     state.groundTruthManifest = loaded.data;
+    state.groundTruthPublication = publication;
+    state.groundTruthPublicationProvenance = publicationProvenance;
     refreshCitationEligibilityUi();
     return state.groundTruthManifest;
   }
@@ -3899,6 +4039,7 @@
         ...dataRelease().profile_ground_truth,
         loaded_manifest_sha256: state.groundTruthManifestProvenance?.sha256 || null,
         loaded_release_id: state.groundTruthManifestProvenance?.release_id || null,
+        publication: truthPublicationProvenance(),
       },
       source_repository: dataRelease().source_repository || null,
       source_ref: dataRelease().source_ref || null,
@@ -6788,7 +6929,7 @@
       panelDescription =
         family?.placementMode === "relative"
           ? "Sixteen geometry-relative native-profile locations on retained normalized-arc-length support; diagnostic and not scored."
-          : "Sixteen fixed AutoCFD5 native-profile locations on pinned physical-distance support; the current primary/candidate placement view.";
+          : "Sixteen fixed AutoCFD5 velocity-profile locations on pinned physical-distance support. Their R² contributes 15% of the overall score for surface-and-volume submissions.";
     } else if (activeDatasetSlug() === "drivaerml" && panel.id === "pressure_profiles") {
       panelDescription =
         family?.placementMode === "relative"
@@ -8669,6 +8810,7 @@
           ...dataRelease().profile_ground_truth,
           loaded_manifest_sha256: state.groundTruthManifestProvenance?.sha256 || null,
           loaded_release_id: state.groundTruthManifestProvenance?.release_id || null,
+          publication: truthPublicationProvenance(),
         },
         view_url: currentViewUrl(false, false),
         license: {
@@ -9682,7 +9824,8 @@
       const validation = maintainerValidation(row);
       const profile = row.profile_data || {};
       const evaluation = row.evaluation || {};
-      const expectedGroundTruth = release.profile_ground_truth || {};
+      const publishedTruth = publicationDataset(row);
+      const expectedGroundTruth = publishedTruth?.submission_profile_ground_truth || release.profile_ground_truth || {};
       const loadedGroundTruth = state.groundTruthManifestProvenance || {};
       const schemaMajor = submissionSchemaMajor(row);
       const expectedContract = expectedReproducibilityContract(row);
@@ -9745,13 +9888,14 @@
         }
       }
       if (
+        (release.profile_ground_truth_publication && !publishedTruth) ||
         !validation.profile_ground_truth_release_id ||
         validation.profile_ground_truth_release_id !== expectedGroundTruth.release_id ||
-        validation.profile_ground_truth_release_id !== loadedGroundTruth.release_id ||
+        (!publishedTruth && validation.profile_ground_truth_release_id !== loadedGroundTruth.release_id) ||
         validation.profile_ground_truth_release_id !== profile.profile_ground_truth_release_id ||
         !validation.profile_ground_truth_manifest_sha256 ||
         validation.profile_ground_truth_manifest_sha256 !== expectedGroundTruth.manifest_sha256 ||
-        validation.profile_ground_truth_manifest_sha256 !== loadedGroundTruth.sha256 ||
+        (!publishedTruth && validation.profile_ground_truth_manifest_sha256 !== loadedGroundTruth.sha256) ||
         validation.profile_ground_truth_manifest_sha256 !== profile.profile_ground_truth_manifest_sha256 ||
         !validation.case_set_id ||
         validation.case_set_id !== profile.case_set_id
@@ -10541,11 +10685,6 @@
     const truthOnly = activeDatasetSlug() === "windsorml" && activeDataset()?.submission_count === 0;
     element("leaderboard-radar-panel").hidden = truthOnly;
     element("comparison-model-description").closest("fieldset").hidden = truthOnly;
-    if (truthOnly && state.workspaceView !== "compute") {
-      element("leaderboard-advanced-analysis").open = true;
-      state.workspaceView = "compare";
-      state.analysisView = "profiles";
-    }
     renderProfileExplorer();
     compactFigureActions();
     activateAnalysisTab(state.analysisView);

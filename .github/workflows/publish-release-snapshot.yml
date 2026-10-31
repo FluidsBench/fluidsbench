@@ -161,6 +161,7 @@ jobs:
         run: |
           node --check assets/js/leaderboard.js
           node bin/check_leaderboard_claim_ui.js
+          node --test tests/test_official_profile_publication.js
 
       - name: Verify immutable published release bytes
         env:
@@ -173,6 +174,8 @@ jobs:
           REVISION_HISTORY_SHA256: ${{ steps.release.outputs.revision_history_sha256 }}
           GROUND_TRUTH_MANIFEST_URL: ${{ steps.release.outputs.ground_truth_manifest_url }}
           GROUND_TRUTH_MANIFEST_SHA256: ${{ steps.release.outputs.ground_truth_manifest_sha256 }}
+          TRUTH_PUBLICATION_URL: ${{ steps.release.outputs.truth_publication_url }}
+          TRUTH_PUBLICATION_SHA256: ${{ steps.release.outputs.truth_publication_sha256 }}
         run: |
           python3 bin/check_release_snapshot.py list-claim-assets \
             --manifest _submission_release/leaderboard/manifest.json \
@@ -250,6 +253,21 @@ jobs:
             echo "published profile ground-truth manifest does not match its declared SHA-256" >&2
             exit 1
           fi
+          TRUTH_PUBLICATION_ARGS=()
+          if [[ -n "$TRUTH_PUBLICATION_URL" ]]; then
+            curl --proto '=https' --proto-redir '=https' --tlsv1.2 --fail --location --silent --show-error \
+              --output "$RUNNER_TEMP/published-truth-publication.json" "$TRUTH_PUBLICATION_URL"
+            PUBLISHED_TRUTH_PUBLICATION_SHA256=$(sha256sum "$RUNNER_TEMP/published-truth-publication.json")
+            if [[ "${PUBLISHED_TRUTH_PUBLICATION_SHA256%% *}" != "$TRUTH_PUBLICATION_SHA256" ]]; then
+              echo "published profile truth publication does not match its declared SHA-256" >&2
+              exit 1
+            fi
+            TRUTH_PUBLICATION_ARGS=(--publication "$RUNNER_TEMP/published-truth-publication.json")
+          fi
+          python3 bin/check_release_snapshot.py check-profile-truth \
+            --manifest _submission_release/leaderboard/manifest.json \
+            --ground-truth "$RUNNER_TEMP/published-ground-truth-manifest.json" \
+            "${TRUTH_PUBLICATION_ARGS[@]}"
           SUPPORT_COUNTER=0
           while IFS=$'\t' read -r DATASET_ID SUPPORT_URL SUPPORT_SHA256
           do

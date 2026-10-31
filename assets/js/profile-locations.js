@@ -362,7 +362,7 @@
       <div class="location-details" aria-live="polite"><strong>${escape(selected.label)}</strong><dl>${details}</dl></div>
       <p class="location-note">${
         velocity
-          ? "Line endpoints are the exact fixed definitions. The vehicle outline is schematic and stays the same for every case. The guide shows full candidate lines; the chart below preserves gaps in CFD support."
+          ? "Line endpoints are the exact fixed definitions. The vehicle outline is schematic and stays the same for every case. The guide shows full reference lines; the chart below preserves gaps in CFD support."
           : "Cut planes are the exact fixed definitions. The vehicle and highlighted surface regions are schematic, not the sampled Cp paths. Upper-body and underbody cuts share y = 0 but use different surfaces."
       }</p>`;
   }
