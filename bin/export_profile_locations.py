@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE_REF = "d45eb286f1c3fa73c02832c064d675e36ffedae5"
+SOURCE_REF = "6804f9b2a720b4b53db1d4c5870e403ed4945136"
 
 
 def build(source):
