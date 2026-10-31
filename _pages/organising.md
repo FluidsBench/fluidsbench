@@ -2,6 +2,7 @@
 layout: null
 permalink: /organisers/
 sitemap: false
+exclude_from_release: true
 ---
 
 <!doctype html>

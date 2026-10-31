@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: FluidsBench/fluidsbench-submission
-          ref: 299de2b46b97a91e09888ae0f9e1f3ead4b64830
+          ref: 6804f9b2a720b4b53db1d4c5870e403ed4945136
           path: fluidsbench-submission
       - uses: actions/setup-python@v5
         with:

@@ -180,3 +180,10 @@ site = site_for("collecting")
 site.config["leaderboard_preview_enabled"] = true
 site.data["leaderboard_preview"] = { "base_url" => "https://example.com/latest/", "manifest_sha256" => "a" * 64 }
 rejected(site, "public preview accepted a moving source")
+
+# Archive builds never contain the independently pinned empty preview or redirects.
+site = site_for("collecting")
+site.config.merge!({ "release_snapshot" => true, "leaderboard_preview_enabled" => true })
+site.pages << OpenStruct.new(data: { "exclude_from_release" => true }, relative_path: "_pages/organising.md", url: "/organisers/")
+FluidsBench::Launch.new.generate(site)
+check(site.pages.none? { |page| page.data["leaderboard_preview"] || page.data["exclude_from_release"] }, "archive contains a prelaunch preview or excluded redirect")

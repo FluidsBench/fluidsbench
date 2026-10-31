@@ -268,6 +268,7 @@ def release_config(
         "launch": {"phase": "live", "dates_confirmed": True, "release_id": release_id},
         "preview_mode": False,
         "release_snapshot": True,
+        "leaderboard_preview_enabled": False,
         "release_snapshot_id": release_id,
         "release_snapshot_submission_commit": artifact_commit,
         "release_snapshot_website_commit": website_commit,

@@ -1850,9 +1850,10 @@
   function metricDefinition(metricId) {
     const definition = state.metrics.get(metricId);
     if (!definition) return definition;
+    const contract = activeDataset()?.metric_contracts?.[metricId];
+    const resolved = { ...definition, ...(contract || {}) };
     const override = activeDataset()?.metric_definition_overrides?.[metricId];
-    if (!override || typeof override !== "object" || Array.isArray(override)) return definition;
-    const resolved = { ...definition };
+    if (!override || typeof override !== "object" || Array.isArray(override)) return resolved;
     ["label", "description"].forEach((key) => {
       if (typeof override[key] === "string" && override[key].trim()) resolved[key] = override[key];
     });
@@ -9140,6 +9141,12 @@
       direction.textContent = `${definition.direction === "lower" ? "Lower" : "Higher"} is better.`;
       explanation.appendChild(direction);
       description.appendChild(explanation);
+      ["aggregation", "weighting"].forEach((key) => {
+        if (!definition[key]) return;
+        const rule = document.createElement("p");
+        rule.textContent = `${humanize(key)}: ${humanize(definition[key])}.`;
+        description.appendChild(rule);
+      });
       if (definition.equation) {
         const line = document.createElement("div");
         line.className = "leaderboard-metric-equation";

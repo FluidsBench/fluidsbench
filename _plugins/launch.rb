@@ -37,6 +37,7 @@ module FluidsBench
 
     # Use the real interface with a separately pinned, empty snapshot.
     def add_leaderboard_preview(site)
+      return if site.config["release_snapshot"] == true
       return unless site.config["leaderboard_preview_enabled"] == true
       preview = site.data.fetch("leaderboard_preview", {})
       reject!("leaderboard preview requires an immutable snapshot") unless
@@ -109,6 +110,7 @@ module FluidsBench
       launch["reveal_passed"] = site.time >= dates[2]
       site.config["launch"] = launch
 
+      site.pages.reject! { |page| page.data["exclude_from_release"] } if site.config["release_snapshot"]
       add_committee_review(site)
       add_leaderboard_preview(site)
       site.pages.each do |page|
