@@ -3759,7 +3759,7 @@
         ? "Submit a result for review and preview display."
         : open
           ? `${dataset.name} submissions use ${support.release_id || "the official scoring-support release"}.`
-          : "This dataset is not currently accepting leaderboard submissions.";
+          : "Submissions are closed for this selection.";
     }
     if (button) {
       button.disabled = !open;

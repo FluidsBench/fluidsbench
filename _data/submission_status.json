@@ -1,5 +1,5 @@
 {
-  "source_commit": "9365805a6150f974cbf59c555638e03d08a2f301",
+  "source_commit": "299de2b46b97a91e09888ae0f9e1f3ead4b64830",
   "manifest_sha256": "4c56b408be1e225fd7659dd8a4aafd4834b9f7624f6d32bbd08daf5b7251195b",
   "release": {
     "id": "fluidsbench-2026-unreleased",

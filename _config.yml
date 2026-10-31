@@ -20,7 +20,7 @@ website_repository_url: https://github.com/FluidsBench/fluidsbench
 leaderboard_base_url: https://raw.githubusercontent.com/FluidsBench/fluidsbench-submission/d45eb286f1c3fa73c02832c064d675e36ffedae5/
 # Participant documentation and contracts are pinned independently of the empty preview feed.
 submission_target_branch: main
-submission_source_ref: 9365805a6150f974cbf59c555638e03d08a2f301
+submission_source_ref: 299de2b46b97a91e09888ae0f9e1f3ead4b64830
 # Public community invite: no expiry or use limit; opens the start-here channel.
 community_discord_url: "https://discord.gg/zVZsXAeVKp"
 leaderboard_preview_enabled: true
