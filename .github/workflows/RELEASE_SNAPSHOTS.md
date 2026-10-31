@@ -10,6 +10,13 @@ its exact release-view URL, and the bytes served by its asset base before buildi
 `/releases/<release-id>/`. The publication-time leaderboard-manifest SHA-256 is embedded in the snapshot and enforced by the
 browser before academic citation or promotion copying can be enabled.
 
+The workflow also verifies the official reference publication pinned by
+`data_release.profile_ground_truth_publication`. This catalog covers the five open datasets, identifies their immutable native
+CFD assets, and preserves each evaluator's exact reference fingerprints. AirfRANS has its own submission reference binding.
+The downloaded catalog and publication metadata must pass `check_release_snapshot.py check-profile-truth`; a checksum alone
+does not establish that their dataset bindings or source provenance are correct. Reference metadata publication does not
+activate a dataset or publish submitted results.
+
 The packaging step removes the legacy `assets/html`, `assets/jupyter`, `assets/plotly`, and `leaderboards` demo directories.
 Those standalone HTML files bypass the site layout, so they cannot carry the snapshot's release ID, manifest digest, or source
 commit metadata. The checker rejects a snapshot if any of those unscoped directories remain.
