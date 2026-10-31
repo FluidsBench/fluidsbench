@@ -2641,9 +2641,9 @@ function verifyHiLiftVelocityStorageDecoder() {
   assert.throws(() => api.decodeHiLiftVelocityStorage(stored.slice(1), count, "bad velocity"), /storage length differs/);
 }
 
-async function verifyWindsorNativeGroundTruth() {
+async function verifyWindsorNativeGroundTruth(selectedManifest) {
   const previous = { ...api.state };
-  const manifest = JSON.parse(fs.readFileSync(path.join(submissionRoot, "leaderboard/manifest.json"), "utf8"));
+  const manifest = selectedManifest || JSON.parse(fs.readFileSync(path.join(submissionRoot, "leaderboard/manifest.json"), "utf8"));
   const truthManifest = JSON.parse(fs.readFileSync(path.join(root, "assets/data/profile-ground-truth/manifest.json"), "utf8"));
   const windsor = manifest.datasets.find((dataset) => dataset.slug === "windsorml");
   api.state.manifest = manifest;
@@ -2657,11 +2657,7 @@ async function verifyWindsorNativeGroundTruth() {
       windsor.splits.map((split) => split.id),
       ["full", "medium", "scarce", "super_scarce", "geometry", "high_drag", "low_drag", "image_wake"]
     );
-    assert.equal(windsor.submission_count, 0);
-    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(submissionRoot, windsor.file), "utf8")), []);
-    api.renderReleaseMetadata();
-    assert.equal(elements.get("leaderboard-data-warning-title").textContent, "No results yet");
-    assert.doesNotMatch(elements.get("leaderboard-data-warning-text").textContent, /dummy/);
+    // Native truth availability is independent of the number of published results.
     const checked = new Set();
     for (const split of windsor.splits) {
       const index = await api.groundTruthIndex("WindsorML", split.name);
@@ -2930,6 +2926,12 @@ async function verifyOpenDatasetAndClosedSplitStates() {
       api.renderSubmissionAvailability();
       assert.equal(elements.get("submission-status").textContent, "Submissions open");
     }
+    // Isolate display-state scenarios from the selected release's actual rows.
+    api.state.manifest.datasets.forEach((dataset) => {
+      dataset.submission_count = 0;
+    });
+    api.renderReleaseMetadata();
+    assert.equal(elements.get("leaderboard-data-warning-title").textContent, "No results yet");
     api.state.manifest.datasets.find((dataset) => dataset.slug === "ahmedml").submission_count = 1;
     api.state.manifest.data_release.status = "official";
     api.state.dataset = "WindsorML";
@@ -2939,6 +2941,9 @@ async function verifyOpenDatasetAndClosedSplitStates() {
     assert.equal(elements.get("leaderboard-data-warning-title").textContent, "Native CFD ground truth");
     assert.match(elements.get("leaderboard-data-warning-text").textContent, /No model results have been published/);
     assert.doesNotMatch(elements.get("leaderboard-data-warning-text").textContent, /awaiting owner review/);
+    api.state.manifest.datasets.find((dataset) => dataset.slug === "windsorml").submission_count = 1;
+    api.renderReleaseMetadata();
+    assert.equal(elements.get("leaderboard-data-warning-title").textContent, "Official release");
   } finally {
     Object.assign(api.state, previous);
     context.window.FluidsBenchSubmissionAvailability = previousAvailability;
@@ -2969,7 +2974,7 @@ async function verifyNativeProfilesOnMain() {
   const nativeApi = nativeContext.window.__FluidsBenchClaimTest;
   nativeApi.state.manifest = manifest;
   nativeApi.state.groundTruthManifest = {};
-  assert.equal(manifest.data_release.source_ref, "main");
+  // Official release artifacts may identify a release branch or tag.
   for (const name of ["AirfRANS", "DrivAerNet++"]) {
     const dataset = manifest.datasets.find((item) => item.name === name);
     nativeApi.state.dataset = name;
@@ -2981,10 +2986,28 @@ async function verifyNativeProfilesOnMain() {
 
 verifyNativeProfilesOnMain()
   .then(() => verifyOpenDatasetAndClosedSplitStates())
+  .then(() => {
+    const previous = { ...api.state };
+    api.state.manifest = manifest;
+    api.state.metrics = new Map(manifest.metric_definitions.map((definition) => [definition.id, definition]));
+    for (const dataset of manifest.datasets) {
+      if (displayConfig[dataset.slug]?.coming_soon || displayConfig[dataset.slug]?.hidden) continue;
+      api.state.dataset = dataset.name;
+      const spec = JSON.parse(fs.readFileSync(path.join(submissionRoot, "benchmark-specs", dataset.slug, "submission-spec.json"), "utf8"));
+      for (const metric of spec.metrics) {
+        const displayed = api.activeMetricDefinitions().find((definition) => definition.id === metric.id);
+        for (const key of ["equation", "aggregation", "weighting"]) {
+          if (metric[key]) assert.equal(displayed[key], metric[key], `${dataset.slug}/${metric.id}: displayed ${key} must match its specification`);
+        }
+      }
+    }
+    Object.assign(api.state, previous);
+  })
   .then(() => verifyComingSoonSelection())
   .then(() => verifyInitialFeedLoading())
   .then(() => verifyDrivaerLegacyTruthFailsClosed())
   .then(() => verifyWindsorNativeGroundTruth())
+  .then(() => verifyWindsorNativeGroundTruth({ ...manifest, datasets: manifest.datasets.map((dataset) => ({ ...dataset, submission_count: 1 })) }))
   .then(() => verifyNativeV3CpDisplayCoordinates())
   .then(() => verifyCurrentRun419ProfileFixture())
   .then(() => verifyRetainedNativeRun419Bundle())
