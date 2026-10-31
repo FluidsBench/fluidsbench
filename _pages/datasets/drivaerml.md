@@ -297,7 +297,7 @@ compact_masthead: true
   <section class="dataset-panel">
     <h3 id="overall-score">Default overall score</h3>
     <p>
-      The leaderboard can be ranked by any individual metric. Its default ranking is a bounded 0–100 weighted score.
+      Official rank uses the overall score, a bounded 0–100 weighted score. You can sort the table by individual metrics; sorting does not change official rank.
       Fields measure the predicted flow and surface quantities, forces measure integrated aerodynamic behaviour, and profiles reveal local flow structure.
       Together they help distinguish models that have similar overall scores but different strengths. Compare scores within the same dataset and split;
       a score of 90 does not mean 90% accuracy.

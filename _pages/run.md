@@ -31,8 +31,9 @@ hide_header_background: true
   <p class="ux-page-eyebrow">Start here</p>
   <h2 id="submission-datasets-title">Choose a dataset</h2>
   <p>Start with one dataset and one supported split. Its guide sets out the required evaluation cases.</p>
+  {% if site.leaderboard_preview_enabled %}<p><a href="{{ '/leaderboard-preview/' | relative_url }}">Preview the leaderboard →</a> to inspect metrics, methodology and native CFD profiles. The preview contains no submitted results.</p>{% endif %}
   {% if site.launch.can_submit %}
-  <p class="ux-small-note">To open a submission PR, first push your submission to a branch in your fork. On GitHub, select <strong>compare across forks</strong>, choose your fork and submission branch, and target <code>{{ site.submission_repository_url | remove: 'https://github.com/' }}:{{ submission_branch }}</code>.</p>
+  <p class="ux-small-note">For your first result, follow the <a href="{{ source_root }}/SUBMITTING.md#set-up-your-submission-branch">fork and branch setup</a>. Push your result branch to your fork, then on GitHub select <strong>compare across forks</strong>, choose your fork and submission branch, and target <code>{{ site.submission_repository_url | remove: 'https://github.com/' }}:{{ submission_branch }}</code>.</p>
   {% endif %}
   <div class="launch-submission-grid">
     {% for entry in site.data.submission_status.datasets %}{% assign slug = entry[0] %}{% assign availability = entry[1] %}
@@ -63,14 +64,14 @@ hide_header_background: true
   <div>
     <p class="ux-page-eyebrow">Check your setup</p>
     <h2 id="quickstart-title">Try the reference example</h2>
-    <p>A small synthetic example checks your setup and demonstrates metric calculation. It runs locally without downloading a CFD dataset or training a model.</p>
+    <p>A small synthetic example checks your setup and demonstrates metric calculation. It runs locally without downloading a CFD dataset or training a model. For a submission, use the fork checkout described above.</p>
     <a href="{{ source_root }}/reference">Reference documentation <span aria-hidden="true">↗</span></a>
   </div>
   <div class="ux-code-panel">
     <div class="ux-code-label">Terminal <span>Python 3 · macOS / Linux</span></div>
     <pre><code>git clone {{ site.submission_repository_url }}.git
 cd fluidsbench-submission
-git checkout {{ source_ref }}
+git switch -c reference-example {{ source_ref }}
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -r requirements.txt
