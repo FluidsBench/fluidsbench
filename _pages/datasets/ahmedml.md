@@ -295,7 +295,7 @@ compact_masthead: true
   <section class="dataset-panel">
     <h3>Default overall score</h3>
     <p>
-      The leaderboard can be ranked by any individual metric. Its default ranking is a bounded 0-100 weighted score:
+      Official rank uses the overall score, a bounded 0–100 weighted score. You can sort the table by individual metrics; sorting does not change official rank.
     </p>
     <p>
       Relative L1 fields are reported as sortable supplementary metrics, but they are not included in this default score unless a

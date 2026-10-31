@@ -17,10 +17,10 @@ baseurl: # the subpath of your site, e.g. /blog/. Leave blank for root
 # Active navigation and contribution links. FluidsBench organisation repositories.
 submission_repository_url: https://github.com/FluidsBench/fluidsbench-submission
 website_repository_url: https://github.com/FluidsBench/fluidsbench
-leaderboard_base_url: https://raw.githubusercontent.com/FluidsBench/fluidsbench-submission/7a15eda810f24afcddb46ec383ced278feb6885e/
+leaderboard_base_url: https://raw.githubusercontent.com/FluidsBench/fluidsbench-submission/bc1cc8e81f5e97a73dc174b9c268ab6ab368b0f1/
 # Participant documentation and contracts are pinned independently of the empty preview feed.
 submission_target_branch: main
-submission_source_ref: 7a15eda810f24afcddb46ec383ced278feb6885e
+submission_source_ref: bc1cc8e81f5e97a73dc174b9c268ab6ab368b0f1
 # Public community invite: no expiry or use limit; opens the start-here channel.
 community_discord_url: "https://discord.gg/zVZsXAeVKp"
 leaderboard_preview_enabled: true

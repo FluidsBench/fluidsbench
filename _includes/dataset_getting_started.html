@@ -167,21 +167,27 @@ hf download nvidia/HiLiftAeroML \
 <div class="dataset-start-grid">
   <div>
     <h4>1. Install and download with the official library</h4>
-    <pre><code>python3 -m pip install "airfrans==0.1.5.1"
-
+    <p>Run these commands in a terminal. Use the participant quickstart's pinned environment for benchmark evaluation.</p>
+    <pre><code>python3 -m pip install "airfrans==0.1.5.1"</code></pre>
+    <pre><code>python3 - &lt;&lt;'PY'
 import airfrans as af
-af.dataset.download(root="./airfrans_data", unzip=True)</code></pre>
+af.dataset.download(root="./airfrans_data", unzip=True)
+PY</code></pre>
   </div>
   <div>
     <h4>2. Load an official task</h4>
-    <pre><code>import airfrans as af
+    <p>The archive extracts into <code>airfrans_data/Dataset</code>. Run this terminal command after extraction:</p>
+    <pre><code>python3 - &lt;&lt;'PY'
+import airfrans as af
 
 train, train_names = af.dataset.load(
-    root="./airfrans_data",
+    root="./airfrans_data/Dataset",
     task="full",
     train=True,
 )
-print(train.shape, train_names[:3])</code></pre>
+print(len(train), train_names[:3])
+print(train[0].shape)
+PY</code></pre>
   </div>
 </div>
 <p class="dataset-download-note">
