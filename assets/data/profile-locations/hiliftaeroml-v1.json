@@ -2,10 +2,10 @@
   "schema": "fluidsbench-profile-location-guide-v1",
   "dataset_id": "hiliftaeroml",
   "source_repository": "FluidsBench/fluidsbench-submission",
-  "source_ref": "6804f9b2a720b4b53db1d4c5870e403ed4945136",
+  "source_ref": "7a15eda810f24afcddb46ec383ced278feb6885e",
   "source": {
     "file": "leaderboard/manifest.json",
-    "sha256": "068f47ffb85fc08635b6e792e4d97b1ef5bf084f2c49a363e71fd03b2efc41de"
+    "sha256": "37c9fcd792a6e4e2e97c4626c9d953a7fc0b7f94226bbb505b81972c4cbf5059"
   },
   "panels": [
     {
