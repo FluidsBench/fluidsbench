@@ -19,6 +19,11 @@
   <body class="{% if site.navbar_fixed %}fixed-top-nav{% endif %} {% unless site.footer_fixed %}sticky-bottom-footer{% endunless %}">
     <!-- Header -->
     {% include header.liquid %}
+    {% if page.permalink == '/' %}
+      {% include open_session_notice.liquid %}
+    {% else %}
+      {% include open_session_notice.liquid compact=true %}
+    {% endif %}
     {% unless page.hide_header_background %}
       <div class="header-background"><div class="img"></div></div>
     {% endunless %}

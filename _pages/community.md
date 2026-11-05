@@ -8,6 +8,11 @@ description: Find FluidsBench community channels, project repositories and conta
 hide_header_background: true
 ---
 
+{% if site.open_session and site.open_session.phase != 'ended' %}
+
+<p class="ux-page-notice" data-open-session data-event-start="{{ site.open_session.starts_at }}" data-event-end="{{ site.open_session.ends_at }}" data-event-hide-ended="true">Meet the organising committee at our <a href="{{ site.open_session.path | relative_url }}">open session on {{ site.open_session.short_date_label }}, {{ site.open_session.time_label }}</a>. Bring questions about the benchmark, feedback or ideas for additional datasets.</p>
+{% endif %}
+
 <div class="ux-community-grid">
   <section class="ux-community-card">
     <span class="ux-community-icon" aria-hidden="true"><i class="fa-brands fa-discord"></i></span>
