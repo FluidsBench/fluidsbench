@@ -1,0 +1,31 @@
+title: "FluidsBench Open Session"
+subtitle: "Benchmarking, scoring and submissions"
+description: "An open community session on the scientific aims, datasets and scoring of FluidsBench, with a DrivAerML submission walkthrough and time for questions."
+starts_at: "2026-11-11T16:30:00Z"
+ends_at: "2026-11-11T17:30:00Z"
+path: /open-session/
+calendar_path: /assets/calendar/fluidsbench-open-session-2026-11-11.ics
+uid: fluidsbench-open-session-20261111@fluidsbench.org
+join_url: "https://teams.microsoft.com/meet/3201271797963561?p=a26xqHhGOt95LAyOWs"
+meeting_id: "320 127 179 796 356 1"
+passcode: "RU7M3bw6"
+time_zones:
+  - label: "Paris (CET)"
+    offset: "+01:00"
+  - label: "New York (EST)"
+    offset: "-05:00"
+  - label: "Los Angeles (PST)"
+    offset: "-08:00"
+agenda:
+  - offset_minutes: 0
+    duration_minutes: 35
+    title: "Benchmark overview and submission demonstration"
+    description: "Scientific aims, available datasets, scoring and a DrivAerML submission walkthrough, including the leaderboard preview."
+  - offset_minutes: 35
+    duration_minutes: 20
+    title: "Community questions and discussion"
+    description: "Questions about evaluation and submissions, feedback on the benchmark and suggestions for additional datasets."
+  - offset_minutes: 55
+    duration_minutes: 5
+    title: "Next steps and closing remarks"
+    description: "How to participate in the first submission period and continue the discussion with the community."

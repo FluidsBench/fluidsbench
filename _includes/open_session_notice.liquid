@@ -1,0 +1,35 @@
+{% assign event = site.open_session %}
+{% if event and event.phase != 'ended' and page.permalink != event.path %}
+  <aside
+    class="open-session-notice{% if include.compact %} open-session-notice--compact{% endif %}"
+    aria-label="FluidsBench open session"
+    data-open-session
+    data-event-start="{{ event.starts_at }}"
+    data-event-end="{{ event.ends_at }}"
+    data-event-hide-ended="true"
+  >
+    <div class="open-session-notice__inner">
+      <div>
+        <strong>{{ event.title }}</strong>
+        <span class="open-session-notice__date"
+          ><time datetime="{{ event.starts_at }}">{{ event.date_label }}</time> · {{ event.time_label -}}
+        </span>
+        {% unless include.compact %}
+          <p>Benchmark overview, scoring, submission walkthrough and community Q&amp;A. Everyone welcome.</p>
+        {% endunless %}
+        <span
+          class="open-session-live"
+          data-event-phase="live"
+          {% unless event.phase == 'live' %}
+            hidden
+          {% endunless %}
+          >Live now</span
+        >
+      </div>
+      <div class="open-session-actions">
+        <a class="open-session-button" href="{{ event.join_url | escape }}">Join on Microsoft Teams <span aria-hidden="true">↗</span></a>
+        <a href="{{ event.path | relative_url }}">Details and calendar <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </aside>
+{% endif %}
