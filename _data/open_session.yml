@@ -9,6 +9,40 @@ uid: fluidsbench-open-session-20261111@fluidsbench.org
 join_url: "https://teams.microsoft.com/meet/3201271797963561?p=a26xqHhGOt95LAyOWs"
 meeting_id: "320 127 179 796 356 1"
 passcode: "RU7M3bw6"
+recording:
+  url: "https://github.com/FluidsBench/fluidsbench/releases/download/open-session-2026-11-11/FluidsBench-open-session-2026-11-11.mp4"
+  duration_label: "54 minutes"
+  size_label: "245 MB"
+  poster_path: /assets/video/open-session-2026-11-11.jpg
+  captions_path: /assets/video/open-session-2026-11-11.en.vtt
+  chapters_path: /assets/video/open-session-2026-11-11.chapters.vtt
+  slides_url: "https://docs.google.com/presentation/d/1eS6d5YE97I79YMazkogm1goegXzfvBZpoR7BGvXrdow/view"
+  walkthrough_seconds: 3073
+  chapters:
+    - seconds: 0
+      timestamp: "00:00"
+      title: "Benchmark aims and context"
+    - seconds: 1291
+      timestamp: "21:31"
+      title: "Evaluation framework"
+    - seconds: 1784
+      timestamp: "29:44"
+      title: "Current and future datasets"
+    - seconds: 1923
+      timestamp: "32:03"
+      title: "AirfRANS example"
+    - seconds: 2277
+      timestamp: "37:57"
+      title: "DrivAerNet++ example"
+    - seconds: 2634
+      timestamp: "43:54"
+      title: "DrivAerML scoring"
+    - seconds: 3073
+      timestamp: "51:13"
+      title: "Submission walkthrough"
+    - seconds: 3246
+      timestamp: "54:06"
+      title: "Next steps"
 time_zones:
   - label: "Paris (CET)"
     offset: "+01:00"

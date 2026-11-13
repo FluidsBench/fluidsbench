@@ -1,60 +1,54 @@
 ---
 layout: support
-title: Open session
+title: Open session recording
 permalink: /open-session/
 page_title: FluidsBench Open Session
 page_description: Benchmarking, scoring and submissions
-description: Join the FluidsBench organising committee for a benchmark overview, DrivAerML submission walkthrough and community Q&A on 11 November 2026.
+description: Watch the FluidsBench open session recording, covering the benchmark aims, current and future datasets, evaluation, scoring and a DrivAerML submission walkthrough.
 hide_header_background: true
 exclude_from_release: true
 ---
 
 {% assign event = site.open_session %}
+{% assign recording = event.recording %}
 
-<div class="open-session-page" data-open-session data-event-start="{{ event.starts_at }}" data-event-end="{{ event.ends_at }}">
-  <p class="open-session-date"><time datetime="{{ event.starts_at }}">{{ event.date_label }}</time><br><strong>{{ event.time_label }}</strong></p>
-  <p class="ux-page-lead">{{ event.description }}</p>
-  <p>Researchers, practitioners and anyone interested in AI for fluid dynamics are welcome. The <a href="{{ '/contributors/' | relative_url }}#organisers">FluidsBench organising committee</a> will introduce the benchmark and discuss questions from the community.</p>
+<div class="open-session-page">
+  <section id="recording" class="session-recording" aria-labelledby="recording-title" data-session-recording>
+    <div class="session-recording-heading">
+      <h2 id="recording-title">Watch the recording <span>· {{ recording.duration_label }}</span></h2>
+      <p>Recorded <time datetime="2026-11-11">11 November 2026</time></p>
+    </div>
+    <video controls playsinline preload="metadata" poster="{{ recording.poster_path | relative_url }}" aria-label="FluidsBench open session recording">
+      <source src="{{ recording.url | escape }}" type="video/mp4">
+      <track kind="captions" src="{{ recording.captions_path | relative_url }}" srclang="en" label="English (auto-generated)">
+      <track kind="chapters" src="{{ recording.chapters_path | relative_url }}" srclang="en" label="Session chapters">
+      <p><a href="{{ recording.url | escape }}">Download the recording</a> to watch it in your video player.</p>
+    </video>
+    <p class="ux-small-note" data-recording-feedback role="status" hidden></p>
+    <p class="session-recording-summary">The organising committee introduces the aims of FluidsBench, current and future datasets, evaluation and scoring, followed by a DrivAerML submission walkthrough.</p>
+    <p class="ux-small-note"><a href="{{ recording.url | escape }}">Download video ({{ recording.size_label }})</a></p>
 
-  <section class="open-session-join" aria-label="Join the open session" data-event-phase="upcoming live"{% if event.phase == 'ended' %} hidden{% endif %}>
-    <div class="open-session-actions">
-      <a class="open-session-button" href="{{ event.join_url | escape }}">Join on Microsoft Teams <span aria-hidden="true">↗</span></a>
-      <span class="open-session-live" data-event-phase="live"{% unless event.phase == 'live' %} hidden{% endunless %}>The session is in progress</span>
-    </div>
-    <p>Use the meeting link to join. The organiser will admit attendees from the lobby.</p>
-    <p class="ux-small-note">Meeting ID: <code>{{ event.meeting_id }}</code> · Passcode: <code>{{ event.passcode }}</code></p>
-    <h2>Add to your calendar</h2>
-    <div class="open-session-actions">
-      <a href="{{ event.google_calendar_url | escape }}">Google Calendar <span aria-hidden="true">↗</span></a>
-      <a href="{{ event.outlook_calendar_url | escape }}">Outlook on the web <span aria-hidden="true">↗</span></a>
-      <a href="{{ event.calendar_path | relative_url }}" download>Download calendar file (.ics)</a>
-    </div>
-    <p class="ux-small-note">The calendar options add a copy of the event in your calendar's timezone. The .ics file also works with Outlook and Apple Calendar.</p>
+    <nav class="session-chapters" aria-labelledby="session-chapters-title">
+      <h3 id="session-chapters-title">Jump to a chapter</h3>
+      <ol>
+        {% for chapter in recording.chapters %}
+          <li><a href="?t={{ chapter.seconds }}#recording" data-recording-seek="{{ chapter.seconds }}"><span class="session-chapter-time">{{ chapter.timestamp }}</span><span>{{ chapter.title }}</span></a></li>
+        {% endfor %}
+      </ol>
+    </nav>
+
   </section>
 
-  <section class="ux-page-notice" data-event-phase="ended"{% unless event.phase == 'ended' %} hidden{% endunless %} aria-label="Session follow-up">
-    <h2>This session has ended</h2>
-    <p>Continue the discussion in <a href="{{ '/community/' | relative_url }}">the FluidsBench community</a>, or <a href="mailto:admin@fluidsbench.org">contact the team</a> for follow-up material.</p>
-  </section>
-
-  <p class="open-session-local-time" data-event-local-time hidden></p>
-  <details class="ux-page-disclosure">
-    <summary>Time in other locations</summary>
-    <ul class="open-session-timezones">
-      <li><span>London (GMT) / UTC</span><strong>{{ event.time_label | remove: ' GMT / UTC' }}</strong></li>
-      {% for zone in event.time_zones %}<li><span>{{ zone.label }}</span><strong>{{ zone.time_label }}</strong></li>{% endfor %}
+  <section class="session-resources" aria-labelledby="session-resources-title">
+    <h2 id="session-resources-title">Slides and next steps</h2>
+    <ul>
+      <li><a href="{{ recording.slides_url | escape }}">View the session slides <span aria-hidden="true">↗</span></a></li>
+      <li><a href="{{ '/run/' | relative_url }}">Follow the submission guide <span aria-hidden="true">→</span></a></li>
+      <li><a href="{{ '/datasets/' | relative_url }}">Explore the datasets <span aria-hidden="true">→</span></a></li>
+      <li><a href="{{ '/leaderboard-preview/' | relative_url }}?dataset=drivaerml">Preview the leaderboard <span aria-hidden="true">→</span></a></li>
     </ul>
-    <p>All times refer to Wednesday 11 November 2026. The session lasts one hour.</p>
-  </details>
-
-  <h2>Programme <span class="ux-small-note">(GMT / UTC)</span></h2>
-  <ol class="open-session-programme">
-    {% for item in event.agenda %}
-      <li><span>{{ item.time_label }}</span><div><h3>{{ item.title }}</h3><p>{{ item.description }}</p></div></li>
-    {% endfor %}
-  </ol>
-
-  <h2>Explore FluidsBench</h2>
-  <p>You can explore the <a href="{{ '/datasets/' | relative_url }}">datasets</a>, read the <a href="{{ '/run/' | relative_url }}">submission instructions</a> and <a href="{{ '/leaderboard-preview/' | relative_url }}?dataset=drivaerml">preview the leaderboard</a>. Questions and suggestions for additional datasets are welcome.</p>
-  <p>Please share this page with colleagues and collaborators: <a href="{{ event.path | absolute_url }}">{{ event.path | absolute_url }}</a>.</p>
+    <p>Continue the discussion in <a href="{{ '/community/' | relative_url }}">the FluidsBench community</a>, or <a href="mailto:admin@fluidsbench.org">contact the team</a>.</p>
+  </section>
 </div>
+
+<script defer src="{{ '/assets/js/session-recording.js' | relative_url | bust_file_cache }}"></script>

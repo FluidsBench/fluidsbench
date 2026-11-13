@@ -1,5 +1,19 @@
 {% assign event = site.open_session %}
-{% if event and event.phase != 'ended' and page.permalink != event.path %}
+{% if event.recording.url and page.permalink == '/' %}
+  <aside class="open-session-notice" aria-label="FluidsBench open session recording">
+    <div class="open-session-notice__inner">
+      <div>
+        <strong>FluidsBench Open Session · Watch the recording</strong>
+        <p>Benchmark aims, datasets, scoring and a practical submission walkthrough. {{ event.recording.duration_label | capitalize }}.</p>
+      </div>
+      <div class="open-session-actions">
+        <a class="open-session-button" href="{{ event.path | relative_url }}#recording"
+          >Watch the introduction and submission walkthrough <span aria-hidden="true">→</span></a
+        >
+      </div>
+    </div>
+  </aside>
+{% elsif event and event.recording.url == null and event.phase != 'ended' and page.permalink != event.path %}
   <aside
     class="open-session-notice{% if include.compact %} open-session-notice--compact{% endif %}"
     aria-label="FluidsBench open session"
