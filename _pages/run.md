@@ -27,7 +27,13 @@ hide_header_background: true
   {% endif %}
 </aside>
 
-{% if site.open_session and site.open_session.phase != 'ended' %}
+{% if site.open_session.recording.url %}
+
+<aside class="ux-page-notice session-walkthrough-notice" aria-label="Submission walkthrough">
+  <strong>See a submission from start to finish</strong>
+  <p><a href="{{ site.open_session.path | relative_url }}?t={{ site.open_session.recording.walkthrough_seconds }}#recording">Watch the 3-minute submission walkthrough <span aria-hidden="true">→</span></a> Follow the DrivAerML example from preparing a result package to the leaderboard preview.</p>
+</aside>
+{% elsif site.open_session and site.open_session.phase != 'ended' %}
 
 <p data-open-session data-event-start="{{ site.open_session.starts_at }}" data-event-end="{{ site.open_session.ends_at }}" data-event-hide-ended="true">Questions about submitting? Join our <a href="{{ site.open_session.path | relative_url }}">open session on {{ site.open_session.short_date_label }}, {{ site.open_session.time_label }}</a> for a submission walkthrough and Q&amp;A.</p>
 {% endif %}

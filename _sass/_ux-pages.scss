@@ -79,6 +79,93 @@ html[data-theme="dark"] a.open-session-button {
   font-size: 22px;
   line-height: 1.6;
 }
+.session-recording {
+  scroll-margin-top: 24px;
+}
+.session-recording-heading {
+  margin-bottom: 16px;
+}
+.session-recording-heading h2 {
+  margin-bottom: 6px;
+  font-size: 22px;
+}
+.session-recording-heading h2 span {
+  color: var(--ux-muted);
+  font-size: 16px;
+  font-weight: 500;
+}
+.session-recording-heading p {
+  margin: 0;
+  color: var(--ux-muted);
+  font-size: 14px;
+}
+.session-recording video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #0b1726;
+  border: 1px solid var(--ux-border);
+  border-radius: 8px;
+}
+.session-recording video:focus-visible,
+.session-chapters a:focus-visible {
+  outline: 3px solid var(--ux-accent);
+  outline-offset: 4px;
+}
+.session-recording-summary {
+  margin-top: 18px;
+}
+.session-chapters {
+  margin-top: 28px;
+  padding: 22px;
+  background: var(--ux-tint);
+  border: 1px solid var(--ux-border);
+  border-radius: 8px;
+}
+.session-chapters h3 {
+  margin: 0 0 14px;
+  font-size: 18px;
+}
+.session-chapters ol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.session-chapters a {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 0;
+  line-height: 1.5;
+}
+.session-chapter-time {
+  flex-shrink: 0;
+  color: var(--ux-muted);
+  font-variant-numeric: tabular-nums;
+}
+.session-resources {
+  margin-top: 36px;
+}
+.session-resources ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 24px;
+  padding-left: 20px;
+  margin-bottom: 24px;
+}
+@media (max-width: 600px) {
+  .session-chapters {
+    padding: 16px;
+  }
+  .session-chapters ol,
+  .session-resources ul {
+    grid-template-columns: 1fr;
+  }
+}
 .open-session-join {
   margin: 30px 0;
   padding: 24px;

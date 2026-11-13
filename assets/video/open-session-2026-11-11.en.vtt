@@ -1,0 +1,2889 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:03.374
+to, yeah, to actually have it. So, yeah, firstly, thanks for everybody for,
+
+2
+00:00:03.374 --> 00:00:06.698
+you know, for joining and coming wherever you are
+
+3
+00:00:06.698 --> 00:00:10.354
+in the world. The purpose of this session is to talk a
+
+4
+00:00:10.354 --> 00:00:15.407
+little bit more about what is Fluids Bench, why we did it in the 1st place,
+
+5
+00:00:15.407 --> 00:00:17.601
+who are the people working on it,
+
+6
+00:00:18.721 --> 00:00:23.605
+how you can contribute both submitting results,
+
+7
+00:00:23.605 --> 00:00:30.321
+but also potentially contributing data sets and getting involved.
+
+8
+00:00:31.281 --> 00:00:35.359
+And we&#x27;re going to go through a series of slides on that,
+
+9
+00:00:35.359 --> 00:00:40.210
+where various folks from the organising committee are going to talk.
+
+10
+00:00:40.210 --> 00:00:45.203
+And then we&#x27;ll leave plenty of time for Q&amp;A at the end for people.
+
+11
+00:00:45.203 --> 00:00:50.124
+But if there&#x27;s any other discussions afterwards, of course, you know,
+
+12
+00:00:50.124 --> 00:00:51.601
+you&#x27;ve now got a face
+
+13
+00:00:51.681 --> 00:00:55.420
+To the names on the website, and of course, this is a, you know,
+
+14
+00:00:55.420 --> 00:00:56.801
+continuous conversation.
+
+15
+00:00:58.801 --> 00:01:02.171
+So as I said, yeah, we&#x27;ll just go over what it is,
+
+16
+00:01:02.171 --> 00:01:04.881
+the questions and some of the next steps.
+
+17
+00:01:06.321 --> 00:01:13.634
+So from an organising point of view, you know, this is purposely distributed,
+
+18
+00:01:13.634 --> 00:01:20.197
+you know, across academia and industry. It is trying to be, you know,
+
+19
+00:01:20.197 --> 00:01:27.041
+as inclusive as possible whilst not being linked to any one institution.
+
+20
+00:01:27.281 --> 00:01:31.823
+So the ethos of this is very much a community project.
+
+21
+00:01:31.823 --> 00:01:37.686
+All of the stuff is not tied to any individual company. And, you know,
+
+22
+00:01:37.686 --> 00:01:44.292
+we want to make this as non-commercial and non sort of proprietary as possible.
+
+23
+00:01:44.292 --> 00:01:47.761
+So it&#x27;s great to have all these, you know,
+
+24
+00:01:47.841 --> 00:01:52.061
+people who faces, many of them are on the screen here,
+
+25
+00:01:52.061 --> 00:01:56.664
+who are going to talk. So what I&#x27;ll do is I&#x27;ll let probably
+
+26
+00:01:56.664 --> 00:02:02.802
+people introduce themselves a little bit as they come to their section to talk.
+
+27
+00:02:02.802 --> 00:02:06.561
+But what we also realised is that, of course, we
+
+28
+00:02:06.721 --> 00:02:11.510
+as any organising committee cannot do it all themselves.
+
+29
+00:02:11.510 --> 00:02:18.147
+And we want feedback and insights from different companies across industry and
+
+30
+00:02:18.147 --> 00:02:22.432
+academia. And so what we also did is we created an
+
+31
+00:02:22.432 --> 00:02:27.641
+advisory board that, you know, hopefully will also expand and
+
+32
+00:02:27.761 --> 00:02:33.864
+include additional people over time. And that really covers an even broader
+
+33
+00:02:33.864 --> 00:02:40.368
+spectrum. And hopefully, as you notice, many of the companies here could be seen
+
+34
+00:02:40.368 --> 00:02:46.150
+as competitors to each other. But what&#x27;s nice is they all have seen the
+
+35
+00:02:46.150 --> 00:02:49.041
+reason for an open benchmark. And so
+
+36
+00:02:49.321 --> 00:02:54.199
+What&#x27;s nice about this is, you know, it&#x27;s clear that we have many companies
+
+37
+00:02:54.199 --> 00:02:58.948
+giving their opinions and things in a non, you know, non-competitive way.
+
+38
+00:02:58.948 --> 00:03:03.761
+And we wanted to have a, as I said, a mixture of like aerospace companies,
+
+39
+00:03:03.761 --> 00:03:08.767
+automotive companies who are bringing more the fluids and engineering aspects
+
+40
+00:03:08.767 --> 00:03:09.281
+to this.
+
+41
+00:03:09.841 --> 00:03:15.106
+but then also the software companies who are developing and commercialising some
+
+42
+00:03:15.106 --> 00:03:18.876
+of these surrogate modelling technologies. And of course,
+
+43
+00:03:18.876 --> 00:03:22.581
+universities and research institutes that are, you know,
+
+44
+00:03:22.581 --> 00:03:27.846
+developing the next the next wave of it. So it&#x27;s very much the idea that when we
+
+45
+00:03:27.846 --> 00:03:29.081
+were creating this,
+
+46
+00:03:29.561 --> 00:03:34.437
+Fluids bench, we were interacting and asking for advice
+
+47
+00:03:34.437 --> 00:03:39.662
+at an overall level, but also a technical level in terms of
+
+48
+00:03:39.662 --> 00:03:45.061
+like the, you know, the scoring we should use and the metrics
+
+49
+00:03:45.061 --> 00:03:47.761
+that we should have, et cetera.
+
+50
+00:03:48.841 --> 00:03:53.801
+Oh, perfect timing. So I just saw Paola just joined.
+
+51
+00:03:56.601 --> 00:03:58.681
+I had some problems with the connexion, sorry.
+
+52
+00:03:58.681 --> 00:04:02.251
+Yeah, no worries. And I&#x27;m sort of doing a jewel job here of
+
+53
+00:04:02.251 --> 00:04:06.238
+trying to drive this slideshow and admit people into the meetings.
+
+54
+00:04:06.238 --> 00:04:09.987
+So apologies about that. I think we were about to come up. Oh,
+
+55
+00:04:09.987 --> 00:04:13.914
+sorry, it&#x27;s Faez first. I think Faez was going to talk a bit like
+
+56
+00:04:13.914 --> 00:04:17.961
+why are we even doing the benchmarking in the 1st place? So please.
+
+57
+00:04:14.841 --> 00:04:15.241
+Yeah.
+
+58
+00:04:18.441 --> 00:04:19.081
+Over to you.
+
+59
+00:04:19.641 --> 00:04:24.780
+Hi, nice to meet you all. I&#x27;m Faez Ahmed, associate professor of mechanical
+
+60
+00:04:24.780 --> 00:04:29.040
+engineering. And yeah, I think the motivation comes from other
+
+61
+00:04:29.040 --> 00:04:34.112
+fields. So when you look at, for example, large language models and so on,
+
+62
+00:04:34.112 --> 00:04:39.589
+there are some very well-known benchmarks. GPT-4 Carbon just came out and we can
+
+63
+00:04:39.589 --> 00:04:43.241
+very quickly jump to one of our favourite benchmarks.
+
+64
+00:04:43.361 --> 00:04:47.375
+many of our benchmarks and see how they are doing on RKGI.
+
+65
+00:04:47.375 --> 00:04:51.117
+Or there are some other fun ones like the drone bench,
+
+66
+00:04:51.117 --> 00:04:56.765
+which tells you how well modern LLMs can, for example, operate drones. Next slide,
+
+67
+00:04:56.765 --> 00:04:57.241
+please.
+
+68
+00:04:58.201 --> 00:05:01.858
+However, I think one thing that is missing is that
+
+69
+00:05:01.858 --> 00:05:07.524
+we need to think about these benchmarks play a critical role in evaluating and
+
+70
+00:05:07.524 --> 00:05:12.615
+improving performance of LLMs. And we can also see, like in this case,
+
+71
+00:05:12.615 --> 00:05:15.986
+across time, every time there was a new model,
+
+72
+00:05:15.986 --> 00:05:18.281
+we couldn&#x27;t track record against
+
+73
+00:05:18.841 --> 00:05:22.610
+how the performance is improving with time. So given all of this,
+
+74
+00:05:22.610 --> 00:05:27.122
+we have been motivated on what are those equivalent benchmarks in engineering.
+
+75
+00:05:27.122 --> 00:05:30.548
+And in recent times, we are seeing more and more benchmarks
+
+76
+00:05:30.548 --> 00:05:33.347
+coming out, but still engineering benchmarks are
+
+77
+00:05:33.347 --> 00:05:37.516
+quite sparse compared to what we see in LLM and computer science domain.
+
+78
+00:05:37.516 --> 00:05:38.601
+Next slide, please.
+
+79
+00:05:39.641 --> 00:05:44.048
+And that was a big motivation for creating FluidsBench. And again,
+
+80
+00:05:44.048 --> 00:05:48.783
+I think we want to highlight that the goal of the benchmark can be many
+
+81
+00:05:48.783 --> 00:05:53.650
+different goals and different groups would have different targets for the
+
+82
+00:05:53.650 --> 00:05:58.781
+benchmark. Some of the obvious ones, like we can compare models for research.
+
+83
+00:05:58.781 --> 00:06:02.201
+When new models come out, we can create new models.
+
+84
+00:06:02.441 --> 00:06:07.188
+Maybe someone is taking one of the models and deciding whether they want to put it
+
+85
+00:06:07.188 --> 00:06:09.877
+in production or measuring progress over time,
+
+86
+00:06:09.877 --> 00:06:14.281
+like how is performance changing in fluid predictions, different types of...
+
+87
+00:06:17.338 --> 00:06:21.704
+versus like testing, generalizability, or even understanding what research
+
+88
+00:06:21.704 --> 00:06:24.848
+question to ask, because a good benchmark can help us
+
+89
+00:06:24.848 --> 00:06:28.632
+understand what are the questions that we are not asking so far.
+
+90
+00:06:28.632 --> 00:06:32.474
+And by looking at those weaknesses, we could ask those questions.
+
+91
+00:06:32.474 --> 00:06:36.898
+So these were some of the key like high level motivations for us to create.
+
+92
+00:06:37.218 --> 00:06:42.537
+a benchmark primarily focused on fluids. And I think I want to highlight that
+
+93
+00:06:42.537 --> 00:06:48.129
+standardising comparisons can really help the community compound progress instead
+
+94
+00:06:48.129 --> 00:06:53.652
+of duplicating the effort and creating hidden sets and not knowing when progress
+
+95
+00:06:53.652 --> 00:06:55.698
+is really being made. However,
+
+96
+00:06:55.858 --> 00:07:00.432
+Like we also have the risk in the future that if there is too much fixation on
+
+97
+00:07:00.432 --> 00:07:05.354
+benchmarks, that can be counterproductive. But we are not at the stage in the field,
+
+98
+00:07:05.354 --> 00:07:10.217
+in most engineering fields yet. Right now, we want more benchmarks which are widely
+
+99
+00:07:10.217 --> 00:07:10.738
+accepted.
+
+100
+00:07:13.098 --> 00:07:14.898
+Next slide, please. Thanks.
+
+101
+00:07:20.858 --> 00:07:25.548
+Okay, so I think Paola, I&#x27;ll hand over to you to introduce
+
+102
+00:07:24.698 --> 00:07:24.978
+Yeah.
+
+103
+00:07:25.548 --> 00:07:31.908
+yourself and how some of this all kicked off in those early ML for fluids and a
+
+104
+00:07:31.908 --> 00:07:33.418
+COFDAC discussions.
+
+105
+00:07:33.978 --> 00:07:39.513
+Yeah, so okay, Paola Cinnella, I am a professor at Sorbonne University
+
+106
+00:07:39.513 --> 00:07:43.644
+and I am also leading the scientific interest group,
+
+107
+00:07:43.644 --> 00:07:49.412
+Machine Learning for Fluids in the framework of the Air Cove Tax Society,
+
+108
+00:07:49.412 --> 00:07:55.258
+which is a scientific society in Europe on flow turbulence and combustion.
+
+109
+00:07:55.818 --> 00:08:03.071
+And one of the goals of this scientific interest group was to standardise test
+
+110
+00:08:03.071 --> 00:08:10.049
+cases and benchmarks in machine learning methods applied to fluid problems.
+
+111
+00:08:10.049 --> 00:08:15.098
+So we tried to set several benchmarks. One of them was
+
+112
+00:08:15.338 --> 00:08:19.371
+a benchmark for data-driven turbulence modelling.
+
+113
+00:08:19.371 --> 00:08:25.824
+This is called the Closure Challenge. And it builds on preliminary work done by
+
+114
+00:08:25.824 --> 00:08:29.615
+NASA. Then we had another benchmark in closure
+
+115
+00:08:29.615 --> 00:08:34.858
+models for combustion. This is led by Alessandro Parente at ULB.
+
+116
+00:08:35.258 --> 00:08:40.308
+And while we Neil, we were, so we have contributed to this other
+
+117
+00:08:40.308 --> 00:08:43.959
+benchmark led by Neil for his bench. Actually,
+
+118
+00:08:43.959 --> 00:08:50.097
+the history is that a few years ago, I collaborated with the with the group of
+
+119
+00:08:50.097 --> 00:08:56.001
+deep learning in at Sorbonne University, in particular the group of Patrick
+
+120
+00:08:56.001 --> 00:08:56.778
+Gallinari.
+
+121
+00:08:57.098 --> 00:09:00.701
+who is a computer scientist, and together we,
+
+122
+00:09:00.701 --> 00:09:05.714
+with the help of a PhD student at that time, so Florent Bonnet,
+
+123
+00:09:05.714 --> 00:09:11.510
+we built this Air France data set, which is a data set of airfoils at the
+
+124
+00:09:11.510 --> 00:09:15.818
+period where no data sets basically were available for
+
+125
+00:09:16.218 --> 00:09:21.670
+I would say machine learning and fluid computational fluid dynamics.
+
+126
+00:09:21.670 --> 00:09:25.305
+And so this data set then led to a challenge.
+
+127
+00:09:25.305 --> 00:09:31.705
+The first challenge was accepted to the new RIBES data sets and benchmarks track
+
+128
+00:09:31.705 --> 00:09:35.418
+in 2022, and a challenge was proposed in 2023.
+
+129
+00:09:35.818 --> 00:09:40.713
+And well, today, this data set is quite well used by the
+
+130
+00:09:40.713 --> 00:09:47.754
+community for testing surrogate models. And it&#x27;s actually now included in as part
+
+131
+00:09:47.754 --> 00:09:54.538
+of the of the test cases in FluidsBench. And then this benchmark has been also
+
+132
+00:09:54.858 --> 00:10:02.019
+proposed as a test case for the series of workshops, machine learning for fluids.
+
+133
+00:10:02.019 --> 00:10:06.997
+This is a series of workshops which has started in 2024.
+
+134
+00:10:06.997 --> 00:10:13.634
+I started it in Sorbonne and then we had a second edition organised by Luca
+
+135
+00:10:13.634 --> 00:10:16.778
+Mulgree and Neil was there actually.
+
+136
+00:10:17.018 --> 00:10:20.920
+in London. And last year we had another edition in
+
+137
+00:10:20.920 --> 00:10:25.893
+Amsterdam organised by CWI. And there we presented, I would say,
+
+138
+00:10:25.893 --> 00:10:30.484
+the premises of Ruiz&#x27;s bench, which was still in, you know,
+
+139
+00:10:30.484 --> 00:10:35.227
+in under construction. And then we joined forces with the CAR
+
+140
+00:10:35.227 --> 00:10:36.298
+CFD community.
+
+141
+00:10:36.938 --> 00:10:40.953
+which is, which has actually has contributed high
+
+142
+00:10:40.953 --> 00:10:46.334
+fidelity data sets for different families of car shapes. And well,
+
+143
+00:10:46.334 --> 00:10:52.758
+all these forces brought together along with contributions from turbo machinery
+
+144
+00:10:52.758 --> 00:10:57.978
+and from external aerodynamics contributors, all this has led to
+
+145
+00:10:58.178 --> 00:11:02.831
+to through its bench. So the important point here is, well,
+
+146
+00:11:02.831 --> 00:11:08.880
+I would say the rationale between this effort is that we hear very frequently
+
+147
+00:11:08.880 --> 00:11:15.395
+that surrogates aim to replace CFD, right? And the problem is that surrogate models
+
+148
+00:11:15.395 --> 00:11:17.178
+are often assessed only
+
+149
+00:11:17.418 --> 00:11:22.532
+on global error metrics, and which is not what we do in CFD.
+
+150
+00:11:22.532 --> 00:11:27.227
+Nobody would assess, say that the CFD code is good just
+
+151
+00:11:27.227 --> 00:11:32.844
+because it has a low error on the velocity field on average. Okay,
+
+152
+00:11:32.844 --> 00:11:37.538
+so if we aim at replacing CFD with surrogate models, we
+
+153
+00:11:37.618 --> 00:11:42.620
+should assess them as severely as CFD. So the first question is about
+
+154
+00:11:42.620 --> 00:11:45.979
+convergence. So when you run a CFD simulation,
+
+155
+00:11:45.979 --> 00:11:51.053
+what you do first of all is that you cheque if your mesh is converged,
+
+156
+00:11:51.053 --> 00:11:56.698
+if your iterations are converged and so on. So we should do something similar.
+
+157
+00:11:56.898 --> 00:12:02.354
+with surrogate models and see if the model has converged to some extent in
+
+158
+00:12:02.354 --> 00:12:05.554
+terms, for instance, of data we assimilate.
+
+159
+00:12:05.554 --> 00:12:10.427
+The second very important point is the flow quantities we look at,
+
+160
+00:12:10.427 --> 00:12:15.810
+not only L2 errors on global fields, especially in external aerodynamics,
+
+161
+00:12:15.810 --> 00:12:21.338
+where most of the field is basically a constant function. So we should look
+
+162
+00:12:21.538 --> 00:12:24.279
+like profiles, world distributions and forces.
+
+163
+00:12:24.279 --> 00:12:28.477
+This is what we are proposing here. And another important point are the
+
+164
+00:12:28.477 --> 00:12:31.509
+derivatives, because reconstructing well a velocity
+
+165
+00:12:31.509 --> 00:12:35.532
+field doesn&#x27;t mean that you are reconstructing well the derivatives.
+
+166
+00:12:35.532 --> 00:12:39.905
+The derivatives are much harder to reconstruct. And however, for instance,
+
+167
+00:12:39.905 --> 00:12:43.578
+velocity derivatives or temperature derivatives will influence
+
+168
+00:12:43.858 --> 00:12:48.142
+your wall shear stress, your heat fluxes, and the separation,
+
+169
+00:12:48.142 --> 00:12:53.669
+the separation and reattachment points. So this is very important and we should
+
+170
+00:12:53.669 --> 00:12:57.262
+look at those quantities more closely. And finally,
+
+171
+00:12:57.262 --> 00:13:01.960
+the last point is overall cost, because when you train a surrogate,
+
+172
+00:13:01.960 --> 00:13:07.418
+the idea is that you replace costly CFD with a cheap surrogate where inference
+
+173
+00:13:07.658 --> 00:13:13.071
+takes only a few seconds, okay? But imagine that you are addressing an
+
+174
+00:13:13.071 --> 00:13:17.263
+optimization task, and this optimization task could be
+
+175
+00:13:17.263 --> 00:13:21.151
+resolved with brute force CFD using, I don&#x27;t know,
+
+176
+00:13:21.151 --> 00:13:26.183
+1000 queries to the costly CFD code. And to train your surrogate,
+
+177
+00:13:26.183 --> 00:13:28.698
+you need a database of 10,000 CFD
+
+178
+00:13:28.978 --> 00:13:34.486
+So then actually you have gained very little in terms of computational cost,
+
+179
+00:13:34.486 --> 00:13:37.847
+or you have even lost some computational cost.
+
+180
+00:13:37.847 --> 00:13:43.211
+So we should be careful and look very, very carefully at these quantities.
+
+181
+00:13:43.211 --> 00:13:48.218
+And that&#x27;s what we do using open evaluations, submissions reviewed by
+
+182
+00:13:48.418 --> 00:13:52.852
+the data set owners and version rules, and this is what my colleagues,
+
+183
+00:13:52.852 --> 00:13:56.661
+I think Jean and Daniel, are going to present just after me.
+
+184
+00:13:56.661 --> 00:13:57.098
+Thanks.
+
+185
+00:13:58.978 --> 00:14:02.659
+Great. And just maybe mentioned later as well,
+
+186
+00:14:02.659 --> 00:14:08.924
+but certainly I was inspired by the work that Mohammed and Faez had done on the
+
+187
+00:14:08.924 --> 00:14:14.562
+car bench, which was, you know, one of the first publications that came
+
+188
+00:14:14.562 --> 00:14:17.538
+out looking at for the drive net case.
+
+189
+00:14:18.018 --> 00:14:21.148
+And so that combined with, I think, also some of the,
+
+190
+00:14:21.148 --> 00:14:24.510
+we had an interesting chat at this ML Fluids with Daniel,
+
+191
+00:14:24.510 --> 00:14:27.467
+who gave one of the keynotes on weather modelling,
+
+192
+00:14:27.467 --> 00:14:31.756
+who was at Google DeepMind and showing how the weather community uses the
+
+193
+00:14:30.298 --> 00:14:30.778
+Mhm.
+
+194
+00:14:31.756 --> 00:14:35.756
+benchmarks and the leaderboards. And obviously, Neil Turi, you know,
+
+195
+00:14:35.756 --> 00:14:39.524
+did some stuff on that. So all of this started to come together.
+
+196
+00:14:36.698 --> 00:14:37.178
+Okay.
+
+197
+00:14:39.524 --> 00:14:42.538
+And, you know, I think everyone was like, ah, okay.
+
+198
+00:14:42.658 --> 00:14:48.178
+We really should have some benchmarks, so OK, Jean.
+
+199
+00:14:43.178 --> 00:14:43.458
+Yeah.
+
+200
+00:14:50.458 --> 00:14:55.307
+Hi everyone, I&#x27;m Jean Kossaifi. I lead the AI engineering group at NVIDIA
+
+201
+00:14:55.307 --> 00:14:59.567
+Research. And so, yeah, I want to talk a little bit about how we
+
+202
+00:14:59.567 --> 00:15:05.071
+are measuring the progress in the field. And so, in general, in engineering design,
+
+203
+00:15:05.071 --> 00:15:09.658
+we basically want to predict how a system, our geometry, will behave.
+
+204
+00:15:09.978 --> 00:15:14.818
+and determine how to improve it. And so one of the main goals of AI
+
+205
+00:15:14.818 --> 00:15:20.298
+engineering is to use lead surrogate models to make those predictions faster
+
+206
+00:15:20.298 --> 00:15:24.142
+and enable faster, large-scale design exploration and
+
+207
+00:15:24.142 --> 00:15:29.978
+optimization. And so for car aerodynamics, for example, we need to understand how
+
+208
+00:15:30.178 --> 00:15:34.618
+When we change the geometry that affects the flow and the forces, and...
+
+209
+00:15:35.578 --> 00:15:39.299
+do the simulation across several operating conditions.
+
+210
+00:15:39.299 --> 00:15:44.238
+And so the more we want to optimise, the more evaluations we need to do.
+
+211
+00:15:44.238 --> 00:15:49.785
+And so CFD already offers a whole range of established approaches from, you know,
+
+212
+00:15:49.785 --> 00:15:54.995
+RANs to hybrid RANs, LES, LES, DNS. And so each of those differ in the types
+
+213
+00:15:54.995 --> 00:15:56.618
+of physics they resolve.
+
+214
+00:15:56.938 --> 00:16:01.510
+the physics, the model, and the computational cost. And right now,
+
+215
+00:16:01.510 --> 00:16:07.105
+even simulations we can afford for a few configurations might be too expensive to
+
+216
+00:16:07.105 --> 00:16:12.905
+run through the entire optimization loop. And so really, the bottleneck, the budget,
+
+217
+00:16:12.905 --> 00:16:15.498
+whether it&#x27;s both in time and compute,
+
+218
+00:16:15.818 --> 00:16:20.612
+is currently limiting the number of designs we can explore and the fidelity
+
+219
+00:16:20.612 --> 00:16:24.459
+of the solvers we can use. And so learning a surrogate model
+
+220
+00:16:24.459 --> 00:16:29.505
+essentially allows us to amortise the cost of simulation of data generation and
+
+221
+00:16:29.505 --> 00:16:34.361
+model training over many evaluations. So we generate a lot of reference data
+
+222
+00:16:34.361 --> 00:16:37.578
+and then we train a surrogate model from this data
+
+223
+00:16:38.058 --> 00:16:42.538
+and we reuse the model that we trained once to make predictions across many
+
+224
+00:16:42.538 --> 00:16:44.778
+geometries, operating conditions, etc.
+
+225
+00:16:45.778 --> 00:16:50.387
+And so the hope is that we can bring information from the higher fidelity
+
+226
+00:16:50.387 --> 00:16:54.623
+simulation into larger design study at a lower cost per prediction.
+
+227
+00:16:54.623 --> 00:16:57.426
+And so really in aided engineering research,
+
+228
+00:16:57.426 --> 00:17:02.222
+we&#x27;re trying to develop neural operators that connect directly the geometry,
+
+229
+00:17:02.222 --> 00:17:05.336
+the match, the representation directly to physics
+
+230
+00:17:05.336 --> 00:17:07.578
+prediction and design optimizations.
+
+231
+00:17:08.538 --> 00:17:12.137
+And so the reason we call it AI-aided engineering,
+
+232
+00:17:12.137 --> 00:17:17.146
+and not let&#x27;s say AI engineering, is that the models are complementing
+
+233
+00:17:17.146 --> 00:17:21.450
+existing CAE methods. We&#x27;re not really in the stage where we
+
+234
+00:17:21.450 --> 00:17:24.554
+want to replace it. One issue, for example,
+
+235
+00:17:24.554 --> 00:17:28.858
+is that the optimizer could exploit errors in the surrogate.
+
+236
+00:17:29.338 --> 00:17:33.099
+So that find areas where it&#x27;s out of distribution,
+
+237
+00:17:33.099 --> 00:17:37.818
+so that a predictive design still needs to be checked with CFD.
+
+238
+00:17:38.778 --> 00:17:41.959
+And so we still need experimental validation to assess how well the
+
+239
+00:17:41.959 --> 00:17:44.298
+modelling actually represents the physics system.
+
+240
+00:17:45.258 --> 00:17:49.663
+And so the predictions basically also need to support the design decisions
+
+241
+00:17:49.663 --> 00:17:54.244
+we&#x27;re making. If we&#x27;re optimising drag, we want the model to predict how drag
+
+242
+00:17:54.244 --> 00:17:58.708
+actually changes with the geometry. Small average errors in the flow fields
+
+243
+00:17:58.708 --> 00:18:02.701
+don&#x27;t necessarily tell you this. And so this is where the choice of
+
+244
+00:18:02.701 --> 00:18:04.698
+metrics really matter. And CFD has
+
+245
+00:18:04.818 --> 00:18:08.826
+Paola already said has a long history of benchmarking and validation.
+
+246
+00:18:08.826 --> 00:18:12.204
+In other fields, Faez mentioned benchmark really have been
+
+247
+00:18:12.204 --> 00:18:15.410
+driving progress. If you think, for example, in vision,
+
+248
+00:18:15.410 --> 00:18:17.929
+ImageNet really is what provided, you know,
+
+249
+00:18:17.929 --> 00:18:22.738
+common ground and training data for image recognition and was really central to the
+
+250
+00:18:22.738 --> 00:18:25.658
+progress of AI and arriving to where we are today.
+
+251
+00:18:25.978 --> 00:18:29.380
+So these benchmarks really help researchers compare methods,
+
+252
+00:18:29.380 --> 00:18:32.781
+identify limitations, and decide which approaches to pursue.
+
+253
+00:18:32.781 --> 00:18:37.131
+And so that&#x27;s why we really put all our thoughts into designing fluids bench.
+
+254
+00:18:37.131 --> 00:18:40.254
+And so there are two main questions we want to address,
+
+255
+00:18:40.254 --> 00:18:44.938
+what the evaluation measures and whether the results are comparable across methods.
+
+256
+00:18:46.138 --> 00:18:51.655
+So to start with what we&#x27;re actually measuring, as we all know,
+
+257
+00:18:51.655 --> 00:18:58.552
+a model can have low average field error and still predict drag or lift poorly.
+
+258
+00:18:58.552 --> 00:19:04.069
+And so if you use that, those flow fields to optimise the cache
+
+259
+00:19:04.069 --> 00:19:06.138
+shape, for example, then
+
+260
+00:19:06.618 --> 00:19:10.584
+you really want to be looking at the drag error directly. Conversely,
+
+261
+00:19:10.584 --> 00:19:14.719
+if you have a good drag prediction, that can result from cancellation of
+
+262
+00:19:14.719 --> 00:19:17.665
+local errors, and it doesn&#x27;t tell you that the flow
+
+263
+00:19:17.665 --> 00:19:21.460
+field is actually accurate. So we need complementary measurements.
+
+264
+00:19:21.460 --> 00:19:25.766
+You want field force measures to agree with the reference across the entire
+
+265
+00:19:25.766 --> 00:19:28.315
+domain. You want to take into account proper
+
+266
+00:19:28.315 --> 00:19:28.938
+quadrature.
+
+267
+00:19:29.258 --> 00:19:33.938
+You want to look then at integrated forces to measure aerodynamic loads, etc.
+
+268
+00:19:33.938 --> 00:19:38.498
+And then you have things like pressure and weight profile that can help you
+
+269
+00:19:38.498 --> 00:19:41.018
+identify and diagnose local discrepancies.
+
+270
+00:19:42.178 --> 00:19:46.400
+And then we&#x27;re doing machine learning. So you also want to look at things like
+
+271
+00:19:46.400 --> 00:19:50.142
+data efficiency, generalisation, how does performance change with the
+
+272
+00:19:50.142 --> 00:19:53.509
+amount of training data? Does the method work well on held-out
+
+273
+00:19:53.509 --> 00:19:57.357
+cases similar to the training data? At what point do you start to see a
+
+274
+00:19:57.357 --> 00:20:00.243
+domain shift? What happens on different geometries or
+
+275
+00:20:00.243 --> 00:20:01.098
+flow conditions?
+
+276
+00:20:02.058 --> 00:20:05.994
+So this is another aspect of the benchmark. And lastly,
+
+277
+00:20:05.994 --> 00:20:11.406
+it&#x27;s also important to keep track of the source of the data, both, you know,
+
+278
+00:20:11.406 --> 00:20:15.202
+for credit, but also because if you train a surrogate
+
+279
+00:20:15.202 --> 00:20:18.856
+on RANS data, you typically test it on RANS data as
+
+280
+00:20:18.856 --> 00:20:21.738
+well. So you know you can reproduce that.
+
+281
+00:20:21.898 --> 00:20:26.522
+But good performance on that runs data doesn&#x27;t tell you that it will agree with
+
+282
+00:20:26.522 --> 00:20:30.048
+DNS or even wind tunnel experiments. And so as we mentioned,
+
+283
+00:20:30.048 --> 00:20:34.326
+scoring is especially important in the machine learning community because
+
+284
+00:20:34.326 --> 00:20:39.065
+researchers then use the reported results to choose their methods and decide what
+
+285
+00:20:39.065 --> 00:20:41.782
+to work on next. And so the choice of metrics,
+
+286
+00:20:41.782 --> 00:20:43.458
+normalisation and aggregation
+
+287
+00:20:43.538 --> 00:20:47.713
+affects which improvements receive attention and where the field goes.
+
+288
+00:20:47.713 --> 00:20:51.299
+And so on the one hand, benchmark really can drive the field
+
+289
+00:20:51.299 --> 00:20:54.650
+forward with scores that can summarise performance well.
+
+290
+00:20:54.650 --> 00:20:59.119
+But then we need individual metric to see where the improvements come from,
+
+291
+00:20:59.119 --> 00:21:02.058
+you know, better field prediction, market forces.
+
+292
+00:21:02.378 --> 00:21:07.414
+etc. But on the other hand, some scores can be gained and it can hide
+
+293
+00:21:07.414 --> 00:21:13.314
+the differences between methods leading to a race where for a 1% improvement that
+
+294
+00:21:13.314 --> 00:21:17.774
+doesn&#x27;t really reflect an actual improvement on the end goal.
+
+295
+00:21:17.774 --> 00:21:23.098
+And so this is why we established FluidBench and next Daniel will explain
+
+296
+00:21:23.418 --> 00:21:27.898
+How Fluid Bench makes those comparison consistent request submissions.
+
+297
+00:21:31.498 --> 00:21:39.005
+Hello, so my name is Daniel Leibovici. I&#x27;m a research scientist in the AI and
+
+298
+00:21:39.005 --> 00:21:44.106
+the engineering group at NVIDIA, at NVIDIA Research.
+
+299
+00:21:44.106 --> 00:21:50.458
+So I guess could we come back for a second to the previous slide?
+
+300
+00:21:50.618 --> 00:21:55.313
+Or, I think we still had a short point on the
+
+301
+00:21:55.313 --> 00:22:01.130
+comparability, so I just wanted to give a word regarding
+
+302
+00:22:01.130 --> 00:22:06.641
+the comparability, which drives drove the creation of
+
+303
+00:22:06.641 --> 00:22:09.498
+Fluid&#x27;s bench as well, so...
+
+304
+00:22:09.658 --> 00:22:15.042
+As any researcher knows, it can be sometimes very challenging to
+
+305
+00:22:15.042 --> 00:22:20.261
+compare different surrogate models, even on the same data set.
+
+306
+00:22:20.261 --> 00:22:26.556
+There can be different tiny aspects that change between papers and the way,
+
+307
+00:22:26.556 --> 00:22:30.698
+for instance, these models are evaluated, whether
+
+308
+00:22:31.418 --> 00:22:35.818
+They use exactly the same geometries, the same splits,
+
+309
+00:22:35.818 --> 00:22:41.498
+the same evaluation locations, whether error normalisation is done the
+
+310
+00:22:41.498 --> 00:22:47.498
+same way or whether integration of these errors is also done the same way.
+
+311
+00:22:47.498 --> 00:22:52.298
+So it&#x27;s very important to come up with a uniformized way of
+
+312
+00:22:53.338 --> 00:23:00.362
+doing these evaluations in order to be able to compare these various models.
+
+313
+00:23:00.362 --> 00:23:06.838
+And this is what FluidsBench also aims to do. So within each data set,
+
+314
+00:23:06.838 --> 00:23:14.499
+the splits are defined once and for all. While models can use different internally,
+
+315
+00:23:14.499 --> 00:23:17.418
+they can use different meshes or
+
+316
+00:23:17.538 --> 00:23:22.091
+presentations for submission to FluidsBench,
+
+317
+00:23:22.091 --> 00:23:30.285
+they will have to be evaluated at a given set of points which corresponds to the
+
+318
+00:23:30.285 --> 00:23:36.962
+original mesh in those data sets. Metrics as well and aggregation
+
+319
+00:23:36.962 --> 00:23:38.378
+procedures are
+
+320
+00:23:38.418 --> 00:23:43.434
+Are clearly defined, so this gives a common basis for
+
+321
+00:23:43.434 --> 00:23:49.658
+comparing the predictions. Also, the submissions are gonna record.
+
+322
+00:23:51.418 --> 00:24:00.590
+all kinds of information about training procedures that have been used to prepare
+
+323
+00:24:00.590 --> 00:24:08.308
+the models and so that these numbers are reported with context. Now,
+
+324
+00:24:08.308 --> 00:24:15.578
+a second very important point is the fact that this benchmarking
+
+325
+00:24:15.978 --> 00:24:20.708
+remains open and very transparent to the community.
+
+326
+00:24:20.708 --> 00:24:28.349
+So all the data sets that are being used in FluidsBench are public and open source.
+
+327
+00:24:28.349 --> 00:24:33.898
+They can be downloaded, inspected by the research community.
+
+328
+00:24:36.858 --> 00:24:41.274
+Everything that is happening inside Fluids Bench,
+
+329
+00:24:41.274 --> 00:24:47.632
+so the repo itself is public, so the evaluation codes and protocols can
+
+330
+00:24:47.632 --> 00:24:53.902
+be inspected and by the community, and we&#x27;re always open to get to get
+
+331
+00:24:53.902 --> 00:24:57.258
+feedback if there are any suggestions.
+
+332
+00:24:58.298 --> 00:24:58.458
+Um...
+
+333
+00:25:00.058 --> 00:25:06.993
+The reviews on the, and finally, the reviews on the submissions that are
+
+334
+00:25:06.993 --> 00:25:12.408
+going to be done by the participants are public as well.
+
+335
+00:25:12.408 --> 00:25:18.298
+So we try to keep everything as transparent as possible. Now,
+
+336
+00:25:19.978 --> 00:25:23.898
+As of as of now, so.
+
+337
+00:25:26.218 --> 00:25:31.731
+The model code and the weights for the moment are optional,
+
+338
+00:25:31.731 --> 00:25:38.622
+so the way the way the fluid bench submission works is that it takes files
+
+339
+00:25:38.622 --> 00:25:44.778
+where the model has been evaluated, so the model can be evaluated.
+
+340
+00:25:45.578 --> 00:25:49.442
+in a way, outside of the realm of the of fluids
+
+341
+00:25:49.442 --> 00:25:53.307
+bench, and then the evaluator that is inside is
+
+342
+00:25:53.307 --> 00:25:57.010
+going to read these files. So, at the moment,
+
+343
+00:25:57.010 --> 00:26:02.565
+there is no yet a guarantee of reproducibility of the of the models,
+
+344
+00:26:02.565 --> 00:26:04.658
+but the evaluation itself.
+
+345
+00:26:06.058 --> 00:26:14.566
+is and the protocols are open source. A second important point about this open
+
+346
+00:26:14.566 --> 00:26:20.058
+benchmarking is going to be the attribution and...
+
+347
+00:26:20.378 --> 00:26:20.618
+Ohh.
+
+348
+00:26:23.418 --> 00:26:27.385
+merit, so regarding the different data sets and
+
+349
+00:26:27.385 --> 00:26:31.930
+the different models that are submitted to FluidBench.
+
+350
+00:26:31.930 --> 00:26:38.955
+So credit is going to be given, of course, to all the practitioners who have created
+
+351
+00:26:38.955 --> 00:26:40.938
+and submitted data sets.
+
+352
+00:26:41.258 --> 00:26:50.257
+We also actively encourage their participation in coming up with methods
+
+353
+00:26:50.257 --> 00:26:58.146
+of evaluation on their own data sets. As Jean mentioned before,
+
+354
+00:26:58.146 --> 00:27:00.858
+we would like for this
+
+355
+00:27:02.538 --> 00:27:10.461
+Fluids benchmarking to go beyond the simple L2 relative error on the various
+
+356
+00:27:10.461 --> 00:27:18.692
+fields, but actually look at engineering, some engineering relevant quantities.
+
+357
+00:27:18.692 --> 00:27:21.778
+So yeah, credit will be given.
+
+358
+00:27:21.898 --> 00:27:27.454
+to the various participants. Another important thing is versioning.
+
+359
+00:27:27.454 --> 00:27:33.746
+So I guess very often researchers have been exposed to the fact that they&#x27;re
+
+360
+00:27:33.746 --> 00:27:40.528
+going to cite the paper and maybe that&#x27;s on archive and later on they will come up
+
+361
+00:27:40.528 --> 00:27:41.018
+with a
+
+362
+00:27:41.978 --> 00:27:47.315
+an improvement on their model and suddenly the numbers don&#x27;t match anymore.
+
+363
+00:27:47.315 --> 00:27:51.738
+Fluids ban shames that having, yeah, like versions with dates.
+
+364
+00:27:51.738 --> 00:27:57.355
+So it will be very simple to cite the website and for people to just go back to
+
+365
+00:27:57.355 --> 00:28:01.498
+the version at that given date when the citation happened.
+
+366
+00:28:01.898 --> 00:28:08.372
+to see what the different performance of the models were at that point.
+
+367
+00:28:08.372 --> 00:28:13.946
+And on the other hand, participants are able to improve their
+
+368
+00:28:13.946 --> 00:28:20.329
+models and do new submissions. We&#x27;re not stuck at the first submission
+
+369
+00:28:20.329 --> 00:28:21.498
+of the model.
+
+370
+00:28:21.658 --> 00:28:28.427
+we can always have a, yeah, improving surrogate models. Finally,
+
+371
+00:28:28.427 --> 00:28:36.653
+so contributions, as I&#x27;ve said before, there are different ways to contribute.
+
+372
+00:28:36.653 --> 00:28:40.818
+So that is submitting models, obviously.
+
+373
+00:28:40.938 --> 00:28:45.848
+proposing new data sets, contributing to the evaluation codes,
+
+374
+00:28:45.848 --> 00:28:49.668
+or simply like more on the feedback perspective.
+
+375
+00:28:49.668 --> 00:28:56.059
+So identifying a missing test case or a physical quantity that would be important
+
+376
+00:28:56.059 --> 00:29:02.138
+from an engineering perspective. And yeah, the input from CFD researchers and
+
+377
+00:29:03.978 --> 00:29:09.895
+field experts and engineers is particularly useful for us to determine
+
+378
+00:29:09.895 --> 00:29:15.812
+whether the evaluation captures the behaviour engineering applications
+
+379
+00:29:15.812 --> 00:29:20.562
+require. So yeah, we really encourage everyone to submit
+
+380
+00:29:20.562 --> 00:29:24.978
+the results and examine the protocols that are being
+
+381
+00:29:25.098 --> 00:29:29.925
+currently implemented on in fluids bench. And yeah, if you spot anything,
+
+382
+00:29:29.925 --> 00:29:35.143
+a metric that misses an important error or a test that doesn&#x27;t represent really
+
+383
+00:29:35.143 --> 00:29:39.578
+the conditions you need, that would be very useful feedback for us.
+
+384
+00:29:42.618 --> 00:29:43.178
+Great.
+
+385
+00:29:43.978 --> 00:29:45.898
+Thank you, Daniel.
+
+386
+00:29:48.298 --> 00:29:50.058
+So yeah, at a glance.
+
+387
+00:29:52.538 --> 00:29:57.968
+The the at the moment, the there are five data sets that are
+
+388
+00:29:57.968 --> 00:30:03.577
+available: the Air France, the Ahmed, the Windsor, the driver,
+
+389
+00:30:03.577 --> 00:30:08.918
+and the driver net. There are another set of data sets that
+
+390
+00:30:08.918 --> 00:30:10.698
+will be coming soon.
+
+391
+00:30:10.818 --> 00:30:15.834
+So the high lift probably being the first one in the next week or so,
+
+392
+00:30:15.834 --> 00:30:21.637
+the blended net and then a couple more of the turbo machinery ones. To be clear,
+
+393
+00:30:21.637 --> 00:30:26.796
+we called it fluid bench because absolutely the aspiration is to have a
+
+394
+00:30:26.796 --> 00:30:30.378
+broad set of fluid benchmarks. But we also wanted
+
+395
+00:30:30.418 --> 00:30:35.883
+to weigh against what was currently available and what was currently being
+
+396
+00:30:35.883 --> 00:30:39.308
+used by the majority of, you know, developers.
+
+397
+00:30:39.308 --> 00:30:45.138
+So we are aware that at the moment it is a little bit external aerodynamics and
+
+398
+00:30:45.138 --> 00:30:49.218
+sort of incompressible flow heavy, but it&#x27;s that&#x27;s just
+
+399
+00:30:49.298 --> 00:30:54.852
+by the nature of they are probably the most popular open source data sets at the
+
+400
+00:30:54.852 --> 00:30:58.007
+moment. And we will be adding more over time.
+
+401
+00:30:58.007 --> 00:31:03.012
+And so hopefully if you look back at this, you know, in six months time,
+
+402
+00:31:03.012 --> 00:31:07.264
+it will more fairly represent the name, the name CluidsBench.
+
+403
+00:31:07.264 --> 00:31:09.938
+So just so you understand, you know, we
+
+404
+00:31:10.018 --> 00:31:14.365
+We know that it is a little bit of a corner of fluids at the moment,
+
+405
+00:31:14.365 --> 00:31:18.711
+but it will be broader than that. And we won&#x27;t be able to go through
+
+406
+00:31:18.711 --> 00:31:22.868
+everything today, of course. I would suggest that you have a look
+
+407
+00:31:22.868 --> 00:31:26.774
+through, obviously, the repos and get your favourite agent to
+
+408
+00:31:26.774 --> 00:31:31.498
+summarise things and look at things that there&#x27;s a lot of detail in there.
+
+409
+00:31:31.978 --> 00:31:36.781
+A lot of it has been thought through very carefully. But in the interest of time,
+
+410
+00:31:36.781 --> 00:31:41.525
+what I&#x27;ll do now is pass over to, I think, looking at a couple of the data sets.
+
+411
+00:31:41.525 --> 00:31:46.269
+And then what we&#x27;re going to finish off with is a little bit of a walkthrough of
+
+412
+00:31:46.269 --> 00:31:50.778
+sort of example of like how you submit a result and then how the leaderboard
+
+413
+00:31:50.938 --> 00:31:53.018
+Will, will, will look.
+
+414
+00:31:55.018 --> 00:31:59.896
+So I&#x27;ll pass over to Emanuele, who&#x27;s just going to briefly talk about
+
+415
+00:31:59.018 --> 00:31:59.338
+Yeah.
+
+416
+00:31:59.896 --> 00:32:01.498
+the Air France example.
+
+417
+00:32:03.418 --> 00:32:08.994
+Okay, thank you. Thank you very much, Nick. I hope you can hear me.
+
+418
+00:32:08.378 --> 00:32:09.658
+Yes, I can hear you.
+
+419
+00:32:08.994 --> 00:32:15.472
+Let me know otherwise. Thanks. Perfect. So, hi, my name is Emanuele Tamburini.
+
+420
+00:32:15.472 --> 00:32:21.458
+I&#x27;m A PhD student at Sorbonne University. So, just to have a quick look,
+
+421
+00:32:21.818 --> 00:32:25.852
+at this data set, which is one of the data sets we have
+
+422
+00:32:25.852 --> 00:32:29.958
+considered in this fluid bench project. This is iFrance,
+
+423
+00:32:29.958 --> 00:32:35.504
+and this data set has already been the object actually of a machine learning
+
+424
+00:32:35.504 --> 00:32:39.106
+competition, as Professor Cinnella was mentioning
+
+425
+00:32:39.106 --> 00:32:40.618
+before, back in 2023.
+
+426
+00:32:41.058 --> 00:32:47.147
+is a data set of airfoils. It contains 1000 simulated different
+
+427
+00:32:47.147 --> 00:32:53.522
+shapes of airfoil coming from the NACA 4 and NACA 5 digits family.
+
+428
+00:32:53.522 --> 00:33:01.418
+And the simulations were run in open foam with the KEO media SST turbulence model.
+
+429
+00:33:03.018 --> 00:33:08.201
+with different Reynolds numbers and different angle of attacks.
+
+430
+00:33:08.201 --> 00:33:09.578
+You can see here.
+
+431
+00:33:10.938 --> 00:33:15.829
+the velocity of different shapes that is simulated.
+
+432
+00:33:15.829 --> 00:33:23.635
+There are in this data set already some predefined splits that we adopted as such.
+
+433
+00:33:23.635 --> 00:33:29.936
+So out of 1000 simulations, there are 800 for the full splits that
+
+434
+00:33:29.936 --> 00:33:30.218
+are
+
+435
+00:33:30.658 --> 00:33:36.439
+taken for training and to handle for test, and these are randomly sampled.
+
+436
+00:33:36.439 --> 00:33:40.138
+Then there is also a scarce regime, which is...
+
+437
+00:33:43.138 --> 00:33:48.644
+which is made for simulating a data scarcity regime, as we mentioned before.
+
+438
+00:33:48.644 --> 00:33:53.864
+Usually we don&#x27;t have that many data because they&#x27;re costly to generate.
+
+439
+00:33:53.864 --> 00:33:59.369
+So we sub-sampled 200 cases of the training set and we keep the same 200 for
+
+440
+00:33:59.369 --> 00:34:02.945
+testing. And then we decided to keep also another
+
+441
+00:34:02.945 --> 00:34:05.018
+regime, which is the angle of
+
+442
+00:34:05.058 --> 00:34:11.388
+attack extrapolation, which keeps still 800 and 104 samples for
+
+443
+00:34:11.388 --> 00:34:19.696
+training in a specific range of angles of attack. And we keep the rest for testing.
+
+444
+00:34:19.696 --> 00:34:24.938
+And the mod here is supposed to actually extrapolate
+
+445
+00:34:25.578 --> 00:34:31.582
+and get some predictions right at some angles of attacks that the mother never
+
+446
+00:34:31.582 --> 00:34:33.178
+seen during training.
+
+447
+00:34:34.258 --> 00:34:37.814
+So, the goal for the circuit models on this
+
+448
+00:34:37.814 --> 00:34:44.440
+data set, which is actually not very big, it&#x27;s a rather small data set between 10
+
+449
+00:34:44.440 --> 00:34:46.298
+and 20 gigabytes, so...
+
+450
+00:34:48.498 --> 00:34:52.301
+Yeah, not very large. The goal, as I was saying,
+
+451
+00:34:52.301 --> 00:34:57.733
+is to predict the velocity in the horizontal and vertical components,
+
+452
+00:34:57.733 --> 00:35:01.302
+so X&amp;Y velocity, and the pressure fields.
+
+453
+00:35:01.302 --> 00:35:07.665
+So each airfoil is meshed independently, which means that each sample has between
+
+454
+00:35:07.665 --> 00:35:07.898
+160
+
+455
+00:35:08.178 --> 00:35:10.618
+1000 to 200,000 mesh points.
+
+456
+00:35:12.138 --> 00:35:16.698
+This is probably another difficulty of this data set, and...
+
+457
+00:35:18.458 --> 00:35:22.643
+How will we evaluate the performance of the models? Okay,
+
+458
+00:35:22.643 --> 00:35:25.818
+this is probably the most interesting part.
+
+459
+00:35:25.818 --> 00:35:29.353
+So 50% of the score will be given by the fields,
+
+460
+00:35:29.353 --> 00:35:35.197
+which means not only the reconstruction at each mesh point of the two components
+
+461
+00:35:35.197 --> 00:35:37.578
+of the velocity and the pressure,
+
+462
+00:35:39.098 --> 00:35:44.216
+measure with the relative L2 error, but also we&#x27;re going to measure the
+
+463
+00:35:44.216 --> 00:35:49.831
+quantities at the wall of the airfoil, such as the pressure and the wall shear
+
+464
+00:35:49.831 --> 00:35:53.243
+stress, the latter being the most difficult due
+
+465
+00:35:53.243 --> 00:35:57.650
+to the derivatives, which in this case are taking with finite
+
+466
+00:35:57.650 --> 00:35:59.498
+element derivatives. So we
+
+467
+00:35:59.658 --> 00:36:07.233
+post-process the simulation the same way we would do with the output that OpenFoam,
+
+468
+00:36:07.233 --> 00:36:12.824
+for example, gives us. Then 1/4 of the score will be given by
+
+469
+00:36:12.824 --> 00:36:19.136
+the integrated forces. So in this case, for air force, lift and drag.
+
+470
+00:36:19.136 --> 00:36:20.218
+And the last
+
+471
+00:36:20.258 --> 00:36:24.429
+quarter will be given by some velocity profiles.
+
+472
+00:36:24.429 --> 00:36:30.557
+So we decided to extract velocity profiles at 4 location on the section
+
+473
+00:36:30.557 --> 00:36:36.770
+side of the airfoil. And so yeah, our routines will extract the velocity
+
+474
+00:36:36.770 --> 00:36:39.578
+profiles in the normal direction.
+
+475
+00:36:39.738 --> 00:36:45.341
+to the airfoil and compare it against the reference.
+
+476
+00:36:45.341 --> 00:36:54.327
+So these all together are quantities that we deem relevant for engineering purposes.
+
+477
+00:36:54.327 --> 00:36:54.538
+So
+
+478
+00:36:56.058 --> 00:37:00.602
+So yeah, this is what we are ultimately interested
+
+479
+00:37:00.602 --> 00:37:03.898
+in from an engineering point of view.
+
+480
+00:37:06.218 --> 00:37:06.618
+And.
+
+481
+00:37:09.418 --> 00:37:14.930
+Okay, just this is a brief summary. I think this is going to be it for my
+
+482
+00:37:13.618 --> 00:37:14.058
+Great.
+
+483
+00:37:14.930 --> 00:37:15.898
+side for now.
+
+484
+00:37:17.498 --> 00:37:20.774
+Yeah, and this is, I think this is a good one because it&#x27;s a
+
+485
+00:37:20.774 --> 00:37:24.103
+bit lighter to run. So if people want to be testing the pros,
+
+486
+00:37:22.858 --> 00:37:23.978
+Exactly, yeah.
+
+487
+00:37:24.103 --> 00:37:27.968
+it&#x27;s quite quick compared to the other data sets that we&#x27;ll talk about.
+
+488
+00:37:27.968 --> 00:37:29.418
+But the point is there is a
+
+489
+00:37:29.258 --> 00:37:29.738
+Allison.
+
+490
+00:37:31.338 --> 00:37:32.058
+Go ahead, sorry.
+
+491
+00:37:33.578 --> 00:37:37.295
+Yeah, yeah, exactly. So also training and testing and trying
+
+492
+00:37:37.295 --> 00:37:42.230
+different surrogate models is going to be easier to start with on the airference
+
+493
+00:37:42.230 --> 00:37:42.778
+data set.
+
+494
+00:37:44.378 --> 00:37:48.447
+Okay, I know we&#x27;re running a bit over time,
+
+495
+00:37:48.447 --> 00:37:51.498
+so I&#x27;ll maybe move forward and...
+
+496
+00:37:52.938 --> 00:37:56.138
+Hand it up, sorry, you will. Hand it to Ahmed.
+
+497
+00:37:57.698 --> 00:38:04.013
+Yes, so hi everyone. I am Mohammed. I&#x27;m currently a PhD student at MIT
+
+498
+00:38:04.013 --> 00:38:10.240
+working with Professor Faez Ahmed. Thanks everyone for joining today.
+
+499
+00:38:10.240 --> 00:38:17.445
+I will try to give you a quick overview about DriverNet and how we thought about
+
+500
+00:38:17.445 --> 00:38:17.978
+it. So
+
+501
+00:38:18.378 --> 00:38:22.626
+In car aerodynamics, you can classify any car into one of
+
+502
+00:38:22.626 --> 00:38:27.679
+three components or three models. It can be a stateback, a fastback,
+
+503
+00:38:27.679 --> 00:38:31.854
+or a notchback. And then the underbody can be classified
+
+504
+00:38:31.854 --> 00:38:37.566
+into a smooth underbody or a detailed underbody. So the data set has about 8,
+
+505
+00:38:37.566 --> 00:38:38.738
+150 simulations.
+
+506
+00:38:39.578 --> 00:38:43.498
+It was mostly done using Ransky Omega SST.
+
+507
+00:38:44.858 --> 00:38:46.618
+under a fixed boundary condition.
+
+508
+00:38:48.938 --> 00:38:53.385
+Neil, if you could go to the next animation.
+
+509
+00:38:53.385 --> 00:39:01.291
+And the specific task within fluids bench is to predict the surface pressure at
+
+510
+00:39:01.291 --> 00:39:07.418
+every point on the car surface. So that&#x27;s roughly 360 to 550.
+
+511
+00:39:07.818 --> 00:39:11.324
+Thousand nodes per per car, and then again,
+
+512
+00:39:11.324 --> 00:39:16.582
+I think very similar to to most benchmarks we we see in different
+
+513
+00:39:16.582 --> 00:39:22.956
+computer vision and large language model domains is that it&#x27;s very important to
+
+514
+00:39:22.956 --> 00:39:27.178
+have train validation and test test splits, which...
+
+515
+00:39:27.738 --> 00:39:34.154
+I was surprised that it&#x27;s not very common in a lot of the engineering data sets and
+
+516
+00:39:34.154 --> 00:39:38.584
+simulation data sets. So I think having those splits well
+
+517
+00:39:38.584 --> 00:39:44.083
+defined is definitely important. And then how a submission is scored is
+
+518
+00:39:44.083 --> 00:39:49.658
+that we decided to focus specifically on the flow field. So 100% will be
+
+519
+00:39:50.218 --> 00:39:57.563
+given to the prediction on the flow field. But similar to driver ML and air France,
+
+520
+00:39:57.563 --> 00:40:04.732
+you can also get the profiles prediction. So we have 3 profiles for the CP on the
+
+521
+00:40:04.732 --> 00:40:09.978
+upper body, under body, and the rear. And then you can also
+
+522
+00:40:10.938 --> 00:40:16.618
+Yeah, test different models. And Neil, if you could please go to the next slide.
+
+523
+00:40:20.138 --> 00:40:23.581
+So this is like, let&#x27;s say, a specific example.
+
+524
+00:40:23.581 --> 00:40:27.741
+So you can get access to the reference EFD from OpenFOAM,
+
+525
+00:40:27.741 --> 00:40:32.906
+and this is a prediction by the Transolver model or a larger Transolver
+
+526
+00:40:32.906 --> 00:40:38.357
+version that we trained internally. You can also visualise the error on the
+
+527
+00:40:38.357 --> 00:40:39.218
+car surface.
+
+528
+00:40:39.818 --> 00:40:43.250
+And what we see here is the delta CP. And again,
+
+529
+00:40:43.250 --> 00:40:48.433
+you can also get different flow profiles, so the upper body centre lines,
+
+530
+00:40:48.433 --> 00:40:51.725
+the under body centre line, and the rear pace.
+
+531
+00:40:51.725 --> 00:40:57.538
+And you can compare your machine learning or surrogate model prediction versus the
+
+532
+00:40:57.538 --> 00:40:57.818
+CFD.
+
+533
+00:40:58.618 --> 00:41:05.134
+And what&#x27;s interesting, it&#x27;s still like a lot of those models are
+
+534
+00:41:05.134 --> 00:41:12.538
+achieving maybe 17 to 13% error, which shows us that there is definitely a
+
+535
+00:41:12.538 --> 00:41:18.658
+lot of work to be done to improve those AI models and ideally
+
+536
+00:41:18.738 --> 00:41:23.098
+maybe replace some aspects of the CFD, or for other use cases,
+
+537
+00:41:23.098 --> 00:41:28.218
+it can be used as an initialization for maybe more expensive simulations.
+
+538
+00:41:31.898 --> 00:41:36.677
+Next slide, please. So what we did over the last, let&#x27;s say,
+
+539
+00:41:36.677 --> 00:41:40.595
+I would say, maybe 11 months is that we have been
+
+540
+00:41:40.595 --> 00:41:45.374
+working on this car bench. So if you go to the GitHub label,
+
+541
+00:41:45.374 --> 00:41:50.858
+you can download the pre-trained models, so you can get access to the
+
+542
+00:41:51.138 --> 00:41:55.246
+pre-trained models, you don&#x27;t have to train them from scratch.
+
+543
+00:41:55.246 --> 00:42:00.593
+You can also get access to the different, like the code for each model and how to
+
+544
+00:42:00.593 --> 00:42:04.506
+train it from scratch. And then you can also see comparison
+
+545
+00:42:04.506 --> 00:42:08.679
+between most of the neural surrogates, like open source models,
+
+546
+00:42:08.679 --> 00:42:11.418
+such as Transolvers, and also some models.
+
+547
+00:42:11.818 --> 00:42:14.803
+from NVIDIA, for example, is also included.
+
+548
+00:42:14.803 --> 00:42:18.058
+There&#x27;s termnets that we developed here at MIT.
+
+549
+00:42:20.138 --> 00:42:21.178
+Last slide.
+
+550
+00:42:25.898 --> 00:42:30.897
+I&#x27;m also very curious or very interested about this idea of foundation models or
+
+551
+00:42:30.897 --> 00:42:35.464
+general purpose AI tools that can be used for different downstream tasks.
+
+552
+00:42:35.464 --> 00:42:39.660
+So what you could also do within the benchmark is train on subsets.
+
+553
+00:42:39.660 --> 00:42:44.721
+So let&#x27;s say you can train on state backs and fast backs and test on a completely
+
+554
+00:42:44.721 --> 00:42:47.498
+unseen type of geometry such as notch backs.
+
+555
+00:42:47.898 --> 00:42:52.031
+and you can do different experiments. So I think this is very,
+
+556
+00:42:52.031 --> 00:42:56.623
+very interesting for people and researchers who are trying to develop
+
+557
+00:42:56.623 --> 00:43:00.165
+foundation models now. How can I generalise to out of
+
+558
+00:43:00.165 --> 00:43:01.018
+distribution?
+
+559
+00:43:06.178 --> 00:43:10.496
+The last thing is that, yes, we focused a lot on the flow field,
+
+560
+00:43:10.496 --> 00:43:16.076
+but again, as Daniel and Jean mentioned, for a lot of the engineering applications,
+
+561
+00:43:16.076 --> 00:43:19.132
+you can also care about, let&#x27;s say, the drag,
+
+562
+00:43:19.132 --> 00:43:23.782
+if you&#x27;re learning an optimization or it was in an optimization loop.
+
+563
+00:43:23.782 --> 00:43:27.104
+So you can also, we provided a code where you can
+
+564
+00:43:27.104 --> 00:43:28.698
+integrate the flow field
+
+565
+00:43:29.338 --> 00:43:34.298
+to get different KPIs, like let&#x27;s say the drag coefficient or
+
+566
+00:43:34.298 --> 00:43:35.738
+left coefficients.
+
+567
+00:43:38.218 --> 00:43:43.315
+I think that&#x27;s mostly from my side. Yeah, feel free to reach out.
+
+568
+00:43:43.315 --> 00:43:47.098
+If you guys have questions, I&#x27;m happy to answer.
+
+569
+00:43:48.778 --> 00:43:50.858
+Great, thank you.
+
+570
+00:43:52.698 --> 00:43:54.298
+Okay, Astrid.
+
+571
+00:43:54.538 --> 00:43:59.043
+Yeah, okay. Let me get started and I will also try to
+
+572
+00:43:59.043 --> 00:44:03.881
+be quick. Okay, so first of all, hi everyone. I&#x27;m Astrid.
+
+573
+00:44:03.881 --> 00:44:09.053
+I work at Pasteur Labs, which is a startup where we also care
+
+574
+00:44:09.053 --> 00:44:14.058
+about and train and develop field prediction models. And so
+
+575
+00:44:14.298 --> 00:44:18.379
+But another thing I wanted to say before we jump into the slides,
+
+576
+00:44:18.379 --> 00:44:23.572
+so we have thought about having a Q&amp; A session at the end of this presentation.
+
+577
+00:44:23.572 --> 00:44:26.602
+Even though we might not have the time for this,
+
+578
+00:44:26.602 --> 00:44:29.632
+I would still ask you if you have any questions,
+
+579
+00:44:29.632 --> 00:44:34.516
+please just write them in the chat and then we will make sure that we will get
+
+580
+00:44:34.516 --> 00:44:37.298
+back to you even after the meeting. So yeah.
+
+581
+00:44:37.378 --> 00:44:41.968
+I just wanted to say this. Okay, now looking at the slide,
+
+582
+00:44:41.968 --> 00:44:47.957
+and I won&#x27;t go into any of the reasons why we need different metrics, right?
+
+583
+00:44:47.957 --> 00:44:51.535
+So yeah, the others have covered this already
+
+584
+00:44:51.535 --> 00:44:55.191
+perfectly. So I just want to describe a bit an
+
+585
+00:44:55.191 --> 00:44:57.058
+example where we have...
+
+586
+00:44:57.138 --> 00:45:02.147
+gained already some experience. This is the Drive ML data set,
+
+587
+00:45:02.147 --> 00:45:08.745
+and we have gained already experience in asking participants to submit results and
+
+588
+00:45:08.745 --> 00:45:13.516
+also evaluating these results during the Auto CFD workshop,
+
+589
+00:45:13.516 --> 00:45:16.298
+which has happened a few weeks ago.
+
+590
+00:45:16.698 --> 00:45:22.844
+And so there are several things which we have found out and which we then try to
+
+591
+00:45:22.844 --> 00:45:28.079
+incorporate directly when it comes to how the code should look like.
+
+592
+00:45:28.079 --> 00:45:33.845
+People have to follow for submitting. It&#x27;s about fixing the splits and also
+
+593
+00:45:33.845 --> 00:45:35.818
+really fixing the code for
+
+594
+00:45:36.218 --> 00:45:41.484
+calculating the metrics, all with the intention of increasing the,
+
+595
+00:45:41.484 --> 00:45:45.021
+yeah, increasing the chance of having a fair
+
+596
+00:45:45.021 --> 00:45:49.266
+comparison. And so here I will show you how the score
+
+597
+00:45:49.266 --> 00:45:55.632
+does compose for this specific data set. So the data set is pretty large, right?
+
+598
+00:45:55.632 --> 00:46:00.898
+So it has almost 500 samples. It was generated with a Walle model.
+
+599
+00:46:01.018 --> 00:46:04.641
+Overall, the data set has around 30 terabytes,
+
+600
+00:46:04.641 --> 00:46:09.574
+and it includes surface fields, but also volume fields. And so,
+
+601
+00:46:09.574 --> 00:46:13.428
+when you look at the slide on the left-hand side,
+
+602
+00:46:13.428 --> 00:46:19.440
+there you can see an example for the surface fields, but in addition to this,
+
+603
+00:46:19.440 --> 00:46:22.138
+we also have velocity and pressure.
+
+604
+00:46:22.538 --> 00:46:26.905
+in the volume field. As we know that this data set is quite
+
+605
+00:46:26.905 --> 00:46:30.107
+challenging, just also because of the size.
+
+606
+00:46:30.107 --> 00:46:35.638
+That&#x27;s the reason why, for example, here you have the possibility to submit
+
+607
+00:46:35.638 --> 00:46:39.423
+results for surface and volume or just for surface.
+
+608
+00:46:39.423 --> 00:46:43.498
+This does impact the maximum score, what you can reach.
+
+609
+00:46:43.738 --> 00:46:49.256
+And you will find more information also in the submission repository around this.
+
+610
+00:46:49.256 --> 00:46:54.842
+But yeah, I just wanted to mention this. So you do not have to deal with a full 30
+
+611
+00:46:54.842 --> 00:46:58.408
+terabytes, but you would still have a possibility to
+
+612
+00:46:58.408 --> 00:47:02.176
+work with this data set and submit results. So overall,
+
+613
+00:47:02.176 --> 00:47:07.627
+what you can see on the top of the slide is the composition of the overall score
+
+614
+00:47:07.627 --> 00:47:08.098
+is 50%.
+
+615
+00:47:08.138 --> 00:47:13.010
+fields, 25% forces, and 25% profiles. In the middle section,
+
+616
+00:47:13.010 --> 00:47:19.001
+you can see some of these profiles, which are then automatically extracted
+
+617
+00:47:19.001 --> 00:47:25.310
+from the predictions when you perform the submission code on your predictions.
+
+618
+00:47:25.310 --> 00:47:29.943
+And there you can also see just some example data, right,
+
+619
+00:47:29.943 --> 00:47:32.818
+how this can look like, for example,
+
+620
+00:47:32.898 --> 00:47:37.466
+for the upper body, a centre line and a velocity line in the
+
+621
+00:47:37.466 --> 00:47:39.338
+volume field in the wake.
+
+622
+00:47:40.698 --> 00:47:46.880
+And on the right hand side, and with this, I&#x27;m already coming to an end.
+
+623
+00:47:46.880 --> 00:47:52.131
+So there you can see in the bottom on the right in the table,
+
+624
+00:47:52.131 --> 00:47:58.821
+you can really see like the L2 norms and the R square values for the different
+
+625
+00:47:58.821 --> 00:47:59.498
+metrics.
+
+626
+00:47:59.978 --> 00:48:05.030
+which get calculated. And there you can also see that two
+
+627
+00:48:05.030 --> 00:48:09.646
+different models might perform very, yeah, not very,
+
+628
+00:48:09.646 --> 00:48:15.394
+but they can perform and lead in different categories, so to say.
+
+629
+00:48:15.394 --> 00:48:21.578
+And then I think that&#x27;s just important to also know about this or that
+
+630
+00:48:22.138 --> 00:48:27.637
+Depending on your specific use case or what you are specifically interested in,
+
+631
+00:48:27.637 --> 00:48:31.142
+the result of which model does a better job might,
+
+632
+00:48:31.142 --> 00:48:34.785
+the answer to this question might be very different.
+
+633
+00:48:34.785 --> 00:48:40.146
+And that&#x27;s basically the full story I just wanted to tell with this table and
+
+634
+00:48:40.146 --> 00:48:45.645
+this bar chart where you can see, okay, so the composition of the overall score
+
+635
+00:48:45.645 --> 00:48:46.538
+for one model
+
+636
+00:48:46.818 --> 00:48:50.259
+Yeah, it&#x27;s not, yeah, it can it can point into different
+
+637
+00:48:50.259 --> 00:48:53.338
+directions depending on what you pay attention to.
+
+638
+00:48:54.298 --> 00:48:56.858
+And with this, I&#x27;m handing over to Yunia.
+
+639
+00:48:56.698 --> 00:48:59.937
+Great. So this is a hopefully a very practical
+
+640
+00:48:59.937 --> 00:49:05.175
+example of basically where fluids bench was already used for the driver ML.
+
+641
+00:49:05.175 --> 00:49:10.620
+We did it as part of auto CFD workshop, but it was the same evaluator process.
+
+642
+00:49:10.620 --> 00:49:14.066
+It was the same scoring process. It was the same.
+
+643
+00:49:14.066 --> 00:49:17.098
+And it basically was a proof point that now
+
+644
+00:49:17.498 --> 00:49:22.256
+you could compare in a lot of detail how two models are different.
+
+645
+00:49:22.256 --> 00:49:26.801
+And just to highlight what Jean was saying, on the leaderboard,
+
+646
+00:49:26.801 --> 00:49:32.127
+you&#x27;ll also be able to cite the results and they will always be available.
+
+647
+00:49:32.127 --> 00:49:37.098
+That version of the leaderboard that when it comes live on the 6th of
+
+648
+00:49:38.618 --> 00:49:41.993
+December, will be live and that will be then you&#x27;ll
+
+649
+00:49:41.993 --> 00:49:45.691
+be able to cite that. When the next version comes along,
+
+650
+00:49:45.691 --> 00:49:50.169
+you&#x27;ll still be able to cite the first version. You won&#x27;t lose that.
+
+651
+00:49:50.169 --> 00:49:54.711
+And so that will keep it good for academic inclusion as of course new
+
+652
+00:49:54.711 --> 00:49:55.850
+models are submitted. Okay, now I don&#x27;t know whether this is going to
+
+653
+00:49:55.850 --> 00:49:59.128
+just in the interest of time, just to say the submissions are open now,
+
+654
+00:49:59.128 --> 00:50:00.658
+so you can submit.
+
+655
+00:50:00.738 --> 00:50:03.898
+your results for the data sets that are there.
+
+656
+00:50:05.058 --> 00:50:08.178
+We will then review it as this video will explain.
+
+657
+00:50:08.178 --> 00:50:12.581
+And we will make then all of the submitted results that have arrived by
+
+658
+00:50:12.581 --> 00:50:16.496
+the 5th of December, then live on the leaderboard the next day.
+
+659
+00:50:16.496 --> 00:50:20.716
+So the next day, basically, the leaderboard will then come up on the
+
+660
+00:50:20.716 --> 00:50:24.202
+website and you will be able to look at all the results.
+
+661
+00:50:24.202 --> 00:50:27.138
+You&#x27;ll be able to analyse, you&#x27;ll be able to...
+
+662
+00:50:27.258 --> 00:50:31.928
+to look at everything. And then what we will do is then use that
+
+663
+00:50:31.928 --> 00:50:36.814
+as an opportunity to do the analysis, to incorporate any revisions,
+
+664
+00:50:36.814 --> 00:50:42.706
+and then there will be a subsequent sort of V2 version of the leaderboard and the
+
+665
+00:50:42.706 --> 00:50:46.298
+submission. So it will sort of then reopen later.
+
+666
+00:50:46.618 --> 00:50:50.647
+with the next wave. But we purposely wanted to time bound
+
+667
+00:50:50.647 --> 00:50:55.023
+this. So please do go to the website, follow the instructions,
+
+668
+00:50:55.023 --> 00:50:58.635
+submit your result. You can submit multiple models.
+
+669
+00:50:58.635 --> 00:51:03.011
+You can submit the same one if you made a sort of improvement.
+
+670
+00:51:03.011 --> 00:51:07.178
+If you have to update details, there&#x27;s a versioning system.
+
+671
+00:51:07.978 --> 00:51:12.160
+It&#x27;s pretty exhaustively explained. So I&#x27;ll show you this video now,
+
+672
+00:51:12.160 --> 00:51:12.875
+but please do also go to the website and you can reach out to us on the Discord
+
+673
+00:51:13.325 --> 00:51:19.261
+To submit a DrivAerML result, open Run benchmarks and the DrivAerML quickstart.
+
+674
+00:51:20.002 --> 00:51:23.193
+This local demo uses retained Transolver results.
+
+675
+00:51:25.053 --> 00:51:27.226
+Fork and clone the submission repository.
+
+676
+00:51:27.967 --> 00:51:32.253
+Create a branch from upstream main and install the pinned Linux environment.
+
+677
+00:51:32.993 --> 00:51:36.016
+Keep the same checkout through evaluation and packaging.
+
+678
+00:51:37.861 --> 00:51:42.333
+Run your surrogate first: the evaluator reads prediction arrays, not a model
+
+679
+00:51:42.333 --> 00:51:43.166
+checkpoint.
+
+680
+00:51:43.906 --> 00:51:48.455
+Each car needs surface pressure and three-component wall shear, plus volume pressure
+
+681
+00:51:48.455 --> 00:51:51.131
+and velocity for surface-and-volume entries.
+
+682
+00:51:51.870 --> 00:51:56.432
+Use finite, single or double precision arrays: one value per cell for
+
+683
+00:51:56.432 --> 00:51:58.244
+pressure, three for vectors.
+
+684
+00:51:58.984 --> 00:52:03.520
+Undo training normalization and retain native kinematic units for pressure and wall
+
+685
+00:52:03.520 --> 00:52:04.170
+shear.
+
+686
+00:52:04.834 --> 00:52:08.141
+Map outputs to every original cell in unchanged order.
+
+687
+00:52:08.881 --> 00:52:14.031
+The supplied writer creates NPZ chunks, cell IDs and hashed manifests.
+
+688
+00:52:14.770 --> 00:52:17.252
+Set the split and scope in the entry file.
+
+689
+00:52:19.109 --> 00:52:21.978
+Scoring support makes comparisons consistent.
+
+690
+00:52:22.719 --> 00:52:26.812
+Fetch data supplies the original mesh and published surface-area weights.
+
+691
+00:52:27.551 --> 00:52:32.899
+Fetch support downloads verified CFD profile truth and sampling locations, pinned to
+
+692
+00:52:32.899 --> 00:52:33.732
+the release.
+
+693
+00:52:34.471 --> 00:52:36.902
+Everyone uses these same definitions.
+
+694
+00:52:37.641 --> 00:52:42.572
+The evaluator integrates forces and extracts profiles from your predicted fields.
+
+695
+00:52:43.312 --> 00:52:47.977
+Validate and evaluate the complete split with resume enabled: full uses fifty
+
+696
+00:52:47.977 --> 00:52:49.093
+test cars.
+
+697
+00:52:49.832 --> 00:52:51.258
+Inspect the report.
+
+698
+00:52:51.997 --> 00:52:57.397
+Fields contribute fifty percent, forces twenty five percent, and fixed profiles twenty
+
+699
+00:52:57.397 --> 00:52:58.449
+five percent.
+
+700
+00:52:59.188 --> 00:53:01.464
+Relative profiles are report-only.
+
+701
+00:53:03.333 --> 00:53:07.839
+Complete the method, compute, checkpoint and discretization records.
+
+702
+00:53:08.579 --> 00:53:12.351
+Package and verify the result using your actual checkpoint files.
+
+703
+00:53:13.090 --> 00:53:16.693
+Only the generated result directory goes into the pull request.
+
+704
+00:53:18.541 --> 00:53:21.165
+Commit that directory and push to your fork.
+
+705
+00:53:21.906 --> 00:53:26.648
+Compare across forks on GitHub: FluidsBench main is the base, your submission
+
+706
+00:53:26.648 --> 00:53:27.842
+branch is the head.
+
+707
+00:53:28.581 --> 00:53:32.443
+Review the changes, complete the checklist and open the pull request.
+
+708
+00:53:33.182 --> 00:53:34.814
+This is a local preview.
+
+709
+00:53:36.677 --> 00:53:39.868
+This local demo uses retained Transolver results.
+
+710
+00:53:40.609 --> 00:53:43.710
+The table shows the overall score and physical errors.
+
+711
+00:53:44.449 --> 00:53:48.375
+The Scores columns break down fields, forces and profiles.
+
+712
+00:53:49.114 --> 00:53:53.882
+Open Compare, choose Profiles, and select a test car to compare velocity
+
+713
+00:53:53.882 --> 00:53:55.695
+and pressure against CFD.
+
+714
+00:53:56.434 --> 00:53:59.573
+This is tutorial data, not an approved ranking.
+
+715
+00:54:00.313 --> 00:54:04.341
+Real entries appear after maintainer review and official publication.
+
+716
+00:54:05.750 --> 00:54:09.883
+but please do also go to the website and you can reach out to us on the Discord
+
+717
+00:54:09.883 --> 00:54:12.428
+channel. It&#x27;s the most interactive way of
+
+718
+00:54:12.428 --> 00:54:16.185
+interacting with us. You can have like a live then discussion
+
+719
+00:54:16.185 --> 00:54:20.063
+with us. Or of course, there is also an e-mail address on there
+
+720
+00:54:20.063 --> 00:54:23.093
+if you prefer the sort of more old fashioned way.
+
+721
+00:54:23.413 --> 00:54:27.702
+of doing it. And we will put this recording clipped on
+
+722
+00:54:27.702 --> 00:54:29.875
+the website. And now let&#x27;s see if this works.
