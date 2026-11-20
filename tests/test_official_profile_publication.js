@@ -111,7 +111,9 @@ test("official publication loads native CFD reference indices for every open dat
     const truth = published.submission_profile_ground_truth;
     assert.equal(
       truth.release_id,
-      dataset.slug === "airfrans" ? "airfrans-native-profile-truth-v1" : manifest.data_release.profile_ground_truth.release_id
+      dataset.slug === "airfrans"
+        ? "airfrans-native-profile-truth-v1"
+        : (manifest.data_release.profile_ground_truth_overrides?.[dataset.slug] || manifest.data_release.profile_ground_truth).release_id
     );
     assert.ok(index.caseSetId || index.index, dataset.slug);
   }

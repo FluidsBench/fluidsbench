@@ -2654,7 +2654,7 @@
       ) {
         throw new Error(`${dataset.name} publication scoring-support binding differs`);
       }
-      let expectedSubmission = dataRelease().profile_ground_truth;
+      let expectedSubmission = dataRelease().profile_ground_truth_overrides?.[dataset.slug] || dataRelease().profile_ground_truth;
       if (browser.kind === "catalog_dataset") {
         const native = browser.dataset?.native_profile_truth;
         if (
@@ -2880,9 +2880,7 @@
       const declaration = dataset?.native_profile_truth;
       const releaseId = declaration?.release_id;
       const isV2 = releaseId === windsorNativeV2Binding.release_id;
-      const expected = isV2 && split?.id === "low_drag"
-        ? ["low_drag-test", 67]
-        : windsorCaseSets[split?.id];
+      const expected = isV2 && split?.id === "low_drag" ? ["low_drag-test", 67] : windsorCaseSets[split?.id];
       const indexedIds = caseIds(cached.data);
       if (
         !exactWindsorNativeBinding(declaration, releaseId) ||
