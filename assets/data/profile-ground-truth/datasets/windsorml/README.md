@@ -8,7 +8,7 @@ closed pending owner review.
 All eight Hugging Face splits are mapped to the intersection of the official
 assignments with published per-run fields. The four data-efficiency splits share
 the 35-case baseline test set. Geometry and image-wake each have 71 test cases;
-high-drag and low-drag each have 70. The union contains 233 cases. Runs 350–354
+high-drag has 70, and low-drag has 67. The union contains 230 cases. Runs 350–354
 have no public per-run payload and are excluded without reassignment.
 
 Each case has three Cp cuts and five streamwise-velocity profiles in both fixed

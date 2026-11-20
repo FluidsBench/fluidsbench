@@ -2767,6 +2767,11 @@
     series_per_case: 16,
     samples_per_series: 128,
   };
+  const windsorNativeV2Binding = {
+    ...windsorNativeBinding,
+    release_id: "windsorml-native-profile-truth-v2",
+    profile_support_manifest_sha256: "d619e886981780b2a29fa55d617b2640299ada6907855e5abb1f170d95e693a1",
+  };
   const windsorCaseSets = {
     full: ["baseline-test", 35],
     medium: ["baseline-test", 35],
@@ -2796,8 +2801,9 @@
     windsorml_cp_relative_v1: ["cp_centreline_upper_relative", "cp_base_vertical_relative", "cp_side_horizontal_relative"],
   };
 
-  function exactWindsorNativeBinding(value) {
-    return Object.entries(windsorNativeBinding).every(([key, expected]) => value?.[key] === expected);
+  function exactWindsorNativeBinding(value, releaseId) {
+    const binding = releaseId === windsorNativeV2Binding.release_id ? windsorNativeV2Binding : windsorNativeBinding;
+    return Object.entries(binding).every(([key, expected]) => value?.[key] === expected);
   }
 
   function validateWindsorNativeCase(profileCase) {
@@ -2872,13 +2878,17 @@
     }
     if (windsorNativeTruth) {
       const declaration = dataset?.native_profile_truth;
-      const expected = windsorCaseSets[split?.id];
+      const releaseId = declaration?.release_id;
+      const isV2 = releaseId === windsorNativeV2Binding.release_id;
+      const expected = isV2 && split?.id === "low_drag"
+        ? ["low_drag-test", 67]
+        : windsorCaseSets[split?.id];
       const indexedIds = caseIds(cached.data);
       if (
-        !exactWindsorNativeBinding(declaration) ||
-        declaration.case_count !== 233 ||
+        !exactWindsorNativeBinding(declaration, releaseId) ||
+        declaration.case_count !== (isV2 ? 230 : 233) ||
         declaration.case_set_count !== 5 ||
-        !exactWindsorNativeBinding(cached.data) ||
+        !exactWindsorNativeBinding(cached.data, releaseId) ||
         !expected ||
         caseSet.id !== expected[0] ||
         cached.data.case_set_id !== caseSet.id ||
@@ -3331,7 +3341,7 @@
     if (context.windsorNativeTruth) {
       if (
         cached.data?.schema !== "windsorml-native-profile-truth-chunk-v1" ||
-        !exactWindsorNativeBinding(cached.data) ||
+        !exactWindsorNativeBinding(cached.data, context.index?.release_id) ||
         !Array.isArray(cached.data.cases) ||
         cached.data.cases.length !== 1 ||
         cached.data.cases[0]?.case_id !== caseId

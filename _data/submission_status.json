@@ -1,6 +1,6 @@
 {
-  "source_commit": "9bb9b1b8a8229bbd333df24a8be7b94219a8b98f",
-  "manifest_sha256": "38b242bb2b013f478c44116cb0d599d5b9838e31258703f64506fd87efd16b81",
+  "source_commit": "825a69bd741d3e31764fb8ffcfc6724b4b57670d",
+  "manifest_sha256": "eb1d10bf86b9abc4dcf84e53332977e65db0cac652c379d0a94824c09da85fd7",
   "release": {
     "id": "fluidsbench-2026-unreleased",
     "status": "unreleased",
@@ -107,8 +107,8 @@
       "open": true,
       "dev_candidate": false,
       "guide": "benchmark-specs/windsorml/QUICKSTART.md",
-      "specification_sha256": "fa986f21f88ceaaf7d96bb4a5111fcb46470285d71d81921fa74af8d64ee357d",
-      "scoring_release_id": "windsorml-native-support-v1",
+      "specification_sha256": "7a0bd05eb677bb42e5f4513fab10620ac58c4b9dfd938a74f21ae4354925d95f",
+      "scoring_release_id": "windsorml-native-support-v2",
       "open_splits": [
         {
           "id": "full",
@@ -148,7 +148,7 @@
       "open": false,
       "dev_candidate": false,
       "guide": null,
-      "specification_sha256": "864c80b632c9b6c4ba21ffa92b0da64b09a30987a5b6eb1e8f75ea72768bbfee",
+      "specification_sha256": "c35e3daec6859c4c094bd61836a04bb474ed3301e7f3646ef163ecef2515ceaa",
       "scoring_release_id": null,
       "open_splits": []
     },
