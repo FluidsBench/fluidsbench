@@ -24,7 +24,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: python fluidsbench/bin/check_dataset_pages.py --submission-root fluidsbench-submission
-      - run: python fluidsbench/bin/check_pressure_references.py --submission-root fluidsbench-submission
+      - run: python fluidsbench/bin/check_pressure_references.py
       - run: python fluidsbench/bin/export_profile_locations.py --submission-root fluidsbench-submission --check
       - run: python fluidsbench/bin/check_profile_contract.py --submission-root fluidsbench-submission --schema-root fluidsbench-submission
       - run: python fluidsbench/bin/prepare_submission_status.py --submission-root fluidsbench-submission --check
@@ -55,5 +55,6 @@ jobs:
         run: |
           node --test fluidsbench/tests/test_leaderboard_scores.js fluidsbench/tests/test_airfrans_profiles.js fluidsbench/tests/test_drivaernetplusplus_profiles.js fluidsbench/tests/test_official_profile_publication.js
           python fluidsbench/bin/check_dataset_pages.py --submission-root fluidsbench-submission-current
+          # The pressure snapshot follows the current submission source.
           python fluidsbench/bin/check_pressure_references.py --submission-root fluidsbench-submission-current
           python fluidsbench/bin/prepare_submission_status.py --submission-root fluidsbench-submission-current --check-contracts
