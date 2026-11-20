@@ -56,30 +56,30 @@ compact_masthead: true
   <section class="dataset-panel">
     <h3>Benchmark splits</h3>
     <p>
-      All eight splits in the <a href="https://huggingface.co/datasets/neashton/windsorml/blob/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/splits/manifest.json">pinned Hugging Face manifest</a>
+      All eight splits in the <a href="https://huggingface.co/datasets/neashton/windsorml/blob/ba7e66955650b2ff0482517f256d84c1eda815e7/splits/v2/manifest.json">WindsorML v2 split manifest</a>
       are available in the {% include dataset_leaderboard_link.html slug="windsorml" live_label="leaderboard profile viewer" preview_label="leaderboard profile preview" %}.
-      FluidsBench retains the official assignments and uses the intersection with published field files.
-      Runs <code>350–354</code> have no public per-run payload and are excluded, without replacement or reassignment.
-      Counts below show <strong>available / official</strong> cases.
+      The benchmark uses 344 eligible runs from 350 downloadable runs. Version 2 excludes six duplicate-geometry runs
+      and five aggregate-only IDs without per-run data. Retained runs keep their original assignments.
+      See the <a href="https://huggingface.co/datasets/neashton/windsorml/blob/ba7e66955650b2ff0482517f256d84c1eda815e7/splits/v2/README.md">erratum and migration instructions</a> if you used an excluded run.
     </p>
     <div class="dataset-table-wrap">
       <table class="dataset-table compact">
         <thead><tr><th>Split ID</th><th>Purpose</th><th>Train</th><th>Validation</th><th>Test</th></tr></thead>
         <tbody>
-          <tr><td><code>full</code></td><td>Random source baseline.</td><td>280 / 284</td><td>35 / 35</td><td>35 / 36</td></tr>
-          <tr><td><code>medium</code></td><td>Nested data-efficiency subset.</td><td>93 / 95</td><td>35 / 35</td><td>35 / 36</td></tr>
-          <tr><td><code>scarce</code></td><td>Smaller nested subset.</td><td>47 / 47</td><td>35 / 35</td><td>35 / 36</td></tr>
-          <tr><td><code>super_scarce</code></td><td>Minimum-data nested subset.</td><td>8 / 8</td><td>35 / 35</td><td>35 / 36</td></tr>
-          <tr><td><code>geometry</code></td><td>Geometry out of distribution.</td><td>243 / 248</td><td>36 / 36</td><td>71 / 71</td></tr>
-          <tr><td><code>high_drag</code></td><td>High-drag out of distribution.</td><td>244 / 248</td><td>36 / 36</td><td>70 / 71</td></tr>
-          <tr><td><code>low_drag</code></td><td>Low-drag out of distribution.</td><td>244 / 248</td><td>36 / 36</td><td>70 / 71</td></tr>
-          <tr><td><code>image_wake</code></td><td>Image-derived wake out of distribution.</td><td>244 / 248</td><td>35 / 36</td><td>71 / 71</td></tr>
+          <tr><td><code>full</code></td><td>Random source baseline.</td><td>276</td><td>33</td><td>35</td></tr>
+          <tr><td><code>medium</code></td><td>Nested data-efficiency subset.</td><td>90</td><td>33</td><td>35</td></tr>
+          <tr><td><code>scarce</code></td><td>Smaller nested subset.</td><td>45</td><td>33</td><td>35</td></tr>
+          <tr><td><code>super_scarce</code></td><td>Minimum-data nested subset.</td><td>7</td><td>33</td><td>35</td></tr>
+          <tr><td><code>geometry</code></td><td>Geometry out of distribution.</td><td>239</td><td>34</td><td>71</td></tr>
+          <tr><td><code>high_drag</code></td><td>High-drag out of distribution.</td><td>239</td><td>35</td><td>70</td></tr>
+          <tr><td><code>low_drag</code></td><td>Low-drag out of distribution.</td><td>242</td><td>35</td><td>67</td></tr>
+          <tr><td><code>image_wake</code></td><td>Image-derived wake out of distribution.</td><td>239</td><td>34</td><td>71</td></tr>
         </tbody>
       </table>
     </div>
     <p>
       The four data-efficiency splits share validation and test cases; only training size changes. The five distinct test sets contain
-      233 unique available cases. The <code>full</code> split is the published seed-42 benchmark, not a reconstruction of the paper's 60/20/20 split.
+      230 unique cases. The <code>full</code> split retains the eligible assignments from the published seed-42 baseline.
       Use validation for model selection and reserve test cases for final evaluation.
     </p>
   </section>

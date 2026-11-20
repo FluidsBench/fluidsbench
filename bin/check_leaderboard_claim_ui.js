@@ -2707,7 +2707,7 @@ async function verifyWindsorNativeGroundTruth(selectedManifest) {
         assert.equal(count, 16);
       }
     }
-    assert.equal(checked.size, 233);
+    assert.equal(checked.size, 230);
     const index = await api.groundTruthIndex("WindsorML", "Full");
     const caseId = api.caseIds(index.index)[0];
     const truth = await api.indexedProfileCase(index, caseId, cache, "WindsorML test");

@@ -389,7 +389,7 @@
       "revision_short": "8a6ca32",
       "revision_url": "https://huggingface.co/datasets/neashton/windsorml/tree/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2",
       "checked_on": "2026-09-17",
-      "release": "Hugging Face revision 8a6ca32",
+      "release": "WindsorML v2 splits · raw fields at Hugging Face revision 8a6ca32",
       "license": "CC BY-SA 4.0",
       "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
       "availability": "355 aggregate cases; 350 complete per-run field folders; approximately 8 TB",
@@ -444,7 +444,7 @@
       ],
       "operating_conditions": "All cases use the AutoCFD wind-tunnel-style setup at nominal 40 m/s, Reynolds number 2.9 × 10⁶, and 2.5° yaw; flow conditions are fixed.",
       "sampling": "A deterministic, extendable Halton sequence samples 355 points in the seven-dimensional geometry space; complete per-run fields are available for 350.",
-      "coverage": "Eight source split families are bound to the publicly available fields: four nested data-efficiency splits and four held-out regimes, covering 233 distinct test cases across five case sets.",
+      "coverage": "Eight source split families are bound to the publicly available fields: four nested data-efficiency splits and four held-out regimes, covering 230 distinct v2 test cases across five case sets.",
       "source_url": "https://arxiv.org/abs/2407.19320",
       "source_label": "WindsorML paper and geometry-variant table"
     },
@@ -452,11 +452,11 @@
       "status": "official",
       "status_label": "Open for submissions",
       "submissions_open": true,
-      "source_pin": "Hugging Face revision 8a6ca32",
-      "summary": "All eight prescribed splits are open for surface-and-volume submissions and bound to available native field files. Ground-truth profiles cover all 233 distinct test cases, with fixed and body-height-relative families. Use the published scoring support and resumable evaluator for evaluation, validation and package generation.",
+      "source_pin": "WindsorML v2 splits · raw fields at Hugging Face revision 8a6ca32",
+      "summary": "All eight WindsorML v2 splits are open for surface-and-volume submissions. The benchmark uses 344 eligible runs, with fixed and body-height-relative ground-truth profiles for all 230 distinct test cases. Use the published scoring support and resumable evaluator for evaluation, validation and package generation.",
       "split_ids": ["full", "medium", "scarce", "super_scarce", "geometry", "high_drag", "low_drag", "image_wake"],
       "case_id_status": "official_intersected_with_published",
-      "contract_digest": "c430396116344f3940ec08b8bb6bfff04ff335d05b1326546691b0e0c2701a32"
+      "contract_digest": "e9ad14980eaea048f52dbe8438601389a1afd5b77b3b2e0a87f1ff27c16f3e78"
     },
     "visual": {
       "inputs": "Windsor geometry + WMLES conditions",
