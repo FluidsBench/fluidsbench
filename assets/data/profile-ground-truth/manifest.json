@@ -1,11 +1,11 @@
 {
   "schema_version": "1.0",
   "data_release": {
-    "id": "prototype-profile-ground-truth-2026-09-04",
+    "id": "fluidsbench-profile-ground-truth-windsorml-v2",
     "status": "prototype_dummy_data",
-    "generated_at": "2026-09-16T20:48:24Z",
-    "source_repository": "https://github.com/neilashton/fluidsbench",
-    "source_ref": "dev",
+    "generated_at": "2026-11-20T10:40:00Z",
+    "source_repository": "https://github.com/FluidsBench/fluidsbench",
+    "source_ref": "profile-truth-publication-v2",
     "source_commit": null
   },
   "status": "prototype_dummy_data",

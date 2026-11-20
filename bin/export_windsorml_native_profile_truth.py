@@ -16,10 +16,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TRUTH_ROOT = ROOT / "assets/data/profile-ground-truth"
 REVISION = "8a6ca32ae22c94f54df2186d1b0ccf9662a294c2"
-MANIFEST_SHA = "e660311ef82ec19347e91eeb1753c1f0af4c1bd65ba01491fb47ac960da51376"
+MANIFEST_SHA = "d619e886981780b2a29fa55d617b2640299ada6907855e5abb1f170d95e693a1"
 DEFINITION_SHA = "d58014ae66d92ea5ffce3c4f3b8e206447873d563d8bc3ffb4cbeee81539e056"
 SOURCE_SHA = "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff"
-RELEASE = "windsorml-native-profile-truth-v1-candidate"
+RELEASE = "windsorml-native-profile-truth-v2"
 CASE_STATUS = "official_intersected_with_published"
 SPLITS = [
     "full",
@@ -81,7 +81,7 @@ def expected_bundle(submission_root):
     spec_root = submission_root / "benchmark-specs/windsorml"
     support_root = spec_root / "profile-support"
     manifest = pinned(
-        support_root / "windsorml-profile-support-v3-manifest.json", MANIFEST_SHA
+        support_root / "windsorml-profile-support-v3-windsorml-v2-manifest.json", MANIFEST_SHA
     )
     definition = pinned(spec_root / "profile-definition-v2.json", DEFINITION_SHA)
     pinned(
@@ -277,7 +277,7 @@ def main():
             json.dumps(manifest, indent=2, ensure_ascii=False) + "\n"
         )
     print(
-        "WindsorML: all 8 splits, 5 case sets, 233 native CFD cases, 16 series × 128 samples per case verified"
+        "WindsorML: all 8 splits, 5 case sets, 230 native CFD cases, 16 series × 128 samples per case verified"
     )
 
 
