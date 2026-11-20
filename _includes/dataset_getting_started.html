@@ -93,19 +93,19 @@ print(surface.cell_data["wallShearStressMeanTrim"].shape)</code></pre>
 {% when "windsorml" %}
 <div class="dataset-start-grid">
   <div>
-    <h4>1. Inspect the source coverage</h4>
+    <h4>1. Inspect the v2 split package</h4>
     <pre><code>python3 -m pip install -U huggingface_hub hf_xet
 hf download neashton/windsorml \
   --repo-type dataset \
-  --revision {{ dataset.source.revision }} \
+  --revision ba7e66955650b2ff0482517f256d84c1eda815e7 \
   --include "README.md" \
-  --include "splits/**" \
+  --include "splits/v2/**" \
   --include "surface_dual_areas/**" \
   --local-dir ./windsorml \
   --dry-run</code></pre>
   </div>
   <div>
-    <h4>2. Download one complete field case</h4>
+    <h4>2. Download one surface case</h4>
     <pre><code>hf download neashton/windsorml \
   --repo-type dataset \
   --revision {{ dataset.source.revision }} \
@@ -124,9 +124,9 @@ area = np.load("windsorml/run_1/boundary_dual_area_1.npy", mmap_mode="r")
 assert area.shape == (surface.n_points,)
 print(surface.point_data.keys())</code></pre>
 <p class="dataset-download-note">
-  Remove <code>--dry-run</code> only after checking the transfer size. The dual areas apply to the exact raw VTU point order. The split metadata
-  covers 355 aggregate cases, but only runs 0–349 have complete per-run field folders and area sidecars. The scoring contract already intersects each
-  source split with these published runs: Full has 35 test cases and excludes <code>run_354</code>. Use its exact case lists without replacements.
+  Remove <code>--dry-run</code> to download the split package. The dual areas apply to the exact raw VTU point order. Use
+  <code>splits/v2/manifest.json</code> to select cases for training, validation and testing. WindsorML v2 uses 344 eligible runs; Full has 35 test
+  cases.
 </p>
 
 {% when "hiliftaeroml" %}
