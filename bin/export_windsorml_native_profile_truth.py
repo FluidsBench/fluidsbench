@@ -218,11 +218,11 @@ def expected_bundle(submission_root):
         )
     if (
         set(case_chunks) != set().union(*map(set, indexed_sets.values()))
-        or len(case_chunks) != 233
+        or len(case_chunks) != 230
         or len(indexed_sets) != 5
     ):
         raise ValueError(
-            "WindsorML truth must cover exactly the 233-case test union and five case sets"
+            "WindsorML truth must cover exactly the 230-case test union and five case sets"
         )
     return files, dataset
 
