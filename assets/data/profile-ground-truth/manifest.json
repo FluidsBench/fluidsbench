@@ -1,11 +1,11 @@
 {
   "schema_version": "1.0",
   "data_release": {
-    "id": "fluidsbench-profile-ground-truth-windsorml-v2",
+    "id": "fluidsbench-profile-ground-truth-ground-wing-v1",
     "status": "prototype_dummy_data",
-    "generated_at": "2026-11-20T10:40:00Z",
+    "generated_at": "2026-11-23T12:00:00Z",
     "source_repository": "https://github.com/FluidsBench/fluidsbench",
-    "source_ref": "profile-truth-publication-v2",
+    "source_ref": "profile-truth-publication-v3",
     "source_commit": null
   },
   "status": "prototype_dummy_data",
@@ -727,6 +727,53 @@
           "index_file": "datasets/blendednet/geometry_holdout/index.json",
           "index_sha256": "917ddbb017e69b28cf27c45cec048b8fe0b9506f2439d7e8be0349d062377fa4",
           "case_count": 870,
+          "case_id_status": "prototype_generated"
+        }
+      ]
+    },
+    {
+      "id": "ground-wing",
+      "name": "Ground-Wing",
+      "splits": [
+        {
+          "id": "stratified",
+          "label": "stratified",
+          "case_set_id": "stratified",
+          "case_count": 71
+        },
+        {
+          "id": "drag_outlier",
+          "label": "drag_outlier",
+          "case_set_id": "drag_outlier",
+          "case_count": 64
+        },
+        {
+          "id": "interpolated",
+          "label": "interpolated",
+          "case_set_id": "interpolated",
+          "case_count": 80
+        }
+      ],
+      "case_sets": [
+        {
+          "id": "stratified",
+          "index_file": "datasets/ground-wing/stratified/index.json",
+          "index_sha256": "bf234f6a3e623658f3d293d31e0bdc78976effb7e4f104f694523a0c2528c405",
+          "case_count": 71,
+          "case_id_status": "prototype_generated"
+        },
+        {
+          "id": "drag_outlier",
+          "index_file": "datasets/ground-wing/drag_outlier/index.json",
+          "index_sha256": "d1f6db36db4e03930520546db02139781f52ad57518319671fc3c2545206d4f4",
+          "case_count": 64,
+          "case_id_status": "prototype_generated"
+        },
+        {
+          "id": "interpolated",
+          "index_file": "datasets/ground-wing/interpolated/index.json",
+          "index_sha256": "6e3c3323d15eb5c9df2b96146dd4aa6866e5ccdb5b42b938f7ba0807a34da255",
+          "case_count": 80,
           "case_id_status": "prototype_generated"
         }
       ]
