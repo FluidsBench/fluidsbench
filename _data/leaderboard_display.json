@@ -51,5 +51,16 @@
     "coming_soon": true,
     "headline_metric_ids": ["overall_score", "blended_cp_area_rel_l2", "blended_cfx_area_rel_l2", "blended_cfz_area_rel_l2", "c_drag_mae"],
     "radar_metric_ids": ["blended_cp_area_rel_l2", "blended_cfx_area_rel_l2", "blended_cfy_area_rel_l2", "blended_cfz_area_rel_l2"]
+  },
+  "ground-wing": {
+    "coming_soon": true,
+    "headline_metric_ids": [
+      "overall_score",
+      "groundwing_cp_area_rel_l2",
+      "groundwing_wss_area_rel_l2",
+      "groundwing_cl_rel_error",
+      "groundwing_cd_rel_error"
+    ],
+    "radar_metric_ids": ["groundwing_cp_area_rel_l2", "groundwing_wss_area_rel_l2", "groundwing_cl_rel_error", "groundwing_cd_rel_error"]
   }
 }

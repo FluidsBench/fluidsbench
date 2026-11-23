@@ -131,7 +131,9 @@
       <a href="{{ '/datasets/' | relative_url }}">All datasets <span aria-hidden="true">→</span></a>
     </div>
     <div class="launch-dataset-grid">
-      {% assign featured = 'airfrans,drivaerml,drivaernetplusplus,ahmedml,windsorml,hiliftaeroml,blendednet,rotor37,vki-ls59' | split: ',' %}
+      {% assign featured = 'airfrans,drivaerml,drivaernetplusplus,ahmedml,windsorml,hiliftaeroml,blendednet,rotor37,vki-ls59,ground-wing'
+        | split: ','
+      %}
       {% for slug in featured %}
         {% assign dataset = site.data.dataset_catalog[slug] %}
         {% assign coming_soon = site.data.leaderboard_display[slug].coming_soon %}
