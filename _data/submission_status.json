@@ -1,6 +1,6 @@
 {
-  "source_commit": "fdc642244fd61ea4ea841f8604564b6b5bd23400",
-  "manifest_sha256": "ea9f8e178dfdbbf8b6003aeeb737133ce0accc940f0d7cdf7abcb9d041b637e3",
+  "source_commit": "58e798faccfa378e4ba5a5566cb91385f27209a5",
+  "manifest_sha256": "601bcd11430b9732d2b6aeaad1c999f687f8bbeaa6539ce629c0790aebedb51b",
   "release": {
     "id": "fluidsbench-2026-unreleased",
     "status": "unreleased",
@@ -148,7 +148,7 @@
       "open": false,
       "dev_candidate": false,
       "guide": null,
-      "specification_sha256": "c35e3daec6859c4c094bd61836a04bb474ed3301e7f3646ef163ecef2515ceaa",
+      "specification_sha256": "98a27f0bb7d543bb29685077978b18d4ceb053465812f917cdff3d81bef4b397",
       "scoring_release_id": null,
       "open_splits": []
     },
@@ -194,6 +194,14 @@
       "dev_candidate": false,
       "guide": null,
       "specification_sha256": "7b60689a619a094152b063fb4cdf2a716a0790f288ca140737f3355bbc53ef7e",
+      "scoring_release_id": null,
+      "open_splits": []
+    },
+    "ground-wing": {
+      "open": false,
+      "dev_candidate": false,
+      "guide": null,
+      "specification_sha256": "44a78e0fb13ae88a6a608b80710e68b9c95bd078e601fca6143292138c655e99",
       "scoring_release_id": null,
       "open_splits": []
     }

@@ -24,6 +24,7 @@ DATASET_IDS = {
     "blendednet",
     "drivaerml",
     "drivaernetplusplus",
+    "ground-wing",
     "hiliftaeroml",
     "rotor37",
     "vki-ls59",

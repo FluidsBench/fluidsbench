@@ -2786,13 +2786,13 @@ async function verifyComingSoonSelection() {
       "only the five open datasets may expose leaderboard results"
     );
     const options = api.datasetOptions();
-    assert.equal(options.length, 9);
+    assert.equal(options.length, 10);
     assert.deepEqual(
       Array.from(
         options.filter((option) => option.disabled),
         (option) => option.value
       ).sort(),
-      ["BlendedNet", "HiLiftAeroML", "Rotor37", "VKI-LS59"]
+      ["BlendedNet", "Ground-Wing", "HiLiftAeroML", "Rotor37", "VKI-LS59"]
     );
     assert.ok(options.filter((option) => option.disabled).every((option) => option.label.endsWith(" — Coming soon")));
     context.document.createElement = () => ({});
@@ -2806,10 +2806,10 @@ async function verifyComingSoonSelection() {
       },
     };
     api.populateSelect(select, options, "Rotor37");
-    assert.equal(select.children.filter((option) => option.disabled).length, 4, "upcoming options must be natively disabled");
+    assert.equal(select.children.filter((option) => option.disabled).length, 5, "upcoming options must be natively disabled");
     assert.notEqual(select.value, "Rotor37", "a disabled dataset cannot become the default");
     api.state.manifest = { ...manifest, datasets: manifest.datasets.filter((dataset) => !displayConfig[dataset.slug]?.coming_soon) };
-    assert.equal(api.datasetOptions().length, 9, "coming-soon labels must not depend on published result feeds");
+    assert.equal(api.datasetOptions().length, 10, "coming-soon labels must not depend on published result feeds");
     const redirects = [];
     const requestCount = fetchedUrls.length;
     context.window.location = {

@@ -871,5 +871,92 @@
       "support": "Candidate complete 2D domain and blade curve",
       "metrics": "Equal-node domain errors; length-weighted M_iso; six scalar quantities"
     }
+  },
+  "ground-wing": {
+    "name": "Ground-Wing",
+    "category": "Ground Effect Aerodynamics",
+    "summary": "A 770-case steady RANS dataset comprised of 194 geometry variants of a 3D wing running in ground effect, each simulated at 4 different ride heights, with native surface and volume fields, STL geometry and integrated force coefficients. Each geometry features changes in sweep angle, chord, taper ratio, angle of attack, tip twist, and airfoil profile.",
+    "source": {
+      "provider": "huggingface",
+      "repository_id": "andreacenzato/Ground-Wing",
+      "url": "https://huggingface.co/datasets/andreacenzato/Ground-Wing",
+      "revision": "d638fc510531cc1ae56c9adb99788b2dbbdbae01",
+      "revision_short": "d638fc5",
+      "revision_url": "https://huggingface.co/datasets/andreacenzato/Ground-Wing/tree/d638fc510531cc1ae56c9adb99788b2dbbdbae01",
+      "checked_on": "2026-11-23",
+      "release": "Hugging Face revision d638fc5",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "availability": "770 cases from 194 geometries at four ride heights; surface meshes of about 1.2M cells and volume meshes of about 28M cells per case",
+      "contents": "Per-case STL geometry, surface VTP files with cell-centred Cp, total-pressure coefficient CpT and wall shear stress, volume VTU files with Cp, CpT and velocity, and a run_db.csv table of geometric parameters and integrated force coefficients.",
+      "image": {
+        "path": "/assets/img/datasets/ground-wing-flow.png",
+        "alt": "Ground-Wing wing between its endplates coloured by a surface flow field, with streamlines bending around it and the endplate tip vortices trailing downstream.",
+        "caption": "Surface field and streamlines around a Ground-Wing case, showing the endplate tip vortices in the wake.",
+        "credit": "Ground-Wing source dataset",
+        "source_url": "https://huggingface.co/datasets/andreacenzato/Ground-Wing"
+      }
+    },
+    "design_space": {
+      "archetype_count": "1 parent shape",
+      "archetypes": [
+        {
+          "name": "Single-element front wing with endplates",
+          "description": "A motorsport front wing occupying the design space of an LMDh prototype front splitter, with rectangular endplates on every geometry and a constant profile and ground clearance along the span."
+        }
+      ],
+      "parameter_count": "5 continuous geometry parameters plus 1 discrete profile parameter and a 4-level ride-height sweep",
+      "parameter_summary": "The airfoil profile is drawn from 27 sections (12 base motorsport high-lift and NACA sections and 15 unseen or interpolated variants); sweep and twist vary linearly along a fixed 2,000 mm span.",
+      "parameters": [
+        {
+          "name": "Airfoil profile",
+          "range": "27 sections"
+        },
+        {
+          "name": "Centerline angle of attack",
+          "range": "−10° to 5°"
+        },
+        {
+          "name": "Tip twist",
+          "range": "−10° to 10°"
+        },
+        {
+          "name": "Centerline chord",
+          "range": "550–700 mm"
+        },
+        {
+          "name": "Tip chord",
+          "range": "350–700 mm"
+        },
+        {
+          "name": "Sweep angle",
+          "range": "−8.5° to 20°"
+        },
+        {
+          "name": "Ride height (endplate clearance)",
+          "range": "30, 45, 60 and 75 mm"
+        }
+      ],
+      "operating_conditions": "Every case uses a 50 m/s freestream parallel to the centerline chord over a moving ground belt, solved with incompressible RANS and the realizable k-ε model in STAR-CCM+.",
+      "sampling": "A Sobol sequence fills the five-dimensional continuous space, infeasible wings are filtered out, and a sensitivity-weighted selection balanced against coverage yields 194 geometries, each simulated at four ride heights.",
+      "coverage": "Three published splits separate a geometry-stratified benchmark, a drag-outlier extrapolation regime and unseen interpolated airfoil profiles. FluidsBench binds prototype case IDs only; public submissions remain closed.",
+      "source_url": "https://arxiv.org/abs/2611.04571",
+      "source_label": "Ground-Wing paper and geometry-parameter table"
+    },
+    "benchmark": {
+      "status": "owner_review_required",
+      "status_label": "Coming soon",
+      "submissions_open": false,
+      "source_pin": "andreacenzato/Ground-Wing @ d638fc5",
+      "summary": "Coming soon. The candidate contract scores cell-centred surface Cp and wall shear stress with area-weighted relative L2, plus integrated lift and drag coefficient errors, on the stratified, drag-outlier and interpolated splits. Case IDs and profile curves are prototypes until the scoring support is published and approved.",
+      "split_ids": ["stratified", "drag_outlier", "interpolated"],
+      "case_id_status": "prototype_generated",
+      "contract_digest": "5016ad918f5395cc64e378d736a3de069b5ff3d6bd349180f922aa1228b148ed"
+    },
+    "visual": {
+      "inputs": "Wing geometry + ride height",
+      "support": "Native surface cells",
+      "metrics": "Area-weighted surface errors; lift and drag coefficient errors"
+    }
   }
 }

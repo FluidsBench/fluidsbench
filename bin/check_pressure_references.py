@@ -16,7 +16,7 @@ def main():
     path = ROOT / "_data/pressure_references.json"
     audit = json.loads(path.read_text())
     catalog = json.loads((ROOT / "_data/dataset_catalog.json").read_text())
-    expected = set(catalog) - {"blendednet"}
+    expected = set(catalog) - {"blendednet", "ground-wing"}
     assert audit["schema_version"] == 1
     assert set(audit["datasets"]) == expected, "pressure inventory must match visible datasets"
     assert re.fullmatch(r"[0-9a-f]{40}", audit["audited_submission_revision"])

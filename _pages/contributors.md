@@ -19,7 +19,7 @@ hide_header_background: true
   <h2 id="dataset-teams-title">Dataset and software contributors</h2>
   <p>FluidsBench builds on the work of the original dataset authors and maintainers. Each dataset guide links to its source project and publications.</p>
   <div class="ux-dataset-credits">
-    {% assign dataset_order = 'ahmedml,drivaerml,drivaernetplusplus,windsorml,hiliftaeroml,airfrans,blendednet,vki-ls59,rotor37' | split: ',' %}
+    {% assign dataset_order = 'ahmedml,drivaerml,drivaernetplusplus,windsorml,hiliftaeroml,airfrans,blendednet,vki-ls59,rotor37,ground-wing' | split: ',' %}
     {% for slug in dataset_order %}
       {% unless site.data.leaderboard_display[slug].hidden %}
         {% if site.data.leaderboard_display[slug].coming_soon %}

@@ -17,7 +17,7 @@ wide: true
     <a href="{{ '/run/' | relative_url }}">How to run a benchmark <span aria-hidden="true">→</span></a>
   </div>
 
-{% assign dataset_order = "ahmedml,drivaerml,drivaernetplusplus,windsorml,hiliftaeroml,airfrans,blendednet,vki-ls59,rotor37" | split: "," %}
+{% assign dataset_order = "ahmedml,drivaerml,drivaernetplusplus,windsorml,hiliftaeroml,airfrans,blendednet,vki-ls59,rotor37,ground-wing" | split: "," %}
 
   <section class="dataset-list" aria-label="Benchmark datasets">
     {% for slug in dataset_order %} {% assign dataset = site.data.dataset_catalog[slug] %}
